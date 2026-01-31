@@ -3,39 +3,35 @@ package org.example
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
-abstract class Transaction(){
-    abstract val storage: Storage
+enum class TypeOperation{
+    PROFIT,
+    LOSS,
+}
+
+abstract class Operation() {
+    abstract val fromStorage: Storage
     abstract val dateTime: LocalDateTime
-    abstract val title: String
-    abstract val countMoney: BigDecimal
-
+    abstract val amount: BigDecimal
 }
-
-interface MoneyMovement{
-    //TODO()
-}
-
-
-data class Income(
-    override val storage: Storage,
+data class GeneralTransaction(
+    override val fromStorage: Storage,
+    val typeOperation: TypeOperation,
     override val dateTime: LocalDateTime,
-    override val title: String,
-    override val countMoney: BigDecimal,
-    val category: Category
-): MoneyMovement, Transaction()
+    override val amount: BigDecimal,
+    val category: Category,
+): Operation()
 
-data class Expense(
-    override val storage: Storage,
+data class TransferTransaction(
+    override val fromStorage: Storage,
+    val toStorage: Storage,
     override val dateTime: LocalDateTime,
-    override val title: String,
-    override val countMoney: BigDecimal,
-    val category: Category
-): MoneyMovement, Transaction()
+    override val amount: BigDecimal
+
+): Operation()
 
 data class Transfer(
-    override val storage: Storage,
-    val toStorageId: Long,
-    override val dateTime: LocalDateTime,
-    override val title: String,
-    override val countMoney: BigDecimal
-): Transaction()
+    val from: Storage,
+    val to: Storage,
+    val dateTime: LocalDateTime,
+    val amount: BigDecimal,
+)
