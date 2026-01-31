@@ -34,7 +34,7 @@ class StorageViewModel(private val storages: MutableSet<Storage> = mutableSetOf(
     fun addGeneralStorage(st: General){
         storages.add(st)
     }
-    fun getStorage(index: Int): Storage{
+    fun getStorage(index: Int){
 
     }
     fun delGeneralStorage(st: General){

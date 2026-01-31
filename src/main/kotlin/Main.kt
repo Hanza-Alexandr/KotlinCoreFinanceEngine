@@ -1,14 +1,12 @@
 package org.example
 
 import java.math.BigDecimal
-import java.time.LocalDateTime
+
 
 fun main() {
     val opVM = OperationViewModel()
     val stVM = StorageViewModel()
-    val view = consoleView(opVM,stVM)
-
-
+    //al view = consoleView(opVM,stVM)
 }
 
 class StorageView(private val storageViewModel: StorageViewModel){
@@ -28,17 +26,14 @@ class StorageView(private val storageViewModel: StorageViewModel){
     fun setNewStartBalance(storage: Storage,newStartBalance: BigDecimal){
         storageViewModel.replaceGeneralStorage(storage, General(storage.title,newStartBalance))
     }
-    fun getStorage(index: Int): Storage{
-        storageViewModel.
-    }
+
 }
 
 class consoleView(
     private val operationViewModel: OperationViewModel,
     private val storageViewModel: StorageViewModel
-){
+)
 
-}
 
 
 
