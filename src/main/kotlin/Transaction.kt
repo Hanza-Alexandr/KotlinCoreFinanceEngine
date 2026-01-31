@@ -28,10 +28,3 @@ data class TransferTransaction(
     override val amount: BigDecimal
 
 ): Operation()
-
-data class Transfer(
-    val from: Storage,
-    val to: Storage,
-    val dateTime: LocalDateTime,
-    val amount: BigDecimal,
-)

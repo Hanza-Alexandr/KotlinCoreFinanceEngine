@@ -1,0 +1,55 @@
+-- ===========================
+-- TABLE: Operations
+-- ===========================
+
+CREATE TABLE Operations (
+  id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  amount REAL NOT NULL,
+  date_time TEXT NOT NULL,
+  from_storage INTEGER NOT NULL,
+  to_storage INTEGER,
+  category INTEGER,
+  type_operation INTEGER,
+  FOREIGN KEY (from_storage) REFERENCES Storage(id)
+    ON UPDATE RESTRICT ON DELETE CASCADE,
+  FOREIGN KEY (to_storage) REFERENCES Storage(id)
+    ON UPDATE NO ACTION ON DELETE NO ACTION,
+  FOREIGN KEY (type_operation) REFERENCES TypesOperation(id)
+    ON UPDATE NO ACTION ON DELETE NO ACTION,
+  FOREIGN KEY (category) REFERENCES Categories(id)
+    ON UPDATE NO ACTION ON DELETE NO ACTION
+);
+
+insertOperation:
+INSERT INTO Operations(
+  amount, date_time, from_storage, to_storage, category, type_operation
+)
+VALUES (?, ?, ?, ?, ?, ?);
+
+updateOperation:
+UPDATE Operations
+SET amount = ?, date_time = ?, from_storage = ?, to_storage = ?, category = ?, type_operation = ?
+WHERE id = ?;
+
+deleteOperation:
+DELETE FROM Operations
+WHERE id = ?;
+
+selectOperationById:
+SELECT * FROM Operations
+WHERE id = ?;
+
+selectAllOperations:
+SELECT * FROM Operations;
+
+selectOperationsByStorage:
+SELECT * FROM Operations
+WHERE from_storage = ? OR to_storage = ?;
+
+selectOperationsByCategory:
+SELECT * FROM Operations
+WHERE category = ?;
+
+selectOperationsByType:
+SELECT * FROM Operations
+WHERE type_operation = ?;

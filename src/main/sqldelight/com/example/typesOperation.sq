@@ -1,0 +1,28 @@
+-- ===========================
+-- TABLE: TypesOperation
+-- ===========================
+
+CREATE TABLE TypesOperation (
+  id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  opetations TEXT NOT NULL
+);
+
+insertTypeOperation:
+INSERT INTO TypesOperation(opetations)
+VALUES (?);
+
+updateTypeOperation:
+UPDATE TypesOperation
+SET opetations = ?
+WHERE id = ?;
+
+deleteTypeOperation:
+DELETE FROM TypesOperation
+WHERE id = ?;
+
+selectTypeOperationById:
+SELECT * FROM TypesOperation
+WHERE id = ?;
+
+selectAllTypesOperation:
+SELECT * FROM TypesOperation;

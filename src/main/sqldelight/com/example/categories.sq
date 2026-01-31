@@ -1,0 +1,35 @@
+-- ===========================
+-- TABLE: Categories
+-- ===========================
+
+CREATE TABLE Categories (
+  id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  title TEXT NOT NULL,
+  parent_category INTEGER,
+  FOREIGN KEY (parent_category) REFERENCES Categories(id)
+    ON UPDATE NO ACTION ON DELETE NO ACTION
+);
+
+insertCategory:
+INSERT INTO Categories(title, parent_category)
+VALUES (?, ?);
+
+updateCategory:
+UPDATE Categories
+SET title = ?, parent_category = ?
+WHERE id = ?;
+
+deleteCategory:
+DELETE FROM Categories
+WHERE id = ?;
+
+selectCategoryById:
+SELECT * FROM Categories
+WHERE id = ?;
+
+selectAllCategories:
+SELECT * FROM Categories;
+
+selectChildCategories:
+SELECT * FROM Categories
+WHERE parent_category = ?;
