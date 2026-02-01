@@ -1,35 +1,36 @@
 -- ===========================
--- TABLE: Categories
+-- TABLE: CategoryDao
 -- ===========================
 
-CREATE TABLE Categories (
+CREATE TABLE CategoryDao (
   id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
   title TEXT NOT NULL,
   parent_category INTEGER,
-  FOREIGN KEY (parent_category) REFERENCES Categories(id)
+  FOREIGN KEY (parent_category) REFERENCES CategoryDao(id)
     ON UPDATE NO ACTION ON DELETE NO ACTION
 );
 
-insertCategory:
-INSERT INTO Categories(title, parent_category)
+
+insertCategoryDao:
+INSERT INTO CategoryDao(title, parent_category)
 VALUES (?, ?);
 
-updateCategory:
-UPDATE Categories
+updateCategoryDao:
+UPDATE CategoryDao
 SET title = ?, parent_category = ?
 WHERE id = ?;
 
-deleteCategory:
-DELETE FROM Categories
+deleteCategoryDao:
+DELETE FROM CategoryDao
 WHERE id = ?;
 
-selectCategoryById:
-SELECT * FROM Categories
+selectCategoryDaoById:
+SELECT * FROM CategoryDao
 WHERE id = ?;
 
-selectAllCategories:
-SELECT * FROM Categories;
+selectAllCategoryDao:
+SELECT * FROM CategoryDao;
 
-selectChildCategories:
-SELECT * FROM Categories
+selectChildCategoryDao:
+SELECT * FROM CategoryDao
 WHERE parent_category = ?;

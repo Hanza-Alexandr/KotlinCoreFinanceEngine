@@ -1,8 +1,8 @@
 -- ===========================
--- TABLE: Operations
+-- TABLE: OperationDao
 -- ===========================
 
-CREATE TABLE Operations (
+CREATE TABLE OperationDao (
   id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
   amount REAL NOT NULL,
   date_time TEXT NOT NULL,
@@ -10,46 +10,46 @@ CREATE TABLE Operations (
   to_storage INTEGER,
   category INTEGER,
   type_operation INTEGER,
-  FOREIGN KEY (from_storage) REFERENCES Storage(id)
+  FOREIGN KEY (from_storage) REFERENCES StorageDao(id)
     ON UPDATE RESTRICT ON DELETE CASCADE,
-  FOREIGN KEY (to_storage) REFERENCES Storage(id)
+  FOREIGN KEY (to_storage) REFERENCES StorageDao(id)
     ON UPDATE NO ACTION ON DELETE NO ACTION,
-  FOREIGN KEY (type_operation) REFERENCES TypesOperation(id)
+  FOREIGN KEY (type_operation) REFERENCES TypeOperationDao(id)
     ON UPDATE NO ACTION ON DELETE NO ACTION,
-  FOREIGN KEY (category) REFERENCES Categories(id)
+  FOREIGN KEY (category) REFERENCES CategoryDao(id)
     ON UPDATE NO ACTION ON DELETE NO ACTION
 );
 
-insertOperation:
-INSERT INTO Operations(
+insertOperationDao:
+INSERT INTO OperationDao(
   amount, date_time, from_storage, to_storage, category, type_operation
 )
 VALUES (?, ?, ?, ?, ?, ?);
 
-updateOperation:
-UPDATE Operations
+updateOperationDao:
+UPDATE OperationDao
 SET amount = ?, date_time = ?, from_storage = ?, to_storage = ?, category = ?, type_operation = ?
 WHERE id = ?;
 
-deleteOperation:
-DELETE FROM Operations
+deleteOperationDao:
+DELETE FROM OperationDao
 WHERE id = ?;
 
-selectOperationById:
-SELECT * FROM Operations
+selectOperationDaoById:
+SELECT * FROM OperationDao
 WHERE id = ?;
 
-selectAllOperations:
-SELECT * FROM Operations;
+selectAllOperationDao:
+SELECT * FROM OperationDao;
 
-selectOperationsByStorage:
-SELECT * FROM Operations
+selectOperationDaoByStorage:
+SELECT * FROM OperationDao
 WHERE from_storage = ? OR to_storage = ?;
 
-selectOperationsByCategory:
-SELECT * FROM Operations
+selectOperationDaoByCategory:
+SELECT * FROM OperationDao
 WHERE category = ?;
 
-selectOperationsByType:
-SELECT * FROM Operations
+selectOperationDaoByType:
+SELECT * FROM OperationDao
 WHERE type_operation = ?;

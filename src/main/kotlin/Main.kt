@@ -1,14 +1,26 @@
 package org.example
 
+import app.cash.sqldelight.db.SqlDriver
+import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
+import com.example.Database
+import java.io.File
 import java.math.BigDecimal
 
 
 fun main() {
-    val opVM = OperationViewModel()
-    val stVM = StorageViewModel()
-    //al view = consoleView(opVM,stVM)
-}
+    val driver: SqlDriver =  JdbcSqliteDriver( "jdbc:sqlite:src/main/resources/CoreDatabase.db")
+    // Create a Database
+    if (!File("src/main/resources/CoreDatabase.db").exists()) {
+        Database.Schema.create(driver)
+    }
+    // Get a reference to the queries
+    //val usersQueries: UsersQueries = Database(driver).usersQueries
 
+
+    val opVM = OperationViewModel()
+    //val stVM = StorageViewModel()
+    //val view = consoleView(opVM,stVM)
+}
 class StorageView(private val storageViewModel: StorageViewModel){
     fun showMenu(){
         println("1. Список Всех")
@@ -26,9 +38,7 @@ class StorageView(private val storageViewModel: StorageViewModel){
     fun setNewStartBalance(storage: Storage,newStartBalance: BigDecimal){
         storageViewModel.replaceGeneralStorage(storage, General(storage.title,newStartBalance))
     }
-
 }
-
 class consoleView(
     private val operationViewModel: OperationViewModel,
     private val storageViewModel: StorageViewModel

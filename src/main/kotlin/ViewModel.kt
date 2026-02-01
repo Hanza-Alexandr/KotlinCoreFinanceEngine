@@ -1,5 +1,8 @@
 package org.example
 
+import com.example.Database
+import com.example.StorageQueries
+import com.example.StorageDao
 import java.time.Period
 
 class OperationViewModel(private val operations: MutableList<Operation> = mutableListOf()){
@@ -9,15 +12,12 @@ class OperationViewModel(private val operations: MutableList<Operation> = mutabl
     fun delGeneralTransaction(tx: GeneralTransaction){
         operations.remove(tx)
     }
-
     fun addTransferTransaction(tx: TransferTransaction){
         operations.add(tx)
     }
     fun delTransferTransaction(tx: TransferTransaction){
         operations.remove(tx)
     }
-
-
     fun listOperations(): List<String> {
         return operations.map {
             when (it) {
@@ -27,25 +27,31 @@ class OperationViewModel(private val operations: MutableList<Operation> = mutabl
             }
         }
     }
-
 }
 
-class StorageViewModel(private val storages: MutableSet<Storage> = mutableSetOf()){
-    fun addGeneralStorage(st: General){
-        storages.add(st)
+class StorageViewModel( val storageQueries: StorageQueries){
+
+    fun getList(): List<StorageDao>{
+        val aasd = mutableListOf<StorageDao>()
+        storageQueries.selectAllStorageDao{id, title, start_balance -> aasd.add(StorageDao(id,title,start_balance))}
+        return aasd.toList()
     }
-    fun getStorage(index: Int){
+    fun addGeneralStorage(st: General){
+        storageQueries.insertStorageDao(st.title,st.startBalance.toDouble())
+    }
+    fun getStorage(st: Storage){
+
+    }
+    fun getStorage(id: Int){
 
     }
     fun delGeneralStorage(st: General){
-        storages.add(st)
+
     }
     fun replaceGeneralStorage(old: Storage, new: Storage){
-        storages.remove(old)
-        storages.add(new)
+
     }
     fun listStorage(): List<String> {
-        return storages.map {"${it}" }
+        TODO()
     }
-
 }

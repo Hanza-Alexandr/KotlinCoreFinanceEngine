@@ -1,28 +1,28 @@
 -- ===========================
--- TABLE: TypesOperation
+-- TABLE: TypeOperationDao
 -- ===========================
 
-CREATE TABLE TypesOperation (
+CREATE TABLE TypeOperationDao (
   id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-  opetations TEXT NOT NULL
+  operation TEXT NOT NULL
 );
 
-insertTypeOperation:
-INSERT INTO TypesOperation(opetations)
+insertTypeOperationDao:
+INSERT INTO TypeOperationDao(operation)
 VALUES (?);
 
-updateTypeOperation:
-UPDATE TypesOperation
-SET opetations = ?
+updateTypeOperationDao:
+UPDATE TypeOperationDao
+SET operation = ?
 WHERE id = ?;
 
-deleteTypeOperation:
-DELETE FROM TypesOperation
+deleteTypeOperationDao:
+DELETE FROM TypeOperationDao
 WHERE id = ?;
 
-selectTypeOperationById:
-SELECT * FROM TypesOperation
+selectTypeOperationDaoById:
+SELECT * FROM TypeOperationDao
 WHERE id = ?;
 
-selectAllTypesOperation:
-SELECT * FROM TypesOperation;
+selectAllTypeOperationDao:
+SELECT * FROM TypeOperationDao;

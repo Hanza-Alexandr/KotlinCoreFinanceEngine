@@ -2,7 +2,7 @@ package org.example
 
 import java.math.BigDecimal
 
-abstract class Storage(){
+abstract class Storage{
     abstract val title: String
     abstract val startBalance: BigDecimal
 }

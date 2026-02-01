@@ -1,29 +1,29 @@
 -- ===========================
--- TABLE: Storage
+-- TABLE: StorageDao
 -- ===========================
 
-CREATE TABLE Storage (
+CREATE TABLE StorageDao (
   id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
   title TEXT NOT NULL,
   start_balance REAL NOT NULL
 );
 
-insertStorage:
-INSERT INTO Storage(title, start_balance)
+insertStorageDao:
+INSERT INTO StorageDao(title, start_balance)
 VALUES (?, ?);
 
-updateStorage:
-UPDATE Storage
+updateStorageDao:
+UPDATE StorageDao
 SET title = ?, start_balance = ?
 WHERE id = ?;
 
-deleteStorage:
-DELETE FROM Storage
+deleteStorageDao:
+DELETE FROM StorageDao
 WHERE id = ?;
 
-selectStorageById:
-SELECT * FROM Storage
+selectStorageDaoById:
+SELECT * FROM StorageDao
 WHERE id = ?;
 
-selectAllStorage:
-SELECT * FROM Storage;
+selectAllStorageDao:
+SELECT * FROM StorageDao;
