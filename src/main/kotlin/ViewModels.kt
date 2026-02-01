@@ -1,9 +1,7 @@
 package org.example
 
-import com.example.Database
 import com.example.StorageQueries
 import com.example.StorageDao
-import java.time.Period
 
 class OperationViewModel(private val operations: MutableList<Operation> = mutableListOf()){
     fun addGeneralTransaction(tx: GeneralTransaction){
