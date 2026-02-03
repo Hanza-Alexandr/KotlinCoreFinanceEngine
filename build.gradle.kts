@@ -18,6 +18,8 @@ sqldelight {
         }
     }
 }
+
+
 dependencies {
     implementation("app.cash.sqldelight:sqlite-driver:2.0.0")
     testImplementation(kotlin("test"))
@@ -25,6 +27,11 @@ dependencies {
 tasks.test {
     useJUnitPlatform()
 }
+
+tasks.withType<JavaExec> {
+    jvmArgs("--enable-native-access=ALL-UNNAMED")
+}
+
 kotlin {
     jvmToolchain(24)
 }

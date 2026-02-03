@@ -1,0 +1,14 @@
+package org.example.repository
+
+import com.example.StorageQueries
+import org.example.General
+import org.example.Storage
+
+class StorageRepository(private val queries: StorageQueries) {
+    fun getAllStorages(): List<Storage>{
+        return queries.selectAllStorageDao { id, title, start_balance ->
+            General(id,title,start_balance.toBigDecimal())
+        }.executeAsList()
+    }
+
+}
