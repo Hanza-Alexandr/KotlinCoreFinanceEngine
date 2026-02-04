@@ -9,28 +9,3 @@ CREATE TABLE CategoryDao (
   FOREIGN KEY (parent_category) REFERENCES CategoryDao(id)
     ON UPDATE NO ACTION ON DELETE NO ACTION
 );
-
-
-insertCategoryDao:
-INSERT INTO CategoryDao(title, parent_category)
-VALUES (?, ?);
-
-updateCategoryDao:
-UPDATE CategoryDao
-SET title = ?, parent_category = ?
-WHERE id = ?;
-
-deleteCategoryDao:
-DELETE FROM CategoryDao
-WHERE id = ?;
-
-selectCategoryDaoById:
-SELECT * FROM CategoryDao
-WHERE id = ?;
-
-selectAllCategoryDao:
-SELECT * FROM CategoryDao;
-
-selectChildCategoryDao:
-SELECT * FROM CategoryDao
-WHERE parent_category = ?;

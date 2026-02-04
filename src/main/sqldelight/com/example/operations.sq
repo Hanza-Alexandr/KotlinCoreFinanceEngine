@@ -57,6 +57,3 @@ LEFT JOIN StorageDao fs ON fs.id = t.from_storage
 LEFT JOIN StorageDao ts ON ts.id = t.to_storage
 
 WHERE o.storage IN ?;
-
-
-
