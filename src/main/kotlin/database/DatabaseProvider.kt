@@ -2,7 +2,6 @@ package org.example.database
 
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
-import com.example.CategoriesQueries
 import com.example.Database
 import com.example.OperationsQueries
 import com.example.StorageQueries
@@ -14,7 +13,7 @@ class DatabaseProvider {
     private val dbPath = "src/main/resources/CoreDatabase.db"
 
 
-    private val driver: SqlDriver by lazy {
+    private val driver: JdbcSqliteDriver by lazy {
         JdbcSqliteDriver(url = "jdbc:sqlite:$dbPath").also {
             it.execute(null, "PRAGMA foreign_keys = ON", 0)
             if (!File(dbPath).exists()) {
@@ -35,7 +34,4 @@ class DatabaseProvider {
         database.operationsQueries
     }
 
-    val categoryQueries: CategoriesQueries by lazy {
-        database.categoriesQueries
-    }
 }

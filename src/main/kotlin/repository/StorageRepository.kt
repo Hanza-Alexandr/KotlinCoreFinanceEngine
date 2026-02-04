@@ -11,4 +11,8 @@ class StorageRepository(private val queries: StorageQueries) {
         }.executeAsList()
     }
 
+    fun createNewStorage(storage: Storage): Long?{
+        return queries.insertStorageDao(storage.title).executeAsOneOrNull()
+    }
+
 }

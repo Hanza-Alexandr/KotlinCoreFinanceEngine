@@ -9,7 +9,8 @@ CREATE TABLE StorageDao (
 
 insertStorageDao:
 INSERT INTO StorageDao(title)
-VALUES (?);
+VALUES (?)
+RETURNING id;
 
 updateStorageDao:
 UPDATE StorageDao

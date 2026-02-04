@@ -1,6 +1,6 @@
 plugins {
     kotlin("jvm") version "2.2.20"
-    id("app.cash.sqldelight") version "2.0.0"
+    id("app.cash.sqldelight") version "2.0.2"
 }
 
 group = "org.example"
@@ -15,13 +15,18 @@ sqldelight {
         create("Database") {
             // Package name
             packageName.set("com.example")
+            dialect("app.cash.sqldelight:sqlite-3-35-dialect:2.0.2")
+
         }
     }
 }
 
 
 dependencies {
-    implementation("app.cash.sqldelight:sqlite-driver:2.0.0")
+    implementation("app.cash.sqldelight:jdbc-driver:2.0.2")
+    implementation("org.slf4j:slf4j-simple:2.0.9")
+    implementation("app.cash.sqldelight:sqlite-driver:2.0.2")
+    implementation("app.cash.sqldelight:sqlite-3-35-dialect:2.0.2")
     testImplementation(kotlin("test"))
 }
 tasks.test {
