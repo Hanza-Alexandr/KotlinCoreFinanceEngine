@@ -4,17 +4,16 @@
 
 CREATE TABLE StorageDao (
   id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-  title TEXT NOT NULL,
-  start_balance REAL NOT NULL
+  title TEXT NOT NULL
 );
 
 insertStorageDao:
-INSERT INTO StorageDao(title, start_balance)
-VALUES (?, ?);
+INSERT INTO StorageDao(title)
+VALUES (?);
 
 updateStorageDao:
 UPDATE StorageDao
-SET title = ?, start_balance = ?
+SET title = ?
 WHERE id = ?;
 
 deleteStorageDao:

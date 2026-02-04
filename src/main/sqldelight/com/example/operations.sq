@@ -4,158 +4,59 @@
 
 CREATE TABLE OperationDao (
   id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  storage INTEGER NOT NULL,
   amount REAL NOT NULL,
-  date_time TEXT NOT NULL,
-  from_storage INTEGER NOT NULL,
-  to_storage INTEGER,
+  occurred_at TEXT NOT NULL,
+
   category INTEGER,
-  type_operation INTEGER NOT NULL,
-  FOREIGN KEY (from_storage) REFERENCES StorageDao(id)
+  type_operation TEXT NOT NULL,
+  transfer INTEGER,
+  FOREIGN KEY (storage) REFERENCES StorageDao(id)
     ON UPDATE RESTRICT ON DELETE CASCADE,
-  FOREIGN KEY (to_storage) REFERENCES StorageDao(id)
-    ON UPDATE NO ACTION ON DELETE NO ACTION,
-  FOREIGN KEY (type_operation) REFERENCES TypeOperationDao(id)
-    ON UPDATE NO ACTION ON DELETE NO ACTION,
   FOREIGN KEY (category) REFERENCES CategoryDao(id)
+    ON UPDATE NO ACTION ON DELETE NO ACTION,
+   FOREIGN KEY (transfer) REFERENCES TransferDao(id)
     ON UPDATE NO ACTION ON DELETE NO ACTION
 );
 
-insertOperationDao:
-INSERT INTO OperationDao(
-  amount, date_time, from_storage, to_storage, category, type_operation
-)
-VALUES (?, ?, ?, ?, ?, ?);
 
-updateOperationDao:
-UPDATE OperationDao
-SET amount = ?, date_time = ?, from_storage = ?, to_storage = ?, category = ?, type_operation = ?
-WHERE id = ?;
-
-deleteOperationDao:
-DELETE FROM OperationDao
-WHERE id = ?;
-
-selectFullOperationsByFromStorages:
+selectFullOperationByStorages:
 SELECT
-  o.id,
-  o.amount,
-  o.date_time,
-  o.from_storage,
-  o.to_storage,
-  o.category,
-  o.type_operation,
+    o.id,
+    o.amount,
+    o.occurred_at,
+    o.type_operation,
 
-  s1.id AS from_id,
-  s1.title AS from_title,
-  s1.start_balance AS from_balance,
+    -- storage операции
+    s.id            AS storage_id,
+    s.title         AS storage_title,
 
-  s2.id AS to_id,
-  s2.title AS to_title,
-  s2.start_balance AS to_balance,
+    -- категория
+    c.id            AS category_id,
+    c.title         AS category_title,
+    c.parent_category AS category_parent_id,
 
-  c.id AS category_id,
-  c.title AS category_title,
+    -- перевод
+    t.id            AS transfer_id,
+    t.amount        AS transfer_amount,
+    t.occurred_at   AS transfer_occurred_at,
 
-  t.id AS type_id,
-  t.operation AS type_title
+    -- from_storage перевода
+    fs.id            AS transfer_from_id,
+    fs.title         AS transfer_from_title,
+
+    -- to_storage перевода
+    ts.id            AS transfer_to_id,
+    ts.title         AS transfer_to_title
 
 FROM OperationDao o
-LEFT JOIN StorageDao s1 ON s1.id = o.from_storage
-LEFT JOIN StorageDao s2 ON s2.id = o.to_storage
+JOIN StorageDao s ON s.id = o.storage
 LEFT JOIN CategoryDao c ON c.id = o.category
-LEFT JOIN TypeOperationDao t ON t.id = o.type_operation
-WHERE o.from_storage IN ?;
+LEFT JOIN TransferDao t ON t.id = o.transfer
+LEFT JOIN StorageDao fs ON fs.id = t.from_storage
+LEFT JOIN StorageDao ts ON ts.id = t.to_storage
 
-selectFullOperationsByToStorages:
-SELECT
-  o.id,
-  o.amount,
-  o.date_time,
-  o.from_storage,
-  o.to_storage,
-  o.category,
-  o.type_operation,
-
-  s1.id AS from_id,
-  s1.title AS from_title,
-  s1.start_balance AS from_balance,
-
-  s2.id AS to_id,
-  s2.title AS to_title,
-  s2.start_balance AS to_balance,
-
-  c.id AS category_id,
-  c.title AS category_title,
-
-  t.id AS type_id,
-  t.operation AS type_title
-
-FROM OperationDao o
-LEFT JOIN StorageDao s1 ON s1.id = o.from_storage
-LEFT JOIN StorageDao s2 ON s2.id = o.to_storage
-LEFT JOIN CategoryDao c ON c.id = o.category
-LEFT JOIN TypeOperationDao t ON t.id = o.type_operation
-WHERE o.to_storage IN ?;
-
-selectFullOperations:
-SELECT
-  o.id,
-  o.amount,
-  o.date_time,
-  o.from_storage,
-  o.to_storage,
-  o.category,
-  o.type_operation,
-
-  s1.id AS from_id,
-  s1.title AS from_title,
-  s1.start_balance AS from_balance,
-
-  s2.id AS to_id,
-  s2.title AS to_title,
-  s2.start_balance AS to_balance,
-
-  c.id AS category_id,
-  c.title AS category_title,
-
-  t.id AS type_id,
-  t.operation AS type_title
-
-FROM OperationDao o
-LEFT JOIN StorageDao s1 ON s1.id = o.from_storage
-LEFT JOIN StorageDao s2 ON s2.id = o.to_storage
-LEFT JOIN CategoryDao c ON c.id = o.category
-LEFT JOIN TypeOperationDao t ON t.id = o.type_operation
-WHERE o.from_storage IN ? OR o.to_storage IN ?;
+WHERE o.storage IN ?;
 
 
-selectFullOperationsByStorages:
-SELECT
-  o.id,
-  o.amount,
-  o.date_time,
-  o.from_storage,
-  o.to_storage,
-  o.category,
-  o.type_operation,
 
-  s1.id AS from_id,
-  s1.title AS from_title,
-  s1.start_balance AS from_balance,
-
-  s2.id AS to_id,
-  s2.title AS to_title,
-  s2.start_balance AS to_balance,
-
-  c.id AS category_id,
-  c.title AS category_title,
-
-  t.id AS type_id,
-  t.operation AS type_title
-
-FROM OperationDao o
-LEFT JOIN StorageDao s1 ON s1.id = o.from_storage
-LEFT JOIN StorageDao s2 ON s2.id = o.to_storage
-LEFT JOIN CategoryDao c ON c.id = o.category
-LEFT JOIN TypeOperationDao t ON t.id = o.type_operation
-WHERE o.from_storage IN ? OR o.to_storage IN ?;

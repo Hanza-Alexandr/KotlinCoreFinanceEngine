@@ -6,7 +6,6 @@ import com.example.CategoriesQueries
 import com.example.Database
 import com.example.OperationsQueries
 import com.example.StorageQueries
-import com.example.TypesOperationQueries
 import java.io.File
 
 //Временное и не практичное решение. где все в одном месте. Дальше можно бы ка нить выелить драйвер и подключение
@@ -38,9 +37,5 @@ class DatabaseProvider {
 
     val categoryQueries: CategoriesQueries by lazy {
         database.categoriesQueries
-    }
-
-    val typeOperationQueries: TypesOperationQueries by lazy {
-        database.typesOperationQueries
     }
 }

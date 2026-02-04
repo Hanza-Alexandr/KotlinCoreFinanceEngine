@@ -11,7 +11,7 @@ import org.example.views.StorageView
 import java.time.format.DateTimeFormatter
 
 object Formater {
-    val DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+    val DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 }
 
 fun main() {

@@ -1,0 +1,54 @@
+CREATE TABLE IF NOT EXISTS TransferDao (
+    id INTEGER PRIMARY KEY,
+    from_storage INTEGER NOT NULL,
+    to_storage INTEGER NOT NULL,
+    amount REAL NOT NULL,
+    occurred_at TEXT NOT NULL,
+
+    FOREIGN KEY (from_storage) REFERENCES StorageDao(id),
+    FOREIGN KEY (to_storage)   REFERENCES StorageDao(id)
+);
+
+
+selectFullTransferByFromStorages:
+SELECT
+    t.id,
+    t.from_storage,
+    t.to_storage,
+    fs.id            AS from_id,
+    fs.title         AS from_title,
+    ts.id            AS to_id,
+    ts.title         AS to_title
+FROM TransferDao t
+JOIN StorageDao fs ON fs.id = t.from_storage
+JOIN StorageDao ts ON ts.id = t.to_storage
+WHERE t.from_storage IN (:storage_ids);
+
+selectFullTransferByToStorages:
+SELECT
+    t.id,
+    t.from_storage,
+    t.to_storage,
+    fs.id            AS from_id,
+    fs.title         AS from_title,
+    ts.id            AS to_id,
+    ts.title         AS to_title
+FROM TransferDao t
+JOIN StorageDao fs ON fs.id = t.from_storage
+JOIN StorageDao ts ON ts.id = t.to_storage
+WHERE t.to_storage IN (:storage_ids);
+
+selectFullTransferByStorages:
+SELECT
+    t.id,
+    t.from_storage,
+    t.to_storage,
+    fs.id            AS from_id,
+    fs.title         AS from_title,
+    ts.id            AS to_id,
+    ts.title         AS to_title
+FROM TransferDao t
+JOIN StorageDao fs ON fs.id = t.from_storage
+JOIN StorageDao ts ON ts.id = t.to_storage
+WHERE t.from_storage IN (:storage_ids) OR t.to_storage IN (:storage_ids);
+

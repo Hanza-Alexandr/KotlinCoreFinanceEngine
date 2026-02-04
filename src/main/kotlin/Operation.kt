@@ -4,61 +4,68 @@ import java.math.BigDecimal
 import java.time.LocalDateTime
 
 enum class TypeOperation{
-    PROFIT,
-    LOSS,
-    TRANSFER,
+    DEBIT,
+    CREDIT
 }
-
-abstract class Operation {
+interface displayOperation{
+    fun printOperation()
+}
+abstract class Operation: displayOperation {
     abstract val id: Long?
-    abstract val fromStorage: Storage
-    abstract val dateTime: LocalDateTime
+    abstract val occurredAt: LocalDateTime
     abstract val amount: BigDecimal
     abstract val typeOperation: TypeOperation
-
-    abstract fun printOperation()
 }
+
+
 abstract class GeneralTransaction: Operation(){
    abstract val category: Category
+   abstract val storage: Storage
 
 }
 
-data class LossTransaction(
+data class CreditTransaction(
     override val id: Long?,
-    override val fromStorage: Storage,
-    override val dateTime: LocalDateTime,
+    override val storage: Storage,
+    override val occurredAt: LocalDateTime,
     override val category: Category,
     override val amount: BigDecimal
 ): GeneralTransaction(){
-    override val typeOperation: TypeOperation = TypeOperation.LOSS
+    override val typeOperation: TypeOperation = TypeOperation.CREDIT
     override fun printOperation() {
-        println("Рсход - $amount Категория - ${category.title} ДатаВремя - ${dateTime}")
+        println("-$amount Категория - ${category.title} ДатаВремя - ${occurredAt}")
     }
 }
 
-data class ProfitTransaction(
+data class DebitTransaction(
     override val id: Long?,
-    override val fromStorage: Storage,
-    override val dateTime: LocalDateTime,
+    override val storage: Storage,
+    override val occurredAt: LocalDateTime,
     override val category: Category,
     override val amount: BigDecimal
 ): GeneralTransaction(){
-    override val typeOperation: TypeOperation = TypeOperation.PROFIT
+    override val typeOperation: TypeOperation = TypeOperation.DEBIT
     override fun printOperation() {
-        println("Приход - $amount Категория - ${category.title} ДатаВремя - ${dateTime}")
+        println("+$amount Категория - ${category.title} ДатаВремя - ${occurredAt}")
     }
 }
 
 data class TransferTransaction(
     override val id: Long?,
-    override val fromStorage: Storage,
+    val fromStorage: Storage,
     val toStorage: Storage,
-    override val dateTime: LocalDateTime,
-    override val amount: BigDecimal
+    override val typeOperation: TypeOperation,
+    override val amount: BigDecimal,
+    override val occurredAt: LocalDateTime
 
-): Operation(){
-    override val typeOperation: TypeOperation = TypeOperation.TRANSFER
+): Operation() {
     override fun printOperation() {
-        println("Перевод - $amount ОтКуда - ${fromStorage.title} Куда - ${toStorage.title} ДатаВремя - ${dateTime}")
+        val info = if (typeOperation == TypeOperation.CREDIT) {
+            "-$amount перевод на ${toStorage.title} из ${fromStorage.title}"
+        }
+        else {
+            "+$amount пополнение с ${fromStorage.title} на ${toStorage.title}"
+        }
+        println("$info ДатаВремя - $occurredAt")
     }
 }
