@@ -1,6 +1,7 @@
 package org.example.views
 
 import org.example.General
+import org.example.Storage
 import org.example.viewmodels.StorageViewModel
 import java.security.Principal
 
@@ -9,6 +10,7 @@ class StorageView(private val storageViewModel: StorageViewModel, private val op
     fun start(){
         var input: String
         while (true){
+            //TODO() Нет проверок на корректность веденных данных
             showStorageMenu()
             input = readln()
             useAction(input.toInt())
@@ -26,7 +28,7 @@ class StorageView(private val storageViewModel: StorageViewModel, private val op
         println("2. List storages")
         println("3. Operations (Операции)")
         println("TODO 4. Edit storage")
-        println("TODO 5. Delete storage")
+        println("5. Delete storage")
         println("0. Back")
         print("Choose option: ")
     }
@@ -36,15 +38,37 @@ class StorageView(private val storageViewModel: StorageViewModel, private val op
             2 -> {printStorages()}
             3 -> {operationView.start{ printStorages()} }
             4 -> {TODO("НЕСДЕЛАЛ {StorageView useAction 4}")}
-            5 -> {TODO("НЕСДЕЛАЛ {StorageView useAction 5}")}
+            5 -> {displayMenuStorageDeletion()}
             else -> return
         }
     }
-    private fun displayMenuStorageCreation(){
+
+    private fun displayMenuStorageDeletion(){
+        var currentStorage: Storage
+        var inputTittleStorage: String
+        println("МЕНЮ УДАЛЕНИЯ СЧЕТА:")
+        //TODO() Нет проверок на корректность веденных данных
         while (true){
-            println("Меню создание ОБЩЕГО счета:")
+            val listStorages = printStorages()
+            println("Введите № счета которые нужно удалить")
+            currentStorage = listStorages[readln().toInt()-1]
+            println("УДАЛЕНИЕ ПРИВЕДЕТ К УДАЛЕНИЮ ВСЕХ СВЯЗАННЫХ ОПЕРАЦИЙ С СЧЕТОМ")
+            println("Будут удалены следующие операции: ")
+            operationView.printOperations(operationView.getListOperationsByStorage(currentStorage.id?:throw NullPointerException("Почему то ID не появилось")))
+            print("ДЛЯ ПОДТВРЕЖДЕНИЯ УДАЛЕНИЯ ВВЕДИТЕ НАЗВАНИЕ СЧЕТА <${currentStorage.title}>:")
+            inputTittleStorage = readln()
+            if (inputTittleStorage == currentStorage.title){
+                storageViewModel.deleteStorage(currentStorage.id ?: throw NullPointerException("Почему то ID не появилось"))
+                break
+            }
+            println("НЕВЕРНО")
+        }
+    }
+    private fun displayMenuStorageCreation(){
+        println("Меню создание ОБЩЕГО счета:")
+        while (true){
             print("Название:")
-            val res =
+            //TODO() Нет проверок на корректность веденных данных
             if (storageViewModel.createNewGeneralStorage(General(null,readln()))) {
                 println("✅Счет успешно создан")
                 printStorages()
@@ -55,10 +79,12 @@ class StorageView(private val storageViewModel: StorageViewModel, private val op
             }
         }
     }
-    private fun printStorages(){
+    private fun printStorages(): List<Storage>{
+        val listStorages = storageViewModel.getListStorages()
         println("МОИ СЧЕТА:")
-        for (storage in storageViewModel.getListStorages()) {
-            println("ID - ${storage.id} TITLE - ${storage.title}")
+        for (idx in listStorages.indices) {
+            println("№ ${idx+1} - ID - ${listStorages[idx].id} TITLE - ${listStorages[idx].title}")
         }
+        return listStorages
     }
 }

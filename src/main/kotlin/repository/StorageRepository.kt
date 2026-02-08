@@ -15,4 +15,8 @@ class StorageRepository(private val queries: StorageQueries) {
         return queries.insertStorageDao(storage.title).executeAsOneOrNull()
     }
 
+    fun deleteStorage(storageId: Long): Long?{
+        return queries.deleteStorageDao(storageId).executeAsOneOrNull()
+    }
+
 }

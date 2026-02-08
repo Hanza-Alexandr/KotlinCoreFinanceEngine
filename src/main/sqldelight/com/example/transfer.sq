@@ -1,54 +1,49 @@
 CREATE TABLE IF NOT EXISTS TransferDao (
     id INTEGER PRIMARY KEY,
-    from_storage INTEGER NOT NULL,
-    to_storage INTEGER NOT NULL,
-    amount REAL NOT NULL,
+    from_operation INTEGER NOT NULL,
+    to_operation INTEGER NOT NULL,
     occurred_at TEXT NOT NULL,
 
-    FOREIGN KEY (from_storage) REFERENCES StorageDao(id),
-    FOREIGN KEY (to_storage)   REFERENCES StorageDao(id)
+    FOREIGN KEY (from_operation) REFERENCES OperationDao(id)
+     ON UPDATE RESTRICT ON DELETE CASCADE,
+    FOREIGN KEY (to_operation) REFERENCES OperationDao(id)
+     ON UPDATE RESTRICT ON DELETE CASCADE
 );
 
-
-selectFullTransferByFromStorages:
+selectTransferByStorages:
 SELECT
-    t.id,
-    t.from_storage,
-    t.to_storage,
-    fs.id            AS from_id,
-    fs.title         AS from_title,
-    ts.id            AS to_id,
-    ts.title         AS to_title
-FROM TransferDao t
-JOIN StorageDao fs ON fs.id = t.from_storage
-JOIN StorageDao ts ON ts.id = t.to_storage
-WHERE t.from_storage IN (:storage_ids);
+    -- Transfer
+    t.id AS transfer_id,
+    t.occurred_at AS transfer_occurred_at,
 
-selectFullTransferByToStorages:
-SELECT
-    t.id,
-    t.from_storage,
-    t.to_storage,
-    fs.id            AS from_id,
-    fs.title         AS from_title,
-    ts.id            AS to_id,
-    ts.title         AS to_title
-FROM TransferDao t
-JOIN StorageDao fs ON fs.id = t.from_storage
-JOIN StorageDao ts ON ts.id = t.to_storage
-WHERE t.to_storage IN (:storage_ids);
+    -- FROM operation
+    fo.id AS from_operation_id,
+    fo.amount AS from_operation_amount,
+    fo.occurred_at AS from_operation_occurred_at,
+    fo.type_operation AS from_operation_type,
 
-selectFullTransferByStorages:
-SELECT
-    t.id,
-    t.from_storage,
-    t.to_storage,
-    fs.id            AS from_id,
-    fs.title         AS from_title,
-    ts.id            AS to_id,
-    ts.title         AS to_title
+    -- FROM storage
+    fs.id AS from_storage_id,
+    fs.title AS from_storage_title,
+
+    -- TO operation
+    to2.id AS to_operation_id,
+    to2.amount AS to_operation_amount,
+    to2.occurred_at AS to_operation_occurred_at,
+    to2.type_operation AS to_operation_type,
+
+    -- TO storage
+    ts.id AS to_storage_id,
+    ts.title AS to_storage_title
+
 FROM TransferDao t
-JOIN StorageDao fs ON fs.id = t.from_storage
-JOIN StorageDao ts ON ts.id = t.to_storage
-WHERE t.from_storage IN (:storage_ids) OR t.to_storage IN (:storage_ids);
+JOIN OperationDao fo ON fo.id = t.from_operation
+JOIN OperationDao to2 ON to2.id = t.to_operation
+JOIN StorageDao fs ON fs.id = fo.storage
+JOIN StorageDao ts ON ts.id = to2.storage
+WHERE fo.storage IN ?
+   OR to2.storage IN ?;
+
+
+
 

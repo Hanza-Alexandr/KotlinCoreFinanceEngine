@@ -15,11 +15,12 @@ abstract class Operation: displayOperation {
     abstract val occurredAt: LocalDateTime
     abstract val amount: BigDecimal
     abstract val typeOperation: TypeOperation
+    abstract val category: Category
+
 }
 
 
 abstract class GeneralTransaction: Operation(){
-   abstract val category: Category
    abstract val storage: Storage
 
 }
@@ -56,7 +57,8 @@ data class TransferTransaction(
     val toStorage: Storage,
     override val typeOperation: TypeOperation,
     override val amount: BigDecimal,
-    override val occurredAt: LocalDateTime
+    override val occurredAt: LocalDateTime,
+    override val category: Category
 
 ): Operation() {
     override fun printOperation() {

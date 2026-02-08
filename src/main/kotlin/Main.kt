@@ -19,7 +19,7 @@ fun main() {
 
     val databaseProvider = DatabaseProvider()
 
-    val opRep = OperationRepository(databaseProvider.operationQueries)
+    val opRep = OperationRepository(databaseProvider.operationQueries, databaseProvider.transferQueries)
     val stRep = StorageRepository(databaseProvider.storageQueries)
 
     val opVM = OperationViewModel(opRep)

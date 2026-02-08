@@ -12,14 +12,10 @@ INSERT INTO StorageDao(title)
 VALUES (?)
 RETURNING id;
 
-updateStorageDao:
-UPDATE StorageDao
-SET title = ?
-WHERE id = ?;
-
 deleteStorageDao:
 DELETE FROM StorageDao
-WHERE id = ?;
+WHERE id = ?
+RETURNING id;
 
 selectStorageDaoById:
 SELECT * FROM StorageDao

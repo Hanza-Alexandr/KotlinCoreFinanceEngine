@@ -9,6 +9,5 @@ class OperationViewModel(private val operationRepository: OperationRepository){
         val list = operationRepository.getOperationsDaoByToStorages(listStorageId)
         return list
     }
-
 }
 

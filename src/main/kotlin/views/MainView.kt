@@ -4,6 +4,7 @@ class MainView(
     private val storageView: StorageView
 ){
     fun start(){
+        //TODO() Нет проверок на корректность веденных данных
         var input: String
         while (true){
             showMainMenu()

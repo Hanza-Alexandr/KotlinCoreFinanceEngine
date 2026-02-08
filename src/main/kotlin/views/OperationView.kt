@@ -1,5 +1,6 @@
 package org.example.views
 
+import org.example.Operation
 import org.example.viewmodels.OperationViewModel
 
 class OperationView(private val operationViewModel: OperationViewModel){
@@ -47,8 +48,9 @@ class OperationView(private val operationViewModel: OperationViewModel){
         val currentsStoragesId: MutableList<Long> = mutableListOf()
         var input: String
         printStorages()
-        println("ВВЕДИТЕ ID СЧЕТОВ ПО КОТОРЫМ НАДО ОПЕРАЦИИ. ПОСЛЕ ПОСЛЕДНЕГО ВВЕДИТЕ СЛОВО <STOP> ")
+        println("ВВЕДИТЕ ID СЧЕТОВ ПО КОТОРЫМ НАДО ОПЕРАЦИИ. ПОСЛЕ ПОСЛЕДНЕГО НАЖМИТЕ ENTER/RETURN ")
         while (true){
+            //TODO() Нет проверок на корректность веденных данных
             input = readln()
             if (input=="") break
             if (input.toIntOrNull() != null){
@@ -61,6 +63,16 @@ class OperationView(private val operationViewModel: OperationViewModel){
             op.printOperation()
         }
         //из viewModel я должен получить список по выбранным счетам
+    }
+
+    fun getListOperationsByStorage(storageId: Long): List<Operation>{
+        return operationViewModel.getListOperationsByStorages(listOf(storageId))
+    }
+
+    fun printOperations(listOperations: List<Operation>){
+        for (op in listOperations){
+            op.printOperation()
+        }
     }
 
 
