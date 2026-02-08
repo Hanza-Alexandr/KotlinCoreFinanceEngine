@@ -1,49 +1,9 @@
-CREATE TABLE IF NOT EXISTS TransferDao (
-    id INTEGER PRIMARY KEY,
-    from_operation INTEGER NOT NULL,
-    to_operation INTEGER NOT NULL,
-    occurred_at TEXT NOT NULL,
-
-    FOREIGN KEY (from_operation) REFERENCES OperationDao(id)
-     ON UPDATE RESTRICT ON DELETE CASCADE,
-    FOREIGN KEY (to_operation) REFERENCES OperationDao(id)
-     ON UPDATE RESTRICT ON DELETE CASCADE
+CREATE TABLE TransferDao (
+    id INTEGER NOT NULL PRIMARY KEY,
+    from_storage_id INTEGER NOT NULL REFERENCES StorageDao(id),
+    to_storage_id INTEGER NOT NULL REFERENCES StorageDao(id),
+    amount REAL NOT NULL,
+    date TEXT NOT NULL,
+    time TEXT NOT NULL,
+    status TEXT NOT NULL
 );
-
-selectTransferByStorages:
-SELECT
-    -- Transfer
-    t.id AS transfer_id,
-    t.occurred_at AS transfer_occurred_at,
-
-    -- FROM operation
-    fo.id AS from_operation_id,
-    fo.amount AS from_operation_amount,
-    fo.occurred_at AS from_operation_occurred_at,
-    fo.type_operation AS from_operation_type,
-
-    -- FROM storage
-    fs.id AS from_storage_id,
-    fs.title AS from_storage_title,
-
-    -- TO operation
-    to2.id AS to_operation_id,
-    to2.amount AS to_operation_amount,
-    to2.occurred_at AS to_operation_occurred_at,
-    to2.type_operation AS to_operation_type,
-
-    -- TO storage
-    ts.id AS to_storage_id,
-    ts.title AS to_storage_title
-
-FROM TransferDao t
-JOIN OperationDao fo ON fo.id = t.from_operation
-JOIN OperationDao to2 ON to2.id = t.to_operation
-JOIN StorageDao fs ON fs.id = fo.storage
-JOIN StorageDao ts ON ts.id = to2.storage
-WHERE fo.storage IN ?
-   OR to2.storage IN ?;
-
-
-
-

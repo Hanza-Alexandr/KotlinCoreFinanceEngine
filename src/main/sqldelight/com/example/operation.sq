@@ -1,0 +1,14 @@
+-- ===========================
+-- TABLE: OperationDao
+-- ===========================
+
+CREATE TABLE OperationDao (
+    id INTEGER NOT NULL PRIMARY KEY,
+    storage_id INTEGER NOT NULL REFERENCES StorageDao(id) ON DELETE CASCADE,
+    type_operation TEXT NOT NULL,
+    category_id INTEGER NOT NULL REFERENCES CategoryDao(id),
+    amount REAL NOT NULL,
+    date TEXT NOT NULL,
+    time TEXT NOT NULL,
+    status TEXT NOT NULL
+);

@@ -3,23 +3,14 @@
 -- ===========================
 
 CREATE TABLE StorageDao (
-  id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-  title TEXT NOT NULL
+    id INTEGER NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL,
+    user_id INTEGER NOT NULL REFERENCES UserDao(id) ON DELETE CASCADE,
+    currency TEXT NOT NULL,
+    type_storage TEXT NOT NULL,
+    note TEXT,
+    color_id INTEGER NOT NULL REFERENCES ColorDao(id),
+    is_statistics INTEGER NOT NULL DEFAULT 1,
+    is_archive INTEGER NOT NULL DEFAULT 0
 );
 
-insertStorageDao:
-INSERT INTO StorageDao(title)
-VALUES (?)
-RETURNING id;
-
-deleteStorageDao:
-DELETE FROM StorageDao
-WHERE id = ?
-RETURNING id;
-
-selectStorageDaoById:
-SELECT * FROM StorageDao
-WHERE id = ?;
-
-selectAllStorageDao:
-SELECT * FROM StorageDao;
