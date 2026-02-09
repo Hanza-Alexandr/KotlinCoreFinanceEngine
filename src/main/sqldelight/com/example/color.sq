@@ -3,3 +3,7 @@ CREATE TABLE ColorDao (
     user_id INTEGER REFERENCES UserDao(id) ON DELETE CASCADE,
     hex_code TEXT NOT NULL
 );
+selectUserColorsOrSystemColorsByUserId:
+SELECT *
+FROM ColorDao
+WHERE user_id = ? OR user_id IS NULL;

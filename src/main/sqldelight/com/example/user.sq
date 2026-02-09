@@ -4,3 +4,7 @@ CREATE TABLE UserDao (
     login TEXT NOT NULL,
     password TEXT NOT NULL
 );
+selectUserByLoginAndPassword:
+SELECT*
+FROM UserDao
+WHERE login = ? AND password = ?;

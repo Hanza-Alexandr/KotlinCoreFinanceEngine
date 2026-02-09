@@ -14,3 +14,9 @@ CREATE TABLE StorageDao (
     is_archive INTEGER NOT NULL DEFAULT 0
 );
 
+selectUserStoragesByUserId:
+SELECT *
+FROM StorageDao
+WHERE user_id = ?;
+
+

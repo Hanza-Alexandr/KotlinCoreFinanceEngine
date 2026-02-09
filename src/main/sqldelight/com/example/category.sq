@@ -12,3 +12,8 @@ CREATE TABLE CategoryDao (
     need TEXT NOT NULL,
     is_hide INTEGER NOT NULL
 );
+
+selectUserCategoriesOrSystemCategoriesByUserId:
+SELECT *
+FROM ColorDao
+WHERE user_id = ? OR user_id IS NULL;

@@ -12,3 +12,10 @@ CREATE TABLE OperationDao (
     time TEXT NOT NULL,
     status TEXT NOT NULL
 );
+
+selectUserOperationsByUserId:
+SELECT *
+FROM OperationDao
+WHERE storage_id IN (
+    SELECT id FROM StorageDao WHERE user_id = ?
+);
