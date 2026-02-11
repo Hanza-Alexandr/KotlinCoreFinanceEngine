@@ -1,22 +1,55 @@
 -- ===========================
--- TABLE: StorageDao
+-- TABLE: StorageEntity
 -- ===========================
 
-CREATE TABLE StorageDao (
+CREATE TABLE StorageEntity (
     id INTEGER NOT NULL PRIMARY KEY,
     name TEXT NOT NULL,
-    user_id INTEGER NOT NULL REFERENCES UserDao(id) ON DELETE CASCADE,
+    user_id INTEGER NOT NULL,
     currency TEXT NOT NULL,
     type_storage TEXT NOT NULL,
     note TEXT,
-    color_id INTEGER NOT NULL REFERENCES ColorDao(id),
+    color_id INTEGER NOT NULL REFERENCES ColorEntity(id),
     is_statistics INTEGER NOT NULL DEFAULT 1,
     is_archive INTEGER NOT NULL DEFAULT 0
 );
+setStorage:
+INSERT INTO StorageEntity (
+    name,
+    user_id,
+    currency,
+    type_storage,
+    note,
+    color_id,
+    is_statistics,
+    is_archive
+) VALUES (
+    :name,
+    :user_id,
+    :currency,
+    :type_storage,
+    :note,
+    :color_id,
+    :is_statistics,
+    :is_archive
+);
 
-selectUserStoragesByUserId:
-SELECT *
-FROM StorageDao
-WHERE user_id = ?;
 
+selectStoragesByUserId:
+SELECT
+    s.id,
+    s.name,
+    s.user_id,
+    s.currency,
+    s.type_storage,
+    s.note,
+    s.color_id,
+    s.is_statistics,
+    s.is_archive,
+    c.hex_code,
+    c.user_id AS color_user_id
+FROM StorageEntity AS s
+LEFT JOIN ColorEntity AS c
+    ON s.color_id = c.id
+WHERE s.user_id = ?;
 

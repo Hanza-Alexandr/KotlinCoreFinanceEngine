@@ -1,19 +1,19 @@
 -- ===========================
--- TABLE: CategoryDao
+-- TABLE: CategoryEntity
 -- ===========================
 
-CREATE TABLE CategoryDao (
+CREATE TABLE CategoryEntity (
     id INTEGER NOT NULL PRIMARY KEY,
     path_icon TEXT NOT NULL,
-    user_id INTEGER REFERENCES UserDao(id) ON DELETE CASCADE,
-    color_id INTEGER NOT NULL REFERENCES ColorDao(id),
+    user_id INTEGER,
+    color_id INTEGER NOT NULL REFERENCES ColorEntity(id),
     name TEXT NOT NULL,
-    parent_category INTEGER REFERENCES CategoryDao(id),
+    parent_category INTEGER REFERENCES CategoryEntity(id),
     need TEXT NOT NULL,
     is_hide INTEGER NOT NULL
 );
 
 selectUserCategoriesOrSystemCategoriesByUserId:
 SELECT *
-FROM ColorDao
+FROM ColorEntity
 WHERE user_id = ? OR user_id IS NULL;

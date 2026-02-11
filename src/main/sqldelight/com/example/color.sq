@@ -1,9 +1,9 @@
-CREATE TABLE ColorDao (
+CREATE TABLE ColorEntity (
     id INTEGER NOT NULL PRIMARY KEY,
-    user_id INTEGER REFERENCES UserDao(id) ON DELETE CASCADE,
+    user_id INTEGER,
     hex_code TEXT NOT NULL
 );
 selectUserColorsOrSystemColorsByUserId:
 SELECT *
-FROM ColorDao
+FROM ColorEntity
 WHERE user_id = ? OR user_id IS NULL;

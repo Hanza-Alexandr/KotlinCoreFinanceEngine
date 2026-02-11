@@ -1,6 +1,6 @@
 package org.example.views
 
-import org.example.Operation
+import org.example.model.Operation
 import org.example.viewmodels.OperationViewModel
 
 class OperationView(private val operationViewModel: OperationViewModel){
@@ -60,7 +60,7 @@ class OperationView(private val operationViewModel: OperationViewModel){
         //Получаем список операций по нужным счетам и выводим на экран
         val operations = operationViewModel.getListOperationsByStorages(currentsStoragesId)
         for (op in operations){
-            op.printOperation()
+            //op.printOperation()
         }
         //из viewModel я должен получить список по выбранным счетам
     }
@@ -71,7 +71,7 @@ class OperationView(private val operationViewModel: OperationViewModel){
 
     fun printOperations(listOperations: List<Operation>){
         for (op in listOperations){
-            op.printOperation()
+            //op.printOperation()
         }
     }
 

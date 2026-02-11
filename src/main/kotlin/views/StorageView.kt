@@ -1,9 +1,10 @@
 package org.example.views
 
-import org.example.General
-import org.example.Storage
+import org.example.Currency
+import org.example.TypeStorage
+import org.example.model.Color
+import org.example.model.Storage
 import org.example.viewmodels.StorageViewModel
-import java.security.Principal
 
 class StorageView(private val storageViewModel: StorageViewModel, private val operationView: OperationView,){
 
@@ -38,11 +39,12 @@ class StorageView(private val storageViewModel: StorageViewModel, private val op
             2 -> {printStorages()}
             3 -> {operationView.start{ printStorages()} }
             4 -> {TODO("НЕСДЕЛАЛ {StorageView useAction 4}")}
-            5 -> {displayMenuStorageDeletion()}
+            5 -> {TODO()}
             else -> return
         }
     }
 
+    /*
     private fun displayMenuStorageDeletion(){
         var currentStorage: Storage
         var inputTittleStorage: String
@@ -64,27 +66,41 @@ class StorageView(private val storageViewModel: StorageViewModel, private val op
             println("НЕВЕРНО")
         }
     }
+
+     */
+
+
     private fun displayMenuStorageCreation(){
-        println("Меню создание ОБЩЕГО счета:")
+        println("Меню создание счета:")
+        var inp: String
         while (true){
+            var name: String
+            var currency: Currency
+            var type: TypeStorage
+            var note: String?
+
             print("Название:")
-            //TODO() Нет проверок на корректность веденных данных
-            if (storageViewModel.createNewGeneralStorage(General(null,readln()))) {
+            name= readln()
+            print("Валюта:")
+            currency = Currency.valueOf(readln())
+            println("Тип счета:")
+            type = TypeStorage.valueOf(readln())
+            println("Описание:")
+            inp = readln()
+            note = if (inp=="") null else inp;
+                storageViewModel.createStorage(name,currency,type,note)
                 println("✅Счет успешно создан")
-                printStorages()
-                break
-            }
-            else{
-                println("ОШИБКА СОЗДАНИЯ СЧЕТА")
-            }
+
+
+
         }
     }
-    private fun printStorages(): List<Storage>{
-        val listStorages = storageViewModel.getListStorages()
-        println("МОИ СЧЕТА:")
-        for (idx in listStorages.indices) {
-            println("№ ${idx+1} - ID - ${listStorages[idx].id} TITLE - ${listStorages[idx].title}")
+
+    private fun printStorages(){
+        val storages= storageViewModel.getListStorages()
+        if (storages.isEmpty()) {println("СЧЕТОВ НЕТ"); return}
+        for (s in storages){
+            println("${s.name}|${s.typeStorage}|${s.currency}")
         }
-        return listStorages
     }
 }

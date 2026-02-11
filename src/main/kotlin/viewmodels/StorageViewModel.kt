@@ -1,20 +1,26 @@
 package org.example.viewmodels
 
+import org.example.Currency
+import org.example.TypeStorage
+import org.example.model.Storage
+import org.example.model.service.StorageService
 
-import com.oracle.svm.core.annotate.Delete
-import org.example.General
-import org.example.Storage
-import org.example.repository.StorageRepository
 
-class StorageViewModel(private val storageRepository: StorageRepository){
+class StorageViewModel(private val service: StorageService){
 
     fun getListStorages(): List<Storage> {
-        return storageRepository.getAllStorages()
+        return service.getStorages()
     }
+    fun createStorage(name: String, currency: Currency, typeStorage: TypeStorage, note: String?){
+        service.createStorage(name,currency,typeStorage,note)
+    }
+    /*
     fun createNewGeneralStorage(storage: General): Boolean{
         return storageRepository.createNewStorage(storage) != null
     }
     fun deleteStorage(storageId: Long): Boolean{
         return storageRepository.deleteStorage(storageId) != null
     }
+
+     */
 }

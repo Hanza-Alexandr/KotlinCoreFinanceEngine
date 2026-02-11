@@ -1,13 +1,12 @@
 package org.example.viewmodels
 
-import org.example.Operation
-import org.example.repository.OperationRepository
+import org.example.model.Operation
+import org.example.model.service.OperationService
 
-class OperationViewModel(private val operationRepository: OperationRepository){
+class OperationViewModel(private val service: OperationService){
 
     fun getListOperationsByStorages(listStorageId: List<Long>): List<Operation>{
-        val list = operationRepository.getOperationsDaoByToStorages(listStorageId)
-        return list
+       TODO()
     }
 }
 

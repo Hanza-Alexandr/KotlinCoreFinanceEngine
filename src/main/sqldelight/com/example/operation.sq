@@ -2,20 +2,58 @@
 -- TABLE: OperationDao
 -- ===========================
 
-CREATE TABLE OperationDao (
+CREATE TABLE OperationEntity (
     id INTEGER NOT NULL PRIMARY KEY,
-    storage_id INTEGER NOT NULL REFERENCES StorageDao(id) ON DELETE CASCADE,
+    storage_id INTEGER NOT NULL REFERENCES StorageEntity(id) ON DELETE CASCADE,
     type_operation TEXT NOT NULL,
-    category_id INTEGER NOT NULL REFERENCES CategoryDao(id),
+    category_id INTEGER NOT NULL REFERENCES CategoryEntity(id),
     amount REAL NOT NULL,
     date TEXT NOT NULL,
     time TEXT NOT NULL,
     status TEXT NOT NULL
 );
+selectOperations:
+SELECT
+    o.id,
+    o.type_operation,
+    o.amount,
+    o.date,
+    o.time,
+    o.status,
 
-selectUserOperationsByUserId:
-SELECT *
-FROM OperationDao
-WHERE storage_id IN (
-    SELECT id FROM StorageDao WHERE user_id = ?
-);
+    -- Storage
+    s.id AS storage_id,
+    s.name AS storage_name,
+    s.user_id AS storage_user_id,
+    s.currency AS storage_currency,
+    s.type_storage AS storage_type,
+    s.note AS storage_note,
+    s.is_statistics,
+    s.is_archive,
+
+    -- Storage color
+    sc.id AS storage_color_id,
+    sc.user_id AS storage_color_user_id,
+    sc.hex_code AS storage_color_hex,
+
+    -- Category
+    c.id AS category_id,
+    c.name AS category_name,
+    c.path_icon AS category_icon,
+    c.user_id AS category_user_id,
+    c.parent_category,
+    c.need,
+    c.is_hide,
+
+    -- Category color
+    cc.id AS category_color_id,
+    cc.user_id AS category_color_user_id,
+    cc.hex_code AS category_color_hex
+
+FROM OperationEntity o
+JOIN StorageEntity s ON s.id = o.storage_id
+JOIN ColorEntity sc ON sc.id = s.color_id
+JOIN CategoryEntity c ON c.id = o.category_id
+JOIN ColorEntity cc ON cc.id = c.color_id;
+
+

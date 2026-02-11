@@ -1,19 +1,51 @@
-CREATE TABLE TransferDao (
+CREATE TABLE TransferEntity (
     id INTEGER NOT NULL PRIMARY KEY,
-    from_storage_id INTEGER NOT NULL REFERENCES StorageDao(id),
-    to_storage_id INTEGER NOT NULL REFERENCES StorageDao(id),
+    from_storage_id INTEGER NOT NULL REFERENCES StorageEntity(id),
+    to_storage_id INTEGER NOT NULL REFERENCES StorageEntity(id),
     amount REAL NOT NULL,
     date TEXT NOT NULL,
     time TEXT NOT NULL,
     status TEXT NOT NULL
 );
 
-selectUserTransfersByUserId:
-SELECT *
-FROM TransferDao
-WHERE from_storage_id IN (
-    SELECT id FROM StorageDao WHERE user_id = ?
-)
-OR to_storage_id IN (
-    SELECT id FROM StorageDao WHERE user_id = ?
-);
+selectTransfers:
+SELECT
+    t.id,
+    t.amount,
+    t.date,
+    t.time,
+    t.status,
+
+    -- From storage
+    fs.id AS from_id,
+    fs.name AS from_name,
+    fs.user_id AS from_user_id,
+    fs.currency AS from_currency,
+    fs.type_storage AS from_type,
+    fs.note AS from_note,
+    fs.is_statistics AS from_is_statistics,
+    fs.is_archive AS from_is_archive,
+
+    fsc.id AS from_color_id,
+    fsc.user_id AS from_color_user_id,
+    fsc.hex_code AS from_color_hex,
+
+    -- To storage
+    ts.id AS to_id,
+    ts.name AS to_name,
+    ts.user_id AS to_user_id,
+    ts.currency AS to_currency,
+    ts.type_storage AS to_type,
+    ts.note AS to_note,
+    ts.is_statistics AS to_is_statistics,
+    ts.is_archive AS to_is_archive,
+
+    tsc.id AS to_color_id,
+    tsc.user_id AS to_color_user_id,
+    tsc.hex_code AS to_color_hex
+
+FROM TransferEntity t
+JOIN StorageEntity fs ON fs.id = t.from_storage_id
+JOIN ColorEntity fsc ON fsc.id = fs.color_id
+JOIN StorageEntity ts ON ts.id = t.to_storage_id
+JOIN ColorEntity tsc ON tsc.id = ts.color_id;

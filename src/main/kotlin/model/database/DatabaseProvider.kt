@@ -1,9 +1,9 @@
-package org.example.database
+package org.example.model.database
 
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import com.example.Database
-import com.example.OperationsQueries
+import com.example.OperationQueries
 import com.example.StorageQueries
 import com.example.TransferQueries
 import java.io.File
@@ -34,12 +34,14 @@ class DatabaseProvider {
         database.storageQueries
     }
 
-    val operationQueries: OperationsQueries by lazy {
-        database.operationsQueries
+    val operationQueries: OperationQueries by lazy {
+        database.operationQueries
     }
 
     val transferQueries: TransferQueries by lazy {
         database.transferQueries
     }
+
+
 
 }

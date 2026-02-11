@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm") version "2.2.20"
+    kotlin("plugin.serialization") version "2.2.20"
     id("app.cash.sqldelight") version "2.0.2"
 }
 
@@ -23,6 +24,7 @@ sqldelight {
 
 
 dependencies {
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.1")
     implementation("app.cash.sqldelight:jdbc-driver:2.0.2")
     implementation("org.slf4j:slf4j-simple:2.0.9")
     implementation("app.cash.sqldelight:sqlite-driver:2.0.2")
