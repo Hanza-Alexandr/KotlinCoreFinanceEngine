@@ -1,12 +1,13 @@
-package org.example.model.repository
+package org.example.model.repository.sqldelightdb
 
 import org.example.model.AuthUser
 import org.example.model.GuestUser
 import org.example.model.User
+import org.example.model.repository.ICurrentUserRepository
 import org.example.model.service.SettingService
 
 
-class CurrentUserRepositoryInMem(private val service: SettingService): ICurrentUserRepository {
+class CurrentUserRepositorySQLDelight(private val service: SettingService): ICurrentUserRepository {
     override fun getCurrentUser(): User? {
         val userId = service.load().userId
         when(userId){

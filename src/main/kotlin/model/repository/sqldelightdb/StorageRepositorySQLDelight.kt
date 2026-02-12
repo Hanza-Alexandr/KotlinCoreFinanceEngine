@@ -1,13 +1,15 @@
-package org.example.model.repository
+package org.example.model.repository.sqldelightdb
 
 import com.example.StorageQueries
 import org.example.Currency
 import org.example.TypeStorage
 import org.example.model.Color
 import org.example.model.Storage
+import org.example.model.repository.IStorageRepository
 import org.example.model.service.CurrentUserService
 
-class StorageRepositoryImp(private val queries: StorageQueries,private val currentUserService: CurrentUserService): IStorageRepository {
+class StorageRepositorySQLDelight(private val queries: StorageQueries, private val currentUserService: CurrentUserService):
+    IStorageRepository {
     override fun getById(id: Long): Storage {
         TODO("Not yet implemented")
     }
@@ -27,20 +29,21 @@ class StorageRepositoryImp(private val queries: StorageQueries,private val curre
             is_archive,
             hex_code,
             color_user_id ->
-            Storage(id,
-                name,
-                user_id,
-                Currency.valueOf(currency),
-                TypeStorage.valueOf(type_storage),
-                note,
-                Color(
-                    color_id,
-                    color_user_id,
-                    hex_code ?: throw NullPointerException("При получении Storage hex_code выдал Null")
-                ),
-                is_statistics==1L,
-                is_archive==1L
-            )
+           Storage(
+               id,
+               name,
+               user_id,
+               Currency.valueOf(currency),
+               TypeStorage.valueOf(type_storage),
+               note,
+               Color(
+                   color_id,
+                   color_user_id,
+                   hex_code ?: throw NullPointerException("При получении Storage hex_code выдал Null")
+               ),
+               is_statistics == 1L,
+               is_archive == 1L
+           )
         }.executeAsList()
     }
 

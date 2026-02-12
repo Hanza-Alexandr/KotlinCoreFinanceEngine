@@ -2,10 +2,10 @@ package org.example
 
 import org.example.model.service.AccountService
 import org.example.model.database.DatabaseProvider
-import org.example.model.repository.CurrentUserRepositoryInMem
-import org.example.model.repository.FileSettingsRepository
-import org.example.model.repository.OperationRepositoryImp
-import org.example.model.repository.StorageRepositoryImp
+import org.example.model.repository.sqldelightdb.CurrentUserRepositorySQLDelight
+import org.example.model.repository.infile.SettingsRepositoryInFile
+import org.example.model.repository.sqldelightdb.OperationRepositorySQLDelight
+import org.example.model.repository.sqldelightdb.StorageRepositorySQLDelight
 import org.example.model.service.AccountSettingService
 import org.example.model.service.CurrentUserService
 import org.example.model.service.OperationService
@@ -52,13 +52,13 @@ fun main() {
     //val logInRep = LogInRepositoryImp(databaseProvider.userQueries)
         //val logInVM = LogInViewModel(logInRep)
     //val logInV = LogInView(logInVM)
-    val settingRep = FileSettingsRepository(File("src/main/resources/settings.json"))
+    val settingRep = SettingsRepositoryInFile(File("src/main/resources/settings.json"))
     val appSetting = SettingService(settingRep)
-    val currentUserRepository = CurrentUserRepositoryInMem(appSetting)
+    val currentUserRepository = CurrentUserRepositorySQLDelight(appSetting)
     val currentUserSer = CurrentUserService(currentUserRepository)
 
-    val opRep = OperationRepositoryImp(databaseProvider.operationQueries, databaseProvider.transferQueries)
-    val stRep = StorageRepositoryImp(databaseProvider.storageQueries, currentUserSer)
+    val opRep = OperationRepositorySQLDelight(databaseProvider.operationQueries, databaseProvider.transferQueries)
+    val stRep = StorageRepositorySQLDelight(databaseProvider.storageQueries, currentUserSer)
 
 
 

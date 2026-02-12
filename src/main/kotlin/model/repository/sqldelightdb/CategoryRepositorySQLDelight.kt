@@ -1,9 +1,10 @@
-package org.example.model.repository
+package org.example.model.repository.sqldelightdb
 
 import com.example.CategoryQueries
 import org.example.model.Category
+import org.example.model.repository.ICategoryRepository
 
-class CategoryRepositoryImp(private val queries: CategoryQueries): ICategoryRepository {
+class CategoryRepositorySQLDelight(private val queries: CategoryQueries): ICategoryRepository {
     override fun getAllByUser(userId: Long): List<Category> {
         TODO("Not yet implemented")
     }

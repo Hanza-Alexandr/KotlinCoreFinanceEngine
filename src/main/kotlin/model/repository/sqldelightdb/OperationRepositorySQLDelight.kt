@@ -1,11 +1,12 @@
-package org.example.model.repository
+package org.example.model.repository.sqldelightdb
 
 import com.example.OperationQueries
 import com.example.TransferQueries
 import org.example.model.Operation
-import org.example.model.Storage
+import org.example.model.repository.IOperationRepository
 
-class OperationRepositoryImp(private val queriesOp: OperationQueries, private val queriesTf: TransferQueries): IOperationRepository {
+class OperationRepositorySQLDelight(private val queriesOp: OperationQueries, private val queriesTf: TransferQueries):
+    IOperationRepository {
     override fun getAllByStorage(storageId: Long): List<Operation> {
         TODO("Not yet implemented")
     }

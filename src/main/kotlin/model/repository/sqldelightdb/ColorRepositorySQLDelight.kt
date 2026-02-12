@@ -1,8 +1,9 @@
-package org.example.model.repository
+package org.example.model.repository.sqldelightdb
 
 import org.example.model.Color
+import org.example.model.repository.IColorRepository
 
-class ColorRepositoryImp: IColorRepository {
+class ColorRepositorySQLDelight: IColorRepository {
     override fun getById(id: Long): Color {
         TODO("Not yet implemented")
     }
