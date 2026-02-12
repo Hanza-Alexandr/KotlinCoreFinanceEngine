@@ -1,7 +1,7 @@
 package org.example.model.service
 
-import org.example.model.AuthUser
-import org.example.model.GuestUser
+import org.example.model.domain.AuthUser
+import org.example.model.domain.GuestUser
 import org.example.model.repository.ICurrentUserRepository
 
 class CurrentUserService(private val repo: ICurrentUserRepository){

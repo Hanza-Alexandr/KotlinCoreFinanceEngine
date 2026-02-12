@@ -1,11 +1,11 @@
 package org.example.model.repository
 
-import org.example.model.Category
-import org.example.model.Color
-import org.example.model.Operation
-import org.example.model.Setting
-import org.example.model.Storage
-import org.example.model.User
+import org.example.model.domain.Category
+import org.example.model.domain.Color
+import org.example.model.domain.Operation
+import org.example.model.domain.Setting
+import org.example.model.domain.Storage
+import org.example.model.domain.User
 
 interface IStorageRepository{
     fun getById(id: Long): Storage

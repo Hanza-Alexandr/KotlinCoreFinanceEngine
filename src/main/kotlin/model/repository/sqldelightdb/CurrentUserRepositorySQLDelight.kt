@@ -1,8 +1,8 @@
 package org.example.model.repository.sqldelightdb
 
-import org.example.model.AuthUser
-import org.example.model.GuestUser
-import org.example.model.User
+import org.example.model.domain.AuthUser
+import org.example.model.domain.GuestUser
+import org.example.model.domain.User
 import org.example.model.repository.ICurrentUserRepository
 import org.example.model.service.SettingService
 

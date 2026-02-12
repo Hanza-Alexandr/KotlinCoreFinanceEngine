@@ -2,7 +2,7 @@ package org.example.viewmodels
 
 import org.example.Currency
 import org.example.TypeStorage
-import org.example.model.Storage
+import org.example.model.domain.Storage
 import org.example.model.service.StorageService
 
 

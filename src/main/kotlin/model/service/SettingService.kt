@@ -1,6 +1,6 @@
 package org.example.model.service
 
-import org.example.model.Setting
+import org.example.model.domain.Setting
 import org.example.model.repository.ISettingRepository
 
 class SettingService(private val repo: ISettingRepository) {

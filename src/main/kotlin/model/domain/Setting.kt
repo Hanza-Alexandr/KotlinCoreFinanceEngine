@@ -1,4 +1,4 @@
-package org.example.model
+package org.example.model.domain
 
 import kotlinx.serialization.Serializable
 import org.example.AppThem

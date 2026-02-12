@@ -2,8 +2,6 @@ package org.example.views
 
 import org.example.Currency
 import org.example.TypeStorage
-import org.example.model.Color
-import org.example.model.Storage
 import org.example.viewmodels.StorageViewModel
 
 class StorageView(private val storageViewModel: StorageViewModel, private val operationView: OperationView,){

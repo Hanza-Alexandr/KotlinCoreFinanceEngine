@@ -1,10 +1,8 @@
-package org.example.model
+package org.example.model.domain
 
 import java.math.BigDecimal
 import java.sql.Time
-import java.time.LocalDateTime
 import java.util.Date
-import javax.xml.crypto.Data
 
 enum class TypeOperation{
     DEBIT,

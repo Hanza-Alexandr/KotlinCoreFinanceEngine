@@ -1,7 +1,7 @@
 package org.example.model.repository.sqldelightdb
 
 import com.example.CategoryQueries
-import org.example.model.Category
+import org.example.model.domain.Category
 import org.example.model.repository.ICategoryRepository
 
 class CategoryRepositorySQLDelight(private val queries: CategoryQueries): ICategoryRepository {

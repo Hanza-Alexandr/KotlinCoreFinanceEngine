@@ -1,15 +1,4 @@
-package org.example.model
-/*
-class User (
-    val id: Long,
-    val userName: String
-){
-    fun rename(newName: String): User {
-        require(newName.isNotBlank())
-        return User(id, newName)
-    }
-}
- */
+package org.example.model.domain
 //Абстракция для разделения гостя и авторизованного пользователя
 abstract class User{
     abstract val id: Long?

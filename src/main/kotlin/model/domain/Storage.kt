@@ -1,4 +1,4 @@
-package org.example.model
+package org.example.model.domain
 
 import org.example.Currency
 import org.example.TypeStorage

@@ -1,6 +1,6 @@
 package org.example.model.repository.sqldelightdb
 
-import org.example.model.Color
+import org.example.model.domain.Color
 import org.example.model.repository.IColorRepository
 
 class ColorRepositorySQLDelight: IColorRepository {

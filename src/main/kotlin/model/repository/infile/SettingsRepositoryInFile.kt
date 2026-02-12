@@ -3,7 +3,7 @@ package org.example.model.repository.infile
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.example.AppThem
-import org.example.model.Setting
+import org.example.model.domain.Setting
 import org.example.model.repository.ISettingRepository
 import java.io.File
 
