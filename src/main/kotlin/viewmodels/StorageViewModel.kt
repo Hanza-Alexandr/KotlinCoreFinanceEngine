@@ -14,13 +14,5 @@ class StorageViewModel(private val service: StorageService){
     fun createStorage(name: String, currency: Currency, typeStorage: TypeStorage, note: String?){
         service.createStorage(name,currency,typeStorage,note)
     }
-    /*
-    fun createNewGeneralStorage(storage: General): Boolean{
-        return storageRepository.createNewStorage(storage) != null
-    }
-    fun deleteStorage(storageId: Long): Boolean{
-        return storageRepository.deleteStorage(storageId) != null
-    }
 
-     */
 }

@@ -1,32 +1,13 @@
 package org.example.views
 
 import org.example.viewmodels.AccountViewModel
+import org.example.views.authentication.AuthenticationView
 
 class MainView(
     private val storageView: StorageView,
     private val authenticationView: AuthenticationView,
     private val accountViewModel: AccountViewModel
 ){
-    fun start(){
-        while (true){
-            authenticationView.start()
-            startMainMenu()
-        }
-    }
-
-    private fun startMainMenu(){
-        //TODO() Нет проверок на корректность веденных данных
-        var input: String
-        while (true){
-            showMainMenu()
-            input = readln()
-            useActions(input.toInt())
-            when(input.toInt()){
-                -1 ->break
-            }
-        }
-    }
-
     private fun showMainMenu() {
         println("====================================")
         println("            FINANCE APP")
@@ -37,6 +18,20 @@ class MainView(
         println("-1. LogOut")
         print("Choose option: ")
     }
+
+    fun start(){
+        while (true){
+            authenticationView.start()
+            startMainMenu()
+        }
+    }
+
+    private fun startMainMenu(){
+        showMainMenu()
+        val input = readln()
+        useActions(input.toInt())
+    }
+
     private fun useActions(num: Int){
         when (num) {
             1 -> {storageView.start()}

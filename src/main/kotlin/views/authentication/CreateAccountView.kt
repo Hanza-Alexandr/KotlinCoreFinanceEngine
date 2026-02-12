@@ -1,4 +1,4 @@
-package org.example.views
+package org.example.views.authentication
 
 import org.example.viewmodels.AccountViewModel
 
