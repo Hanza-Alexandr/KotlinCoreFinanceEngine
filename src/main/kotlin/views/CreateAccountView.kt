@@ -1,7 +1,7 @@
 package org.example.views
 
-import org.example.viewmodels.AuthenticationViewModel
+import org.example.viewmodels.AccountViewModel
 
-class CreateAccountView(private val authenticationViewModel: AuthenticationViewModel) {
+class CreateAccountView(private val accountViewModel: AccountViewModel) {
     //TODO()
 }

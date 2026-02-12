@@ -11,7 +11,7 @@ import org.example.model.service.CurrentUserService
 import org.example.model.service.OperationService
 import org.example.model.service.StorageService
 import org.example.model.service.SettingService
-import org.example.viewmodels.AuthenticationViewModel
+import org.example.viewmodels.AccountViewModel
 import org.example.viewmodels.OperationViewModel
 import org.example.viewmodels.StorageViewModel
 import org.example.views.AccountRecoveryView
@@ -22,11 +22,6 @@ import org.example.views.MainView
 import org.example.views.OperationView
 import org.example.views.StorageView
 import java.io.File
-import java.time.format.DateTimeFormatter
-const val SETTING_USER_ID = "user_id"
-object Formater {
-    val DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-}
 
 enum class AppThem{
     DARK,
@@ -35,7 +30,7 @@ enum class AppThem{
 }
 enum class TypeStorage{
     GENERAL,
-    BANKACCOUNT,
+    BANK_ACCOUNT,
     CASH
 }
 enum class Currency{
@@ -44,14 +39,7 @@ enum class Currency{
 }
 
 fun main() {
-    //DatabaseProvider.reset()
-
-
     val databaseProvider = DatabaseProvider()
-
-    //val logInRep = LogInRepositoryImp(databaseProvider.userQueries)
-        //val logInVM = LogInViewModel(logInRep)
-    //val logInV = LogInView(logInVM)
     val settingRep = SettingsRepositoryInFile(File("src/main/resources/settings.json"))
     val appSetting = SettingService(settingRep)
     val currentUserRepository = CurrentUserRepositorySQLDelight(appSetting)
@@ -60,8 +48,6 @@ fun main() {
     val opRep = OperationRepositorySQLDelight(databaseProvider.operationQueries, databaseProvider.transferQueries)
     val stRep = StorageRepositorySQLDelight(databaseProvider.storageQueries, currentUserSer)
 
-
-
     val opSer = OperationService(opRep)
     val stSer = StorageService(stRep, currentUserSer)
     val accountSettingSer= AccountSettingService(appSetting)
@@ -69,7 +55,7 @@ fun main() {
 
     val opVM = OperationViewModel(opSer)
     val stVM = StorageViewModel(stSer)
-    val autVM = AuthenticationViewModel(accSer)
+    val autVM = AccountViewModel(accSer)
 
     val opV = OperationView(opVM)
     val stV = StorageView(stVM, opV)
@@ -79,16 +65,7 @@ fun main() {
 
     val authV = AuthenticationView(autVM,logView, createAccountView, recoveryView)
 
-
     val app = MainView(stV, authV, autVM)
 
     app.start()
-
-
 }
-
-
-
-
-
-

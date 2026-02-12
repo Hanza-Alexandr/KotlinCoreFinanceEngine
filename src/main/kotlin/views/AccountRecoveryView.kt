@@ -1,7 +1,7 @@
 package org.example.views
 
-import org.example.viewmodels.AuthenticationViewModel
+import org.example.viewmodels.AccountViewModel
 
-class AccountRecoveryView(private val authenticationViewModel: AuthenticationViewModel) {
+class AccountRecoveryView(private val accountViewModel: AccountViewModel) {
     //TODO()
 }

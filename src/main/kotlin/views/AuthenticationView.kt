@@ -1,9 +1,9 @@
 package org.example.views
 
-import org.example.viewmodels.AuthenticationViewModel
+import org.example.viewmodels.AccountViewModel
 
 class AuthenticationView(
-    private val authenticationViewModel: AuthenticationViewModel,
+    private val accountViewModel: AccountViewModel,
     private val logInView: LogInView,
     private val createAccountView: CreateAccountView,
     private val recoveryView: AccountRecoveryView
@@ -12,7 +12,7 @@ class AuthenticationView(
     // Пока тут просто реализация автоматического входа если пользователь уже авторизован
     // Но может и должен быть вью входа(LoginView)
     fun start(){
-        if (authenticationViewModel.isAuthentication()) return
+        if (accountViewModel.isAuthentication()) return
         showMenu()
         val input = readln()
         useAction(input.toInt())
@@ -31,7 +31,7 @@ class AuthenticationView(
                 TODO("Создание еще не сделано")
             }
             3 -> {
-                authenticationViewModel.loginAsGuest()
+                accountViewModel.loginAsGuest()
             }
             else -> println("нет такого варианта")
         }

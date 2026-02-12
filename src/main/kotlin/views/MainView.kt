@@ -1,20 +1,17 @@
 package org.example.views
 
-import org.example.SETTING_USER_ID
-import org.example.viewmodels.AuthenticationViewModel
-import kotlin.math.log
+import org.example.viewmodels.AccountViewModel
 
 class MainView(
     private val storageView: StorageView,
     private val authenticationView: AuthenticationView,
-    private val authenticationViewModel: AuthenticationViewModel
+    private val accountViewModel: AccountViewModel
 ){
     fun start(){
         while (true){
             authenticationView.start()
             startMainMenu()
         }
-
     }
 
     private fun startMainMenu(){
@@ -45,7 +42,7 @@ class MainView(
             1 -> {storageView.start()}
             2 -> {TODO("НЕСДЕЛАЛ {MaineView useAction 2}")}
             3 -> {TODO("НЕСДЕЛАЛ {MaineView useAction 3}")}
-            -1 -> {authenticationViewModel.logOut()}
+            -1 -> {accountViewModel.logOut()}
             else -> return
         }
     }
