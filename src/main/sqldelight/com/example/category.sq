@@ -8,12 +8,84 @@ CREATE TABLE CategoryEntity (
     user_id INTEGER,
     color_id INTEGER NOT NULL REFERENCES ColorEntity(id),
     name TEXT NOT NULL,
-    parent_category INTEGER REFERENCES CategoryEntity(id),
+    parent_category_id INTEGER REFERENCES CategoryEntity(id),
     need TEXT NOT NULL,
     is_hide INTEGER NOT NULL
 );
 
-selectUserCategoriesOrSystemCategoriesByUserId:
-SELECT *
-FROM ColorEntity
-WHERE user_id = ? OR user_id IS NULL;
+selectBaseCategories:
+SELECT
+    c.id AS category_id,
+    c.path_icon,
+    c.user_id AS category_user_id,
+    c.color_id,
+    c.name,
+    c.parent_category_id,
+    c.need,
+    c.is_hide,
+
+    col.user_id AS color_user_id,
+    col.hex_code AS color_hex_code
+FROM CategoryEntity c
+LEFT JOIN ColorEntity col ON c.color_id = col.id
+WHERE c.parent_category_id IS NULL
+  AND (c.user_id = :userId OR c.user_id IS NULL);
+
+selectChildrenCategories:
+SELECT
+    cat.id AS category_id,
+    cat.path_icon AS category_path_icon,
+    cat.user_id AS category_user_id,
+
+    col.id AS color_id,
+    col.hex_code AS color_hex_code,
+
+    cat.parent_category_id,
+    cat.name AS category_name,
+    cat.need AS category_need,
+    cat.is_hide AS category_isHide
+
+FROM CategoryEntity cat
+LEFT JOIN  ColorEntity col ON cat.color_id = col.id
+WHERE cat.parent_category_id =: parentCategoryId
+    AND(cat.user_id = :userId OR cat.user_id IS NULL);
+
+selectCategoryById:
+SELECT
+    cat.id AS category_id,
+    cat.path_icon AS category_path_icon,
+    cat.user_id AS category_user_id,
+
+    col.id AS color_id,
+    col.hex_code AS color_hex_code,
+
+    cat.parent_category_id,
+    cat.name AS category_name,
+    cat.need AS category_need,
+    cat.is_hide AS category_isHide
+
+FROM CategoryEntity cat
+LEFT JOIN  ColorEntity col ON cat.color_id = col.id
+WHERE cat.id =:CategoryId;
+
+insertNewCategory:
+INSERT INTO CategoryEntity (
+    id,
+    path_icon,
+    user_id,
+    color_id,
+    name,
+    parent_category_id,
+    need,
+    is_hide
+) VALUES (
+    ?,      -- id
+    ?,      -- path_icon
+    ?,      -- user_id (может быть NULL)
+    ?,      -- color_id (должен существовать в ColorEntity)
+    ?,      -- name
+    ?,      -- parent_category_id (NULL или существующий id)
+    ?,      -- need
+    ?       -- is_hide (0/1)
+);
+

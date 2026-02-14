@@ -2,6 +2,7 @@ package org.example.model.database
 
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
+import com.example.CategoryQueries
 import com.example.Database
 import com.example.OperationQueries
 import com.example.StorageQueries
@@ -40,6 +41,9 @@ class DatabaseProvider {
 
     val transferQueries: TransferQueries by lazy {
         database.transferQueries
+    }
+    val categoryQueries: CategoryQueries by lazy {
+        database.categoryQueries
     }
 
 

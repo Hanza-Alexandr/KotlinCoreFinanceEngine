@@ -4,23 +4,27 @@ import org.example.model.service.AccountService
 import org.example.model.database.DatabaseProvider
 import org.example.model.repository.sqldelightdb.CurrentUserRepositorySQLDelight
 import org.example.model.repository.infile.SettingsRepositoryInFile
+import org.example.model.repository.sqldelightdb.CategoryRepositorySQLDelight
 import org.example.model.repository.sqldelightdb.OperationRepositorySQLDelight
 import org.example.model.repository.sqldelightdb.StorageRepositorySQLDelight
 import org.example.model.service.AccountSettingService
+import org.example.model.service.CategoryService
 import org.example.model.service.CurrentUserService
 import org.example.model.service.OperationService
 import org.example.model.service.StorageService
 import org.example.model.service.SettingService
 import org.example.viewmodels.AccountViewModel
+import org.example.viewmodels.CategoryViewModel
 import org.example.viewmodels.OperationViewModel
 import org.example.viewmodels.StorageViewModel
 import org.example.views.authentication.AccountRecoveryView
 import org.example.views.authentication.AuthenticationView
 import org.example.views.authentication.CreateAccountView
 import org.example.views.authentication.LogInView
-import org.example.views.MainView
+import org.example.views.main.MainView
 import org.example.views.OperationView
-import org.example.views.StorageView
+import org.example.views.category.CategoryView
+import org.example.views.storage.StorageView
 import java.io.File
 
 enum class AppThem{
@@ -31,11 +35,16 @@ enum class AppThem{
 enum class TypeStorage{
     GENERAL,
     BANK_ACCOUNT,
-    CASH
+    CASH,
+    CARD
 }
 enum class Currency{
     RUB,
     USD
+}
+enum class NeedCategory{
+    MUST_HAVE,
+    OPTIONAL
 }
 
 fun main() {
@@ -47,25 +56,35 @@ fun main() {
 
     val opRep = OperationRepositorySQLDelight(databaseProvider.operationQueries, databaseProvider.transferQueries)
     val stRep = StorageRepositorySQLDelight(databaseProvider.storageQueries, currentUserSer)
+    val catRep = CategoryRepositorySQLDelight(databaseProvider.categoryQueries)
+
 
     val opSer = OperationService(opRep)
     val stSer = StorageService(stRep, currentUserSer)
     val accountSettingSer= AccountSettingService(appSetting)
     val accSer = AccountService(currentUserSer,accountSettingSer)
+    val catSer = CategoryService(catRep,currentUserSer)
 
     val opVM = OperationViewModel(opSer)
     val stVM = StorageViewModel(stSer)
-    val autVM = AccountViewModel(accSer)
+    val accVM = AccountViewModel(accSer)
+    val catVM = CategoryViewModel(catSer)
 
     val opV = OperationView(opVM)
     val stV = StorageView(stVM, opV)
-    val logView = LogInView(autVM)
-    val createAccountView = CreateAccountView(autVM)
-    val recoveryView = AccountRecoveryView(autVM)
+    val logView = LogInView(accVM)
+    val createAccountView = CreateAccountView(accVM)
+    val recoveryView = AccountRecoveryView(accVM)
+    val catV = CategoryView(catVM)
 
-    val authV = AuthenticationView(autVM,logView, createAccountView, recoveryView)
+    val authV = AuthenticationView(accVM,logView, createAccountView, recoveryView)
 
-    val app = MainView(stV, authV, autVM)
+    val app = MainView(
+        storageView = stV,
+        authenticationView = authV,
+        categoryView = catV,
+        accountViewModel = accVM
+    )
 
     app.start()
 }

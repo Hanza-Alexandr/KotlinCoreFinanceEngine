@@ -1,13 +1,15 @@
 package org.example.model.domain
 
+import org.example.NeedCategory
+
 data class Category(
     val id: Long?,
     val pathIcon: String,
     val userId: Long?,
     val color: Color,
     val name: String,
-    val parentCategoryId: Long,
-    val need: String,
+    val parentCategoryId: Long?,
+    val need: NeedCategory,
     val isHide: Boolean
 ){
     fun rename(newName: String): Category {
@@ -29,7 +31,7 @@ data class Category(
         return copy(parentCategoryId = newParentId)
     }
 
-    fun changeNeed(newNeed: String): Category =
+    fun changeNeed(newNeed: NeedCategory): Category =
         copy(need = newNeed)
 
     fun hide(): Category =
