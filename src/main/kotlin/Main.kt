@@ -5,18 +5,22 @@ import org.example.model.database.DatabaseProvider
 import org.example.model.repository.sqldelightdb.CurrentUserRepositorySQLDelight
 import org.example.model.repository.infile.SettingsRepositoryInFile
 import org.example.model.repository.sqldelightdb.CategoryRepositorySQLDelight
+import org.example.model.repository.sqldelightdb.ColorRepositorySQLDelight
 import org.example.model.repository.sqldelightdb.OperationRepositorySQLDelight
 import org.example.model.repository.sqldelightdb.StorageRepositorySQLDelight
 import org.example.model.service.AccountSettingService
 import org.example.model.service.CategoryService
+import org.example.model.service.ColorService
 import org.example.model.service.CurrentUserService
 import org.example.model.service.OperationService
 import org.example.model.service.StorageService
 import org.example.model.service.SettingService
 import org.example.viewmodels.AccountViewModel
 import org.example.viewmodels.CategoryViewModel
+import org.example.viewmodels.ColorViewModel
 import org.example.viewmodels.OperationViewModel
 import org.example.viewmodels.StorageViewModel
+import org.example.views.ColorView
 import org.example.views.authentication.AccountRecoveryView
 import org.example.views.authentication.AuthenticationView
 import org.example.views.authentication.CreateAccountView
@@ -57,6 +61,8 @@ fun main() {
     val opRep = OperationRepositorySQLDelight(databaseProvider.operationQueries, databaseProvider.transferQueries)
     val stRep = StorageRepositorySQLDelight(databaseProvider.storageQueries, currentUserSer)
     val catRep = CategoryRepositorySQLDelight(databaseProvider.categoryQueries)
+    val colRep = ColorRepositorySQLDelight(databaseProvider.colorQueries)
+
 
 
     val opSer = OperationService(opRep)
@@ -64,11 +70,13 @@ fun main() {
     val accountSettingSer= AccountSettingService(appSetting)
     val accSer = AccountService(currentUserSer,accountSettingSer)
     val catSer = CategoryService(catRep,currentUserSer)
+    val colSer = ColorService(colRep)
 
     val opVM = OperationViewModel(opSer)
     val stVM = StorageViewModel(stSer)
     val accVM = AccountViewModel(accSer)
     val catVM = CategoryViewModel(catSer)
+    val colVM = ColorViewModel(colSer)
 
     val opV = OperationView(opVM)
     val stV = StorageView(stVM, opV)
@@ -76,6 +84,7 @@ fun main() {
     val createAccountView = CreateAccountView(accVM)
     val recoveryView = AccountRecoveryView(accVM)
     val catV = CategoryView(catVM)
+    val colV = ColorView(colVM)
 
     val authV = AuthenticationView(accVM,logView, createAccountView, recoveryView)
 
@@ -83,7 +92,8 @@ fun main() {
         storageView = stV,
         authenticationView = authV,
         categoryView = catV,
-        accountViewModel = accVM
+        colorView = colV,
+        accountViewModel = accVM,
     )
 
     app.start()

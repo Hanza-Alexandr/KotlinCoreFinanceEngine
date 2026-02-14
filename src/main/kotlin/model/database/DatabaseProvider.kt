@@ -3,6 +3,7 @@ package org.example.model.database
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import com.example.CategoryQueries
+import com.example.ColorQueries
 import com.example.Database
 import com.example.OperationQueries
 import com.example.StorageQueries
@@ -44,6 +45,10 @@ class DatabaseProvider {
     }
     val categoryQueries: CategoryQueries by lazy {
         database.categoryQueries
+    }
+
+    val colorQueries: ColorQueries by lazy{
+        database.colorQueries
     }
 
 
