@@ -38,6 +38,7 @@ SELECT
     cat.user_id AS category_user_id,
 
     col.id AS color_id,
+    col.user_id AS color_user_id,
     col.hex_code AS color_hex_code,
 
     cat.parent_category_id,
@@ -57,6 +58,7 @@ SELECT
     cat.user_id AS category_user_id,
 
     col.id AS color_id,
+    col.user_id AS color_user_id,
     col.hex_code AS color_hex_code,
 
     cat.parent_category_id,

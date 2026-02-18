@@ -39,7 +39,8 @@ class StorageRepositorySQLDelight(private val queries: StorageQueries, private v
                Color(
                    color_id,
                    color_user_id,
-                   hex_code ?: throw NullPointerException("При получении Storage hex_code выдал Null")
+                   hex_code ?: throw NullPointerException("При получении Storage hex_code выдал Null"),
+                   color_user_id==null
                ),
                is_statistics == 1L,
                is_archive == 1L

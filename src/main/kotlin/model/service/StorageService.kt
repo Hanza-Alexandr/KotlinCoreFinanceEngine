@@ -12,7 +12,7 @@ class StorageService(private val repo: IStorageRepository, private val currentUs
     }
     fun createStorage(name: String, currency: Currency, typeStorage: TypeStorage, note: String?){
 
-        val newColor = Color(1, null, "asd") //Пока так но нужно получать из вне и колор
+        val newColor = Color(1, null, "asd", false) //Пока так но нужно получать из вне и колор
         val newStorage = Storage(
             id = null,
             name = name,

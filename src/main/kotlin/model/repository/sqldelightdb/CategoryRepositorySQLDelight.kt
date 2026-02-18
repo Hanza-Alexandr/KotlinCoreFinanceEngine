@@ -28,7 +28,8 @@ class CategoryRepositorySQLDelight(private val queries: CategoryQueries): ICateg
                     color = Color(
                         id = color_id,
                         userId = color_user_id,
-                        hexCode = hex_code!!
+                        hexCode = hex_code!!,
+                        isSystem = color_user_id==null
                     ),
                     name = name,
                     parentCategoryId = parent_category,
@@ -51,6 +52,7 @@ class CategoryRepositorySQLDelight(private val queries: CategoryQueries): ICateg
                 category_path_icon,
                 category_user_id,
                 color_id,
+                color_user_id,
                 color_hex_code,
                 parent_category_id,
                 category_name,
@@ -62,8 +64,9 @@ class CategoryRepositorySQLDelight(private val queries: CategoryQueries): ICateg
                     userId = category_user_id,
                     color = Color(
                         id = color_id,
-                        userId = category_user_id,
-                        hexCode = color_hex_code!!
+                        userId = color_user_id,
+                        hexCode = color_hex_code?:throw java.lang.NullPointerException(),
+                        isSystem = color_user_id ==null
                     ),
                     name = category_name,
                     parentCategoryId = parent_category_id,
@@ -85,6 +88,7 @@ class CategoryRepositorySQLDelight(private val queries: CategoryQueries): ICateg
                     category_path_icon,
                     category_user_id,
                     color_id,
+                    color_user_id,
                     color_hex_code,
                     parent_category_id,
                     category_name,
@@ -96,8 +100,9 @@ class CategoryRepositorySQLDelight(private val queries: CategoryQueries): ICateg
                     userId = category_user_id,
                     color = Color(
                         id = color_id,
-                        userId = category_user_id,
-                        hexCode = color_hex_code!!
+                        userId = color_user_id,
+                        hexCode = color_hex_code?: throw NullPointerException(),
+                        isSystem = category_user_id==null
                     ),
                     name = category_name,
                     parentCategoryId = parent_category_id,

@@ -21,10 +21,14 @@ interface IOperationRepository{
     fun delete(id: Long)
 }
 interface IColorRepository{
+    fun getByHex(hex: String): Color?
     fun getById(id: Long): Color
     fun getAll(): List<Color>
-    fun save(color: Color)
+    fun save(color: Color): Color
     fun delete(id: Long)
+
+    fun hasRelation(colorId: Long): Boolean
+    fun replaceColorEverywhere(oldColorId: Long, newColorId: Long)
 }
 
 interface ICategoryRepository{

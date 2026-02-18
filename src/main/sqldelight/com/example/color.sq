@@ -7,3 +7,39 @@ selectUserColorsOrSystemColorsByUserId:
 SELECT *
 FROM ColorEntity
 WHERE user_id = ? OR user_id IS NULL;
+
+insertColor:
+INSERT INTO ColorEntity(user_id, hex_code)
+VALUES (?, ?)
+RETURNING *;
+
+updateColor:
+UPDATE ColorEntity
+SET user_id = ?, hex_code = ?
+WHERE id = ?
+RETURNING *;
+
+selectByHex:
+SELECT * FROM ColorEntity WHERE hex_code = ?;
+
+selectById:
+SELECT * FROM ColorEntity WHERE id = ?;
+
+selectAll:
+SELECT * FROM ColorEntity;
+
+deleteColor:
+DELETE FROM ColorEntity WHERE id = ?;
+
+
+countStoragesByColor:
+SELECT COUNT(*) FROM StorageEntity WHERE color_id = ?;
+
+updateStorageColor:
+UPDATE StorageEntity SET color_id = ? WHERE color_id = ?;
+
+countCategoriesByColor:
+SELECT COUNT(*) FROM CategoryEntity WHERE color_id = ?;
+
+updateCategoryColor:
+UPDATE CategoryEntity SET color_id = ? WHERE color_id = ?;

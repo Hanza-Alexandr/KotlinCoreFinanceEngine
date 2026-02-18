@@ -31,6 +31,8 @@ import org.example.views.category.CategoryView
 import org.example.views.storage.StorageView
 import java.io.File
 
+const val STANDARD_COLOR_HEX = "ABABAB"
+
 enum class AppThem{
     DARK,
     LIGHT,
@@ -70,7 +72,7 @@ fun main() {
     val accountSettingSer= AccountSettingService(appSetting)
     val accSer = AccountService(currentUserSer,accountSettingSer)
     val catSer = CategoryService(catRep,currentUserSer)
-    val colSer = ColorService(colRep)
+    val colSer = ColorService(colRep, currentUserSer)
 
     val opVM = OperationViewModel(opSer)
     val stVM = StorageViewModel(stSer)

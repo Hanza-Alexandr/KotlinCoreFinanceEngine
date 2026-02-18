@@ -1,6 +1,8 @@
 package org.example.views.category
 
 import org.example.model.domain.Category
+import org.example.viewmodels.CategoryListState
+import org.example.viewmodels.CategoryState
 import org.example.viewmodels.CategoryViewModel
 
 // ----------------------------
@@ -8,13 +10,13 @@ import org.example.viewmodels.CategoryViewModel
 // ----------------------------
 sealed class InputState {
     data class Error(val message: String) : InputState()
-    data class Success(val navigationState: NavigationState?) : InputState()
+    data class Success(val navigationIntent: NavigationIntent?) : InputState()
 }
 
-sealed class NavigationState {
-    object Exit : NavigationState()      // Полный выход из CategoryView
-    object Back : NavigationState()      // Вернуться на уровень выше
-    object BackHome : NavigationState()  // Вернуться в корень категорий
+sealed class NavigationIntent {
+    object Exit : NavigationIntent()      // Полный выход из CategoryView
+    object Back : NavigationIntent()      // Вернуться на уровень выше
+    object BackHome : NavigationIntent()  // Вернуться в корень категорий
 }
 
 // ----------------------------
@@ -31,9 +33,9 @@ class CategoryView(private val categoryViewModel: CategoryViewModel) {
             val nav = startMenu(currentCategory = null)
 
             when (nav) {
-                NavigationState.Exit -> return          // Выход в StorageView
-                NavigationState.Back -> continue        // Просто перерисовать корень
-                NavigationState.BackHome -> continue    // То же самое
+                NavigationIntent.Exit -> return          // Выход в StorageView
+                NavigationIntent.Back -> continue        // Просто перерисовать корень
+                NavigationIntent.BackHome -> continue    // То же самое
             }
         }
     }
@@ -42,7 +44,7 @@ class CategoryView(private val categoryViewModel: CategoryViewModel) {
      * Универсальное меню для любой категории.
      * Работает одинаково для корня и дочерних уровней.
      */
-    fun startMenu(currentCategory: Category?): NavigationState {
+    fun startMenu(currentCategory: Category?): NavigationIntent {
         while (true) {
 
             val categories = categoryViewModel.getCategoryByParent(currentCategory?.id)
@@ -57,11 +59,11 @@ class CategoryView(private val categoryViewModel: CategoryViewModel) {
                 }
 
                 is InputState.Success -> {
-                    when (input.navigationState) {
+                    when (input.navigationIntent) {
                         null -> continue                      // Остаёмся в текущем меню
-                        NavigationState.Back -> return NavigationState.Back
-                        NavigationState.BackHome -> return NavigationState.BackHome
-                        NavigationState.Exit -> return NavigationState.Exit
+                        NavigationIntent.Back -> return NavigationIntent.Back
+                        NavigationIntent.BackHome -> return NavigationIntent.BackHome
+                        NavigationIntent.Exit -> return NavigationIntent.Exit
                     }
                 }
             }
@@ -122,12 +124,12 @@ class CategoryView(private val categoryViewModel: CategoryViewModel) {
             }
 
             // Навигация
-            -1 -> InputState.Success(NavigationState.Back)
-            -2 -> InputState.Success(NavigationState.BackHome)
-            -3 -> InputState.Success(NavigationState.Exit)
+            -1 -> InputState.Success(NavigationIntent.Back)
+            -2 -> InputState.Success(NavigationIntent.BackHome)
+            -3 -> InputState.Success(NavigationIntent.Exit)
             -4 -> {
                 TODO()
-                InputState.Success(NavigationState.Back)
+                InputState.Success(NavigationIntent.Back)
             }
 
             // Переход в дочернюю категорию
@@ -138,9 +140,9 @@ class CategoryView(private val categoryViewModel: CategoryViewModel) {
 
                     // Обработка результата вложенного меню
                     when (nav) {
-                        NavigationState.Back -> InputState.Success(null) // Вернуться на текущий уровень
-                        NavigationState.BackHome -> InputState.Success(nav)
-                        NavigationState.Exit -> InputState.Success(nav)
+                        NavigationIntent.Back -> InputState.Success(null) // Вернуться на текущий уровень
+                        NavigationIntent.BackHome -> InputState.Success(nav)
+                        NavigationIntent.Exit -> InputState.Success(nav)
                     }
 
                 } catch (e: IllegalArgumentException) {

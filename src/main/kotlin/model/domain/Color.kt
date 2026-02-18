@@ -3,7 +3,8 @@ package org.example.model.domain
 data class Color (
     val id: Long?,
     val userId: Long?,
-    val hexCode: String
+    val hexCode: String,
+    val isSystem: Boolean
 ){
     fun changeUser(newUserId: Long?): Color =
         copy(userId = newUserId)

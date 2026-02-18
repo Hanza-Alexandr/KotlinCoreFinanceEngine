@@ -21,8 +21,9 @@ class CategoryService(private val repo: ICategoryRepository, private val current
                 color = Color(
                     id = 2L,//пока так
                     userId = null,//пока так
-                    hexCode = "#FF0000"//ПОка так
-                ),
+                    hexCode = "#FF0000",//ПОка так
+                    false//пока так TODO()
+                    ),
                 name = name,
                 parentCategoryId = currentCategory?.id,
                 need = need,
