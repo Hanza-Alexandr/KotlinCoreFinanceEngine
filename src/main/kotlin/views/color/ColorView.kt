@@ -1,26 +1,23 @@
-package org.example.views
+package org.example.views.color
 
 import org.example.model.domain.Color
 import org.example.viewmodels.ColorViewModel
 import org.example.viewmodels.StateColor
 import org.example.viewmodels.StateListColor
-import org.example.views.category.InputState
-import org.example.views.category.NavigationIntent
-
+import org.example.NavigationIntent
 
 class ColorView(private val colorViewModel: ColorViewModel) {
     fun start(){
         while (true){
             val state = startMainMenu()
             when(state){
-                NavigationIntent.Back -> {continue}
-                NavigationIntent.BackHome -> {continue}
+                NavigationIntent.Back -> continue
+                NavigationIntent.BackHome -> continue
                 NavigationIntent.Exit -> return
             }
         }
     }
-
-    private fun startMainMenu(): NavigationIntent{
+    private fun startMainMenu(): NavigationIntent {
         while (true){
             println("====================================")
             println("       Меню цветов")
@@ -84,8 +81,7 @@ class ColorView(private val colorViewModel: ColorViewModel) {
         }
 
     }
-
-    private fun startColorMenu(colorId: Int): NavigationIntent{
+    private fun startColorMenu(colorId: Int): NavigationIntent {
         while (true){
             println("====================================")
             println("       Меню цвета")
@@ -156,8 +152,7 @@ class ColorView(private val colorViewModel: ColorViewModel) {
             }
         }
     }
-
-    private fun startColorEditingMenu(currentColor: Color): NavigationIntent{
+    private fun startColorEditingMenu(currentColor: Color): NavigationIntent {
         while (true){
             println("====================================")
             println("       Меню редактирования цвета")
@@ -195,8 +190,7 @@ class ColorView(private val colorViewModel: ColorViewModel) {
             }
         }
     }
-
-    private fun startDeleteMenu(color: Color): NavigationIntent{
+    private fun startDeleteMenu(color: Color): NavigationIntent {
         while(true){
             val hasRelatedItems: Boolean = colorViewModel.hasRelations(color)
             if (hasRelatedItems){
@@ -275,8 +269,7 @@ class ColorView(private val colorViewModel: ColorViewModel) {
             }
         }
     }
-
-    private fun startColorCreationMenu(): NavigationIntent{
+    private fun startColorCreationMenu(): NavigationIntent {
         while (true){
             println("====================================")
             println("       Меню создания цвета")
@@ -316,8 +309,7 @@ class ColorView(private val colorViewModel: ColorViewModel) {
             }
         }
     }
-
-    fun startColorSelectionMenu(excludeColor: Color? =null): StateColor{
+    fun startColorSelectionMenu(excludeColor: Color? =null): StateColor {
         while (true){
             println("====================================")
             println("       Меню выбора цвета")
@@ -360,9 +352,7 @@ class ColorView(private val colorViewModel: ColorViewModel) {
             }
         }
     }
-
-
-   private fun displayColor(list: List<Color>){
+    private fun displayColor(list: List<Color>){
         list.forEach { println("${it.id}|${if (it.isSystem)"🖥️" else "🙎‍♂️"} |${it.hexCode}") }
     }
 

@@ -4,13 +4,14 @@ import org.example.NeedCategory
 
 data class Category(
     val id: Long?,
-    val pathIcon: String,
     val userId: Long?,
-    val color: Color,
     val name: String,
+    val color: Color,
+    val pathIcon: String,
     val parentCategoryId: Long?,
     val need: NeedCategory,
-    val isHide: Boolean
+    val isHide: Boolean,
+    val isSystem: Boolean
 ){
     fun rename(newName: String): Category {
         require(newName.isNotBlank())

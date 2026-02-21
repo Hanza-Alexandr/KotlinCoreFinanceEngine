@@ -32,11 +32,11 @@ interface IColorRepository{
 }
 
 interface ICategoryRepository{
-    fun getBaseCategories(userId: Long): List<Category>
-    fun getChildrenByParent(parentCategoryId: Long?, userId: Long): List<Category>
+    fun getBaseCategories(): List<Category>
+    fun getChildrenByParent(parentCategoryId: Long?): List<Category>
     fun getById(id: Long): Category?
-    fun save(category: Category)
-    fun delete(id: Long)
+    fun save(category: Category): Category?
+    fun delete(id: Long): Category?
 }
 
 interface ISettingRepository{

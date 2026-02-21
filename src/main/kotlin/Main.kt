@@ -20,7 +20,7 @@ import org.example.viewmodels.CategoryViewModel
 import org.example.viewmodels.ColorViewModel
 import org.example.viewmodels.OperationViewModel
 import org.example.viewmodels.StorageViewModel
-import org.example.views.ColorView
+import org.example.views.color.ColorView
 import org.example.views.authentication.AccountRecoveryView
 import org.example.views.authentication.AuthenticationView
 import org.example.views.authentication.CreateAccountView
@@ -36,22 +36,72 @@ const val STANDARD_COLOR_HEX = "ABABAB"
 enum class AppThem{
     DARK,
     LIGHT,
-    SYSTEM
+    SYSTEM;
+    companion object {
+        fun getObj(inp: String): InputState<NeedCategory> {
+            return try {
+                InputState.Success(NeedCategory.valueOf(inp))
+
+            } catch (e: IllegalArgumentException) {
+                InputState.Error("Нет такой Темы")
+            }
+        }
+    }
 }
-enum class TypeStorage{
+enum class TypeStorage {
     GENERAL,
     BANK_ACCOUNT,
     CASH,
-    CARD
+    CARD;
+
+    companion object {
+        fun getObj(inp: String): InputState<NeedCategory> {
+            return try {
+                InputState.Success(NeedCategory.valueOf(inp))
+
+            } catch (e: IllegalArgumentException) {
+                InputState.Error("Нет такого типа")
+            }
+
+        }
+    }
 }
 enum class Currency{
     RUB,
-    USD
+    USD;
+    companion object {
+        fun getObj(inp: String): InputState<NeedCategory> {
+            return try {
+                InputState.Success(NeedCategory.valueOf(inp))
+
+            } catch (e: IllegalArgumentException) {
+                InputState.Error("Нет такой Валюты")
+            }
+
+        }
+    }
 }
 enum class NeedCategory{
     MUST_HAVE,
-    OPTIONAL
+    OPTIONAL;
+    companion object {
+        fun getObj(inp: String): InputState<NeedCategory> {
+            return try {
+                InputState.Success(NeedCategory.valueOf(inp))
+
+            } catch (e: IllegalArgumentException) {
+                InputState.Error("Нет такой необходисости")
+            }
+
+        }
+    }
 }
+
+sealed class InputState<out T> {
+    data class Error(val message: String) : InputState<Nothing>()
+    data class Success<T>(val obj: T) : InputState<T>()
+}
+
 
 fun main() {
     val databaseProvider = DatabaseProvider()
@@ -85,8 +135,9 @@ fun main() {
     val logView = LogInView(accVM)
     val createAccountView = CreateAccountView(accVM)
     val recoveryView = AccountRecoveryView(accVM)
-    val catV = CategoryView(catVM)
+
     val colV = ColorView(colVM)
+    val catV = CategoryView(catVM,colV)
 
     val authV = AuthenticationView(accVM,logView, createAccountView, recoveryView)
 

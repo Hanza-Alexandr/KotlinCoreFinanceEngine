@@ -1,7 +1,7 @@
 package org.example.views.main
 
 import org.example.viewmodels.AccountViewModel
-import org.example.views.ColorView
+import org.example.views.color.ColorView
 import org.example.views.authentication.AuthenticationView
 import org.example.views.category.CategoryView
 import org.example.views.storage.StorageView
@@ -42,7 +42,7 @@ class MainView(
     private fun useActions(num: Int){
         when (num) {
             1 -> storageView.start()
-            2 -> categoryView.startCategoryMainMenu()
+            2 -> categoryView.startMainMenu()
             3 -> colorView.start()
             -1 -> accountViewModel.logOut()
             else -> return
