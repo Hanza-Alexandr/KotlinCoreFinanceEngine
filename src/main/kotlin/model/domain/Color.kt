@@ -14,3 +14,18 @@ data class Color (
         return copy(hexCode = newHex)
     }
 }
+
+/*
+Можно потом как нить сделать так. Т.е проверка на выполнения треований к атрибутам сущности конкретно тут при создании. Это вроде как раз ответственность самого класса
+data class Color private constructor(
+    val id: Long?,
+    val userId: Long?,
+    val hexCode: String,
+    val isSystem: Boolean
+){
+    companion object{
+        fun create(id: Long?,userId: Long?, hexCode: String, isSystem: Boolean): InputState<Color>{
+            ....
+        }
+    }
+ */

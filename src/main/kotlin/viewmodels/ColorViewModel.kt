@@ -1,19 +1,12 @@
 package org.example.viewmodels
 
 import org.example.model.domain.Color
+import org.example.model.domain.StateDomain
+import org.example.model.domain.StateDomainList
 import org.example.model.service.ColorService
-import org.example.views.category.CategoryUi
 
-sealed class StateColor{
-    data class Success(val color: Color): StateColor()
-    data class Error(val message: String): StateColor()
-}
 
-sealed class StateListColor{
-    data class Success(val colors: List<Color>): StateListColor()
-    object Empty: StateListColor()
 
-}
 
 
 class ColorViewModel(private val colorService: ColorService) {
@@ -21,16 +14,16 @@ class ColorViewModel(private val colorService: ColorService) {
     /**
      * CRUD
      **/
-    fun createColor(hexCode: String): StateColor{
+    fun createColor(hexCode: String): StateDomain<Color>{
         return colorService.createColor(hexCode)
     }
-    fun getColors(): StateListColor{
+    fun getColors(): StateDomainList<Color>{
         return colorService.getColors()
     }
-    fun getColor(colorId: Int): StateColor{
+    fun getColor(colorId: Int): StateDomain<Color>{
         return colorService.getColor(colorId)
     }
-    fun updateColor(oldColor: Color, newHexCode: String): StateColor{
+    fun updateColor(oldColor: Color, newHexCode: String): StateDomain<Color>{
         return colorService.updateColor(oldColor,newHexCode)
     }
     /**
@@ -40,10 +33,10 @@ class ColorViewModel(private val colorService: ColorService) {
      *      Заменить на стоковый цвет. Метод с Id, но newColor пустой
      *      Заменить на выбранный цвет. Метод с Id, но newColor заполнен
      */
-    fun deleteColor(color: Color): StateColor{
+    fun deleteColor(color: Color): StateDomain<Color>{
         return colorService.deleteColor(color)
     }
-    fun deleteColor(color: Color, newColor: Color?): StateColor{
+    fun deleteColor(color: Color, newColor: Color?): StateDomain<Color>{
         return colorService.deleteColor(color,newColor)
     }
     /**

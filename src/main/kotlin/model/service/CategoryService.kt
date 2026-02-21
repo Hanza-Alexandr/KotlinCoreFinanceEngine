@@ -1,32 +1,28 @@
 package org.example.model.service
 
-import org.example.NeedCategory
 import org.example.model.domain.Category
-import org.example.model.domain.Color
+import org.example.model.domain.StateDomain
+import org.example.model.domain.StateDomainList
 import org.example.model.repository.ICategoryRepository
-import org.example.viewmodels.CategoryListState
-import org.example.viewmodels.CategoryState
-import org.example.viewmodels.StateListColor
-import java.lang.NullPointerException
 
 class CategoryService(private val repo: ICategoryRepository, private val currentUserService: CurrentUserService) {
-    fun getBaseCategories(): CategoryListState{
+    fun getBaseCategories(): StateDomainList<Category>{
         val list = repo.getBaseCategories()
-        return if (list.isEmpty()) CategoryListState.Empty
+        return if (list.isEmpty()) StateDomainList.Empty
         else{
-            CategoryListState.Success(list)
+            StateDomainList.Success(list)
         }
     }
-    fun getCategoriesByParent(parentCategoryId: Int): CategoryListState{
+    fun getCategoriesByParent(parentCategoryId: Int): StateDomainList<Category>{
         val list = repo.getChildrenByParent(parentCategoryId.toLong())
-        return if (list.isEmpty()) CategoryListState.Empty
+        return if (list.isEmpty()) StateDomainList.Empty
         else{
-            CategoryListState.Success(list)
+            StateDomainList.Success(list)
         }
     }
-    fun getCategory(categoryId: Int): CategoryState{
-        val category = repo.getById(categoryId.toLong()) ?: return CategoryState.Error("❌ошибка получении категории")
-        return CategoryState.Success(category)
+    fun getCategory(categoryId: Int): StateDomain<Category>{
+        val category = repo.getById(categoryId.toLong()) ?: return StateDomain.Error("❌ошибка получении категории")
+        return StateDomain.Success(category)
     }
 
 

@@ -1,7 +1,8 @@
 package org.example.viewmodels
 
-import org.example.Currency
-import org.example.TypeStorage
+
+import org.example.model.domain.Currency
+import org.example.model.domain.TypeStorage
 import org.example.model.service.StorageService
 import org.example.views.storage.StorageListState
 import org.example.views.storage.StorageState

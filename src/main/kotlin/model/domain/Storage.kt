@@ -1,7 +1,5 @@
 package org.example.model.domain
 
-import org.example.Currency
-import org.example.TypeStorage
 
 data class Storage(
     val id: Long?,
@@ -25,7 +23,6 @@ data class Storage(
     fun changeCurrency(newCurrency: Currency): Storage {
         return copy(currency = newCurrency)
     }
-
     fun changeType(newType: TypeStorage): Storage =
         copy(typeStorage = newType)
 

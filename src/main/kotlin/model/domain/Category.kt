@@ -1,6 +1,5 @@
 package org.example.model.domain
 
-import org.example.NeedCategory
 
 data class Category(
     val id: Long?,

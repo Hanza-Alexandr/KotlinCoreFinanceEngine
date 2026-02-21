@@ -4,10 +4,7 @@ import java.math.BigDecimal
 import java.sql.Time
 import java.util.Date
 
-enum class TypeOperation{
-    DEBIT,
-    CREDIT
-}
+
 abstract class Operation {
     abstract val id: Long?
     abstract val amount: BigDecimal

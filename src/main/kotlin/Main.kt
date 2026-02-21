@@ -33,69 +33,7 @@ import java.io.File
 
 const val STANDARD_COLOR_HEX = "ABABAB"
 
-enum class AppThem{
-    DARK,
-    LIGHT,
-    SYSTEM;
-    companion object {
-        fun getObj(inp: String): InputState<NeedCategory> {
-            return try {
-                InputState.Success(NeedCategory.valueOf(inp))
 
-            } catch (e: IllegalArgumentException) {
-                InputState.Error("Нет такой Темы")
-            }
-        }
-    }
-}
-enum class TypeStorage {
-    GENERAL,
-    BANK_ACCOUNT,
-    CASH,
-    CARD;
-
-    companion object {
-        fun getObj(inp: String): InputState<NeedCategory> {
-            return try {
-                InputState.Success(NeedCategory.valueOf(inp))
-
-            } catch (e: IllegalArgumentException) {
-                InputState.Error("Нет такого типа")
-            }
-
-        }
-    }
-}
-enum class Currency{
-    RUB,
-    USD;
-    companion object {
-        fun getObj(inp: String): InputState<NeedCategory> {
-            return try {
-                InputState.Success(NeedCategory.valueOf(inp))
-
-            } catch (e: IllegalArgumentException) {
-                InputState.Error("Нет такой Валюты")
-            }
-
-        }
-    }
-}
-enum class NeedCategory{
-    MUST_HAVE,
-    OPTIONAL;
-    companion object {
-        fun getObj(inp: String): InputState<NeedCategory> {
-            return try {
-                InputState.Success(NeedCategory.valueOf(inp))
-
-            } catch (e: IllegalArgumentException) {
-                InputState.Error("Нет такой необходисости")
-            }
-
-        }
-    }
-}
 
 sealed class InputState<out T> {
     data class Error(val message: String) : InputState<Nothing>()
@@ -111,7 +49,7 @@ fun main() {
     val currentUserSer = CurrentUserService(currentUserRepository)
 
     val opRep = OperationRepositorySQLDelight(databaseProvider.operationQueries, databaseProvider.transferQueries)
-    val stRep = StorageRepositorySQLDelight(databaseProvider.storageQueries, currentUserSer)
+    val stRep = StorageRepositorySQLDelight(databaseProvider.storageQueries)
     val catRep = CategoryRepositorySQLDelight(databaseProvider.categoryQueries)
     val colRep = ColorRepositorySQLDelight(databaseProvider.colorQueries)
 

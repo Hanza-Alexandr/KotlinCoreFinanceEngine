@@ -4,9 +4,9 @@ import com.example.CategoryEntity
 import com.example.CategoryQueries
 import com.example.SelectById
 import org.example.InputState
-import org.example.NeedCategory
 import org.example.model.domain.Category
 import org.example.model.domain.Color
+import org.example.model.domain.NeedCategory
 import org.example.model.repository.ICategoryRepository
 
 class CategoryRepositorySQLDelight(private val queries: CategoryQueries): ICategoryRepository {

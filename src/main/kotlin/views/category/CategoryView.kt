@@ -2,13 +2,12 @@ package org.example.views.category
 
 import org.example.InputState
 import org.example.NavigationIntent
-import org.example.NeedCategory
 import org.example.model.domain.Category
 import org.example.model.domain.Color
-import org.example.viewmodels.CategoryListState
-import org.example.viewmodels.CategoryState
+import org.example.model.domain.NeedCategory
+import org.example.model.domain.StateDomain
+import org.example.model.domain.StateDomainList
 import org.example.viewmodels.CategoryViewModel
-import org.example.viewmodels.StateColor
 import org.example.views.color.ColorView
 
 
@@ -68,12 +67,12 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
         while (true) {
             val currentCategory: Category
             when(val stateCurrentCategory = categoryViewModel.getCategory(currentCategoryId)) {
-                is CategoryState.Error -> {
+                is StateDomain.Error -> {
                     println(stateCurrentCategory.message)
                     return NavigationIntent.Back
                 }
-                is CategoryState.Success -> {
-                    currentCategory = stateCurrentCategory.category
+                is StateDomain.Success -> {
+                    currentCategory = stateCurrentCategory.domain
                 }
             }
             val categoriesState = categoryViewModel.getCategoriesByParent(currentCategoryId)
@@ -143,12 +142,12 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
             val iconPath = readln()
             val color =
                 when(val colorState =colorView.startColorSelectionMenu()){
-                    is StateColor.Error ->{
+                    is StateDomain.Error ->{
                         println(colorState.message)
                         continue
                     }
-                    is StateColor.Success -> {
-                        colorState.color
+                    is StateDomain.Success -> {
+                        colorState.domain
                     }
                 }
             val need: NeedCategory
@@ -160,11 +159,11 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
             }
             val createState = categoryViewModel.createCategory(name= name, parentCategoryId= currentCategoryId,iconPath= iconPath, color= color)
             when(createState){
-                is CategoryState.Error -> {
+                is StateDomain.Error -> {
                     println(createState.message)
                     continue
                 }
-                is CategoryState.Success -> {
+                is StateDomain.Success -> {
                     println("✅Успешно")
                     return NavigationIntent.Back
                 }
@@ -175,12 +174,12 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
         while (true){
             val currentCategory: Category
             when(val stateCurrentCategory = categoryViewModel.getCategory(currentCategoryId)) {
-                is CategoryState.Error -> {
+                is StateDomain.Error -> {
                     println(stateCurrentCategory.message)
                     return NavigationIntent.Back
                 }
-                is CategoryState.Success -> {
-                    currentCategory = stateCurrentCategory.category
+                is StateDomain.Success -> {
+                    currentCategory = stateCurrentCategory.domain
                 }
             }
             println("====================================")
@@ -239,9 +238,9 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
                         print("Новый цвет:")
                         val state =colorView.startColorSelectionMenu(currentCategory.color)
                         when(state){
-                            is StateColor.Error -> {println(state.message); continue}
-                            is StateColor.Success -> {
-                                newColor = state.color
+                            is StateDomain.Error -> {println(state.message); continue}
+                            is StateDomain.Success -> {
+                                newColor = state.domain
                             }
                         }
                     }
@@ -369,12 +368,12 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
             while (true) {
                 val currentCategory: Category
                 when(val stateCurrentCategory = categoryViewModel.getCategory(parentCategory)) {
-                    is CategoryState.Error -> {
+                    is StateDomain.Error -> {
                         println(stateCurrentCategory.message)
                         return null
                     }
-                    is CategoryState.Success -> {
-                        currentCategory = stateCurrentCategory.category
+                    is StateDomain.Success -> {
+                        currentCategory = stateCurrentCategory.domain
                     }
                 }
                 val categoriesState = categoryViewModel.getCategoriesByParent(parentCategory)
@@ -406,11 +405,11 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
                     -1 -> {
                         val catState = categoryViewModel.getCategory(parentCategory)
                         when(catState){
-                            is CategoryState.Error -> {
+                            is StateDomain.Error -> {
                                 println(catState.message)
                                 return null
                             }
-                            is CategoryState.Success -> {return catState.category}
+                            is StateDomain.Success -> {return catState.domain}
                         }
 
                     }
@@ -441,13 +440,13 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
         }
     }
 
-    private fun displayCategory(state: CategoryListState, excludeCategory: Category?=null) {
+    private fun displayCategory(state: StateDomainList<Category>, excludeCategory: Category?=null) {
         when(state){
-            is CategoryListState.Empty -> {
+            is StateDomainList.Empty -> {
                 println("⚠️ПРЕДУПРЕЖДЕНИЕ: Нет ни одной категории")
             }
-            is CategoryListState.Success -> {
-                val list = state.categories.toMutableList()
+            is StateDomainList.Success -> {
+                val list = state.domainList.toMutableList()
                 if (excludeCategory!=null){
                     list.remove(excludeCategory)
                 }
@@ -455,7 +454,6 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
                 println("<номер категории>. Выбор категории")
             }
         }
-
     }
     private fun displayCategory(list: List<Category>) {
         list.forEach { println("|id - ${it.id}| name - ${it.name}| ${it.color.hexCode} ${if(it.isSystem)"🖥️" else "🙎‍♂️"}") }

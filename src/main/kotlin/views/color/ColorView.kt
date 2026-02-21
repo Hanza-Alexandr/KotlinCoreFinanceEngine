@@ -2,9 +2,9 @@ package org.example.views.color
 
 import org.example.model.domain.Color
 import org.example.viewmodels.ColorViewModel
-import org.example.viewmodels.StateColor
-import org.example.viewmodels.StateListColor
 import org.example.NavigationIntent
+import org.example.model.domain.StateDomain
+import org.example.model.domain.StateDomainList
 
 class ColorView(private val colorViewModel: ColorViewModel) {
     fun start(){
@@ -24,11 +24,11 @@ class ColorView(private val colorViewModel: ColorViewModel) {
             println("====================================")
             val stateListColor = colorViewModel.getColors()
             when(stateListColor){
-                is StateListColor.Empty -> {
+                is StateDomainList.Empty -> {
                     println("⚠️ПРЕДУПРЕЖДЕНИЕ: Нет ни одного цвета")
                 }
-                is StateListColor.Success ->{
-                    val colorList = stateListColor.colors
+                is StateDomainList.Success ->{
+                    val colorList = stateListColor.domainList
                     displayColor(colorList)
                     println("<номер цвета>. Выбор цвета")
 
@@ -86,13 +86,13 @@ class ColorView(private val colorViewModel: ColorViewModel) {
             println("====================================")
             println("       Меню цвета")
             println("====================================")
-            when(val stateCurrentColor: StateColor = colorViewModel.getColor(colorId)){
-                is StateColor.Error -> {
+            when(val stateCurrentColor: StateDomain<Color> = colorViewModel.getColor(colorId)){
+                is StateDomain.Error -> {
                     println(stateCurrentColor.message)
                     return NavigationIntent.BackHome
                 }
-                is StateColor.Success -> {
-                    val currentColor = stateCurrentColor.color
+                is StateDomain.Success -> {
+                    val currentColor = stateCurrentColor.domain
                     if(currentColor.isSystem){
                         println("⚠️ПРЕДУПРЕЖДЕНИЕ: Системные цвета нельзя редактировать")
                         return NavigationIntent.BackHome
@@ -166,13 +166,13 @@ class ColorView(private val colorViewModel: ColorViewModel) {
             val inp = readln()
             if (inp.toIntOrNull()==null){
                 when(val stateEditing = colorViewModel.updateColor(oldColor = currentColor, newHexCode= inp)){
-                    is StateColor.Error -> {
+                    is StateDomain.Error -> {
                         println(stateEditing.message)
                         return NavigationIntent.BackHome
                     }
-                    is StateColor.Success -> {
+                    is StateDomain.Success -> {
                         println("✅Успешно")
-                        println("Измененный цвет |${stateEditing.color.id}| ${stateEditing.color.hexCode}")
+                        println("Измененный цвет |${stateEditing.domain.id}| ${stateEditing.domain.hexCode}")
                         return NavigationIntent.BackHome
                     }
                 }
@@ -213,8 +213,8 @@ class ColorView(private val colorViewModel: ColorViewModel) {
                         1 -> {
                             val stateDelete = colorViewModel.deleteColor(color, null)
                             when(stateDelete){
-                                is StateColor.Error -> println(stateDelete.message)
-                                is StateColor.Success -> {
+                                is StateDomain.Error -> println(stateDelete.message)
+                                is StateDomain.Success -> {
                                     println("✅Успешно")
                                     return NavigationIntent.BackHome
                                 }
@@ -224,22 +224,22 @@ class ColorView(private val colorViewModel: ColorViewModel) {
                             val newColor: Color
                             val stateNewColor = startColorSelectionMenu(color)
                             when(stateNewColor){
-                                is StateColor.Error -> {
+                                is StateDomain.Error -> {
                                     println(stateNewColor.message)
                                     continue
                                 }
-                                is StateColor.Success -> {
-                                    newColor = stateNewColor.color
+                                is StateDomain.Success -> {
+                                    newColor = stateNewColor.domain
                                 }
                             }
 
                             val stateDelete = colorViewModel.deleteColor(color, newColor)
                             when(stateDelete){
-                                is StateColor.Error -> {
+                                is StateDomain.Error -> {
                                     println(stateDelete.message)
                                     return NavigationIntent.BackHome
                                 }
-                                is StateColor.Success -> {
+                                is StateDomain.Success -> {
                                     println("✅Успешно")
                                     return NavigationIntent.BackHome
                                 }
@@ -257,11 +257,11 @@ class ColorView(private val colorViewModel: ColorViewModel) {
             else{
                 val stateDelete = colorViewModel.deleteColor(color)
                 when(stateDelete){
-                    is StateColor.Error -> {
+                    is StateDomain.Error -> {
                         println(stateDelete.message)
                         return NavigationIntent.BackHome
                     }
-                    is StateColor.Success -> {
+                    is StateDomain.Success -> {
                         println("✅Успешно")
                         return NavigationIntent.Back
                     }
@@ -285,13 +285,13 @@ class ColorView(private val colorViewModel: ColorViewModel) {
 
                 val stateCreation = colorViewModel.createColor(hexCode = inp)
                 when(stateCreation){
-                    is StateColor.Error -> {
+                    is StateDomain.Error -> {
                         println(stateCreation.message)
                         return NavigationIntent.BackHome
                     }
-                    is StateColor.Success -> {
+                    is StateDomain.Success -> {
                         println("✅Успешно")
-                        println("Новый цвет: |${stateCreation.color.id}|${stateCreation.color.hexCode}|")
+                        println("Новый цвет: |${stateCreation.domain.id}|${stateCreation.domain.hexCode}|")
                         continue
                     }
                 }
@@ -309,18 +309,18 @@ class ColorView(private val colorViewModel: ColorViewModel) {
             }
         }
     }
-    fun startColorSelectionMenu(excludeColor: Color? =null): StateColor {
+    fun startColorSelectionMenu(excludeColor: Color? =null): StateDomain<Color> {
         while (true){
             println("====================================")
             println("       Меню выбора цвета")
             println("====================================")
             val stateListColor = colorViewModel.getColors()
             when(stateListColor){
-                is StateListColor.Empty -> {
+                is StateDomainList.Empty -> {
                     println("⚠️ПРЕДУПРЕЖДЕНИЕ: Нет ни одного цвета")
                 }
-                is StateListColor.Success -> {
-                    val list = stateListColor.colors.toMutableList()
+                is StateDomainList.Success -> {
+                    val list = stateListColor.domainList.toMutableList()
                     if (excludeColor!=null) {
                         list.remove(excludeColor)
                     }
@@ -343,7 +343,7 @@ class ColorView(private val colorViewModel: ColorViewModel) {
                         continue
                     }
                     -1 -> {
-                        return StateColor.Error(message = "выход из меню")
+                        return StateDomain.Error(message = "выход из меню")
                     }
                     else -> {
                         return colorViewModel.getColor(actionOrId)
@@ -355,5 +355,4 @@ class ColorView(private val colorViewModel: ColorViewModel) {
     private fun displayColor(list: List<Color>){
         list.forEach { println("${it.id}|${if (it.isSystem)"🖥️" else "🙎‍♂️"} |${it.hexCode}") }
     }
-
 }
