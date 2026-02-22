@@ -10,10 +10,6 @@ import org.example.model.domain.StateDomainList
 import org.example.viewmodels.CategoryViewModel
 import org.example.views.color.ColorView
 
-
-// ----------------------------
-// CategoryView
-// ----------------------------
 class CategoryView(private val categoryViewModel: CategoryViewModel, private val colorView: ColorView) {
 
     fun startMainMenu() {

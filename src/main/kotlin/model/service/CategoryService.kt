@@ -24,6 +24,4 @@ class CategoryService(private val repo: ICategoryRepository, private val current
         val category = repo.getById(categoryId.toLong()) ?: return StateDomain.Error("❌ошибка получении категории")
         return StateDomain.Success(category)
     }
-
-
 }

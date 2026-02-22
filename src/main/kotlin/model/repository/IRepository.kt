@@ -30,7 +30,6 @@ interface IColorRepository{
     fun hasRelation(colorId: Long): Boolean
     fun replaceColorEverywhere(oldColorId: Long, newColorId: Long)
 }
-
 interface ICategoryRepository{
     fun getBaseCategories(): List<Category>
     fun getChildrenByParent(parentCategoryId: Long?): List<Category>
@@ -38,7 +37,6 @@ interface ICategoryRepository{
     fun save(category: Category): Category?
     fun delete(id: Long): Category?
 }
-
 interface ISettingRepository{
     fun save(setting: Setting)
     fun load(): Setting

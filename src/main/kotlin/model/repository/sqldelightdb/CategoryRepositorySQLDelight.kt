@@ -31,9 +31,6 @@ class CategoryRepositorySQLDelight(private val queries: CategoryQueries): ICateg
                 )
             )
         }
-
-
-
     }
 
     override fun getChildrenByParent(parentCategoryId: Long?): List<Category> {
@@ -88,8 +85,8 @@ class CategoryRepositorySQLDelight(private val queries: CategoryQueries): ICateg
             isSystem = user_id==null
         )
 
-    private fun SelectById.toDomain(): Category =
-        Category(
+    private fun SelectById.toDomain(): Category{
+        return Category(
             id = category_id,
             userId = category_user_id,
             name = category_name,
@@ -106,5 +103,5 @@ class CategoryRepositorySQLDelight(private val queries: CategoryQueries): ICateg
             isHide = category_is_hide==1L,
             isSystem = category_user_id==null
         )
-
+    }
 }

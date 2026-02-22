@@ -11,7 +11,6 @@ class CategoryViewModel(private val service: CategoryService) {
     fun getBaseCategories(): StateDomainList<Category>{
         return service.getBaseCategories()
     }
-
     fun getCategoriesByParent(parentId: Int): StateDomainList<Category>{
         return service.getCategoriesByParent(parentId)
     }
@@ -21,5 +20,4 @@ class CategoryViewModel(private val service: CategoryService) {
     fun createCategory(name: String, parentCategoryId: Int?, iconPath: String, color: Color ): StateDomain<Category>{
         TODO()
     }
-
 }
