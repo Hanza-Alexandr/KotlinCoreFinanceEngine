@@ -14,16 +14,16 @@ class ColorViewModel(private val colorService: ColorService) {
     /**
      * CRUD
      **/
-    fun createColor(hexCode: String): StateDomain<Color>{
+    fun createColor(hexCode: String): StateDomain<Color.UserColor>{
         return colorService.createColor(hexCode)
     }
-    fun getColors(): StateDomainList<Color>{
+    fun getColors(): StateDomainList<Color.PersistedColor>{
         return colorService.getColors()
     }
-    fun getColor(colorId: Int): StateDomain<Color>{
+    fun getColor(colorId: Int): StateDomain<Color.PersistedColor>{
         return colorService.getColor(colorId)
     }
-    fun updateColor(oldColor: Color, newHexCode: String): StateDomain<Color>{
+    fun updateColor(oldColor: Color.UserColor, newHexCode: String): StateDomain<Color.UserColor>{
         return colorService.updateColor(oldColor,newHexCode)
     }
     /**
@@ -33,16 +33,16 @@ class ColorViewModel(private val colorService: ColorService) {
      *      Заменить на стоковый цвет. Метод с Id, но newColor пустой
      *      Заменить на выбранный цвет. Метод с Id, но newColor заполнен
      */
-    fun deleteColor(color: Color): StateDomain<Color>{
+    fun deleteColor(color: Color.UserColor): StateDomain<Color.UserColor>{
         return colorService.deleteColor(color)
     }
-    fun deleteColor(color: Color, newColor: Color?): StateDomain<Color>{
+    fun deleteColor(color: Color.UserColor, newColor: Color.PersistedColor): StateDomain<Color.UserColor>{
         return colorService.deleteColor(color,newColor)
     }
     /**
      * Other
      */
-    fun hasRelations(color: Color): Boolean{
+    fun hasRelations(color: Color.PersistedColor): Boolean{
         return colorService.hasRelations(color)
     }
 

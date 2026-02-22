@@ -146,15 +146,9 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
                         colorState.domain
                     }
                 }
-            val need: NeedCategory
-            try {
-                need = NeedCategory.valueOf(readln())
-            } catch (e: IllegalArgumentException) {
-                println("Неверное название необходимости")
-                continue
-            }
-            val createState = categoryViewModel.createCategory(name= name, parentCategoryId= currentCategoryId,iconPath= iconPath, color= color)
-            when(createState){
+            println("Необходимость")
+            val need = NeedCategory.selectNeed() ?: continue //Если вернулся null это зачит что в меню выбора необходимости было выбрано действие "назад"
+            when(val createState = categoryViewModel.createCategory(name= name, parentCategoryId= currentCategoryId,iconPath= iconPath, color= color, need= need)){
                 is StateDomain.Error -> {
                     println(createState.message)
                     continue

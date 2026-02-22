@@ -2,6 +2,7 @@ package org.example.model.repository.sqldelightdb
 
 import com.example.CategoryEntity
 import com.example.CategoryQueries
+import com.example.ColorEntity
 import com.example.SelectById
 import org.example.InputState
 import org.example.model.domain.Category
@@ -23,12 +24,11 @@ class CategoryRepositorySQLDelight(private val queries: CategoryQueries): ICateg
                 need = it.category_need,
                 is_hide = it.category_isHide
             ).toDomain(
-                Color(
+                ColorEntity(
                     it.color_id,
                     it.color_user_id,
                     it.color_hex_code?:throw NullPointerException(),
-                    it.color_user_id ==null
-                )
+                ).toDomain()
             )
         }
     }
@@ -45,12 +45,11 @@ class CategoryRepositorySQLDelight(private val queries: CategoryQueries): ICateg
                 need = it.category_need,
                 is_hide = it.category_isHide
             ).toDomain(
-                Color(
+                ColorEntity(
                     it.color_id,
                     it.color_user_id,
-                    it.color_hex_code?:throw NullPointerException(),
-                    it.color_user_id ==null
-                )
+                    it.color_hex_code?:throw NullPointerException()
+                    ).toDomain()
             )
         }
     }
@@ -65,14 +64,29 @@ class CategoryRepositorySQLDelight(private val queries: CategoryQueries): ICateg
     }
 
     override fun save(category: Category): Category? {
-        TODO("Not yet implemented")
+        if (category.id == null){
+            val newId = queries.insertNewCategory(
+                id = null,
+                path_icon = category.pathIcon,
+                user_id = category.userId,
+                color_id = category.color.id,
+                name = category.name,
+                parent_category_id = category.parentCategoryId,
+                need = category.need.toString(),
+                is_hide = if (category.isHide)1L else 0
+            ).executeAsOne().id
+            return getById(newId)
+        }
+        else{
+            TODO("Реализация обновления существуюшие")
+        }
     }
 
     override fun delete(id: Long): Category? {
         TODO("Not yet implemented")
     }
 
-    private fun CategoryEntity.toDomain(color: Color): Category =
+    private fun CategoryEntity.toDomain(color: Color.PersistedColor): Category =
         Category(
             id = id,
             userId = user_id,
@@ -90,13 +104,11 @@ class CategoryRepositorySQLDelight(private val queries: CategoryQueries): ICateg
             id = category_id,
             userId = category_user_id,
             name = category_name,
-            color =
-                Color(
-                    id = color_id,
-                    userId = color_user_id,
-                    hexCode = color_hex_code?:throw NullPointerException(),
-                    isSystem = color_user_id ==null
-                ),
+            color = ColorEntity(
+                id = color_id!!,
+                user_id = color_user_id,
+                hex_code = color_hex_code!!
+            ).toDomain(),
             pathIcon = category_path_icon,
             parentCategoryId = parent_category_id,
             need = NeedCategory.valueOf(category_need),

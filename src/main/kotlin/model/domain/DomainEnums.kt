@@ -14,6 +14,7 @@ enum class TypeOperation{
                 InputState.Error("Нет такой Темы")
             }
         }
+
     }
 }
 
@@ -77,6 +78,31 @@ enum class NeedCategory{
                 InputState.Error("Нет такой необходисости")
             }
 
+        }
+        fun selectNeed(): NeedCategory?{
+            while (true){
+                println("====================================")
+                println("      Меню выбора необходимости")
+                println("====================================")
+                println("1. Необходимо")
+                println("2. Опционально")
+                println("====================================")
+                println("-1. Назад")
+                val inp = readln().toIntOrNull() ?: run { println("❌ОШИБКА: нужно число"); continue }
+
+                when (inp){
+                    1 -> {
+                        return NeedCategory.MUST_HAVE
+                    }
+                    2 -> {
+                        return NeedCategory.OPTIONAL
+                    }
+                    -1 -> {
+                        return null
+                    }
+                }
+
+            }
         }
     }
 }

@@ -89,5 +89,6 @@ INSERT INTO CategoryEntity (
     ?,      -- parent_category_id (NULL или существующий id)
     ?,      -- need
     ?       -- is_hide (0/1)
-);
+)
+RETURNING *;
 

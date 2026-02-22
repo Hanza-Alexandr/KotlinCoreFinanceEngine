@@ -86,17 +86,20 @@ class ColorView(private val colorViewModel: ColorViewModel) {
             println("====================================")
             println("       Меню цвета")
             println("====================================")
-            when(val stateCurrentColor: StateDomain<Color> = colorViewModel.getColor(colorId)){
+            when(val stateCurrentColor = colorViewModel.getColor(colorId)){
                 is StateDomain.Error -> {
                     println(stateCurrentColor.message)
                     return NavigationIntent.BackHome
                 }
                 is StateDomain.Success -> {
-                    val currentColor = stateCurrentColor.domain
-                    if(currentColor.isSystem){
-                        println("⚠️ПРЕДУПРЕЖДЕНИЕ: Системные цвета нельзя редактировать")
-                        return NavigationIntent.BackHome
+                    val currentColor = when(stateCurrentColor.domain){
+                        is Color.UserColor -> {stateCurrentColor.domain}
+                        is Color.SystemColor -> {
+                            println("⚠️ПРЕДУПРЕЖДЕНИЕ: Системные цвета нельзя редактировать")
+                            return NavigationIntent.BackHome
+                        }
                     }
+
                     println("ЦВЕТ: ${currentColor.hexCode}")
                     println("1. Редактировать")
                     println("2. УДАЛИТЬ")
@@ -110,8 +113,7 @@ class ColorView(private val colorViewModel: ColorViewModel) {
                         continue
                     }
                     else {
-                        val numberActionOrId = inp.toInt()
-                        when (numberActionOrId) {
+                        when (val numberActionOrId = inp.toInt()) {
                             1 -> {
                                 val navIntent = startColorEditingMenu(currentColor)
                                 return when(navIntent){
@@ -152,7 +154,7 @@ class ColorView(private val colorViewModel: ColorViewModel) {
             }
         }
     }
-    private fun startColorEditingMenu(currentColor: Color): NavigationIntent {
+    private fun startColorEditingMenu(currentColor: Color.UserColor): NavigationIntent {
         while (true){
             println("====================================")
             println("       Меню редактирования цвета")
@@ -190,14 +192,13 @@ class ColorView(private val colorViewModel: ColorViewModel) {
             }
         }
     }
-    private fun startDeleteMenu(color: Color): NavigationIntent {
+    private fun startDeleteMenu(color: Color.UserColor): NavigationIntent {
         while(true){
             val hasRelatedItems: Boolean = colorViewModel.hasRelations(color)
             if (hasRelatedItems){
                 println("Этот цвет используется в записях!!!")
                 println("====================================")
-                println("1. Заменить в записях на стандартный")
-                println("2. Заменить на другой")
+                println("1. Заменить на другой")
                 println("====================================")
                 println("-1. Назад")
                 println("-2. Вернуться на главную")
@@ -211,17 +212,7 @@ class ColorView(private val colorViewModel: ColorViewModel) {
                 else{
                     when(inp.toInt()){
                         1 -> {
-                            val stateDelete = colorViewModel.deleteColor(color, null)
-                            when(stateDelete){
-                                is StateDomain.Error -> println(stateDelete.message)
-                                is StateDomain.Success -> {
-                                    println("✅Успешно")
-                                    return NavigationIntent.BackHome
-                                }
-                            }
-                        }
-                        2 -> {
-                            val newColor: Color
+                            val newColor: Color.PersistedColor
                             val stateNewColor = startColorSelectionMenu(color)
                             when(stateNewColor){
                                 is StateDomain.Error -> {
@@ -309,7 +300,7 @@ class ColorView(private val colorViewModel: ColorViewModel) {
             }
         }
     }
-    fun startColorSelectionMenu(excludeColor: Color? =null): StateDomain<Color> {
+    fun startColorSelectionMenu(excludeColor: Color.PersistedColor? =null): StateDomain<Color.PersistedColor> {
         while (true){
             println("====================================")
             println("       Меню выбора цвета")
@@ -352,7 +343,16 @@ class ColorView(private val colorViewModel: ColorViewModel) {
             }
         }
     }
-    private fun displayColor(list: List<Color>){
-        list.forEach { println("${it.id}|${if (it.isSystem)"🖥️" else "🙎‍♂️"} |${it.hexCode}") }
+    private fun displayColor(list: List<Color.PersistedColor>){
+        list.forEach {
+            when(it){
+                is Color.UserColor -> {
+                    println("${it.id}|${"🙎‍♂️"} |${it.hexCode}")
+                }
+                is Color.SystemColor -> {
+                    println("${it.id}|${"🖥️"} |${it.hexCode}")
+                }
+            }
+        }
     }
 }

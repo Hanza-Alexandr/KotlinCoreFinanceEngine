@@ -29,7 +29,8 @@ selectAll:
 SELECT * FROM ColorEntity;
 
 deleteColor:
-DELETE FROM ColorEntity WHERE id = ?;
+DELETE FROM ColorEntity WHERE id = ?
+RETURNING *;
 
 
 countStoragesByColor:

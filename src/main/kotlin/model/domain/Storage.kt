@@ -8,7 +8,7 @@ data class Storage(
     val currency: Currency,
     val typeStorage: TypeStorage,
     val note: String?,
-    val color: Color,
+    val color: Color.PersistedColor,
     val isStatistics: Boolean = true,
     val isArchive: Boolean = false
 ){
@@ -29,7 +29,7 @@ data class Storage(
     fun changeNote(newNote: String?): Storage =
         copy(note = newNote)
 
-    fun changeColor(newColor: Color): Storage =
+    fun changeColor(newColor: Color.PersistedColor): Storage =
         copy(color = newColor)
 
     fun enableStatistics(): Storage =

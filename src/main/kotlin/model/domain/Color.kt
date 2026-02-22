@@ -1,31 +1,19 @@
 package org.example.model.domain
+sealed class Color{
+    sealed class PersistedColor(open val id: Long, open val hexCode: String): Color()
 
-data class Color (
-    val id: Long?,
-    val userId: Long?,
-    val hexCode: String,
-    val isSystem: Boolean
-){
-    fun changeUser(newUserId: Long?): Color =
-        copy(userId = newUserId)
+    data class SystemColor(
+        override val id: Long,
+        override val hexCode: String,
+    ): PersistedColor(id,hexCode)
+    data class UserColor(
+        override val id: Long,
+        val userId: Long,
+       override val hexCode: String
+    ): PersistedColor(id, hexCode)
 
-    fun changeHex(newHex: String): Color {
-        require(newHex.matches(Regex("^#?[0-9A-Fa-f]{6}$")))
-        return copy(hexCode = newHex)
-    }
+    data class NewColor(
+        val userId: Long,
+        val hexCode: String
+    ): Color()
 }
-
-/*
-Можно потом как нить сделать так. Т.е проверка на выполнения треований к атрибутам сущности конкретно тут при создании. Это вроде как раз ответственность самого класса
-data class Color private constructor(
-    val id: Long?,
-    val userId: Long?,
-    val hexCode: String,
-    val isSystem: Boolean
-){
-    companion object{
-        fun create(id: Long?,userId: Long?, hexCode: String, isSystem: Boolean): InputState<Color>{
-            ....
-        }
-    }
- */
