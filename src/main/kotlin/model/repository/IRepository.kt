@@ -2,6 +2,7 @@ package org.example.model.repository
 
 import org.example.model.domain.Category
 import org.example.model.domain.Color
+import org.example.model.domain.NewCategory
 import org.example.model.domain.Operation
 import org.example.model.domain.Setting
 import org.example.model.domain.Storage
@@ -21,21 +22,22 @@ interface IOperationRepository{
     fun delete(id: Long)
 }
 interface IColorRepository{
-    fun getByHex(hex: String): Color.PersistedColor?
-    fun getById(id: Long): Color.PersistedColor
-    fun getAll(): List<Color.PersistedColor>
+    fun getByHex(hex: String): Color.ExistingColor?
+    fun getById(id: Long): Color.ExistingColor
+    fun getAll(): List<Color.ExistingColor>
     fun save(color: Color.UserColor): Color.UserColor
     fun save(color: Color.NewColor): Color.UserColor
     fun delete(color: Color.UserColor): Color.UserColor
 
     fun hasRelation(colorId: Long): Boolean
-    fun replaceColorEverywhere(color: Color.UserColor, newColor: Color.PersistedColor)
+    fun replaceColorEverywhere(color: Color.UserColor, newColor: Color.ExistingColor)
 }
 interface ICategoryRepository{
     fun getBaseCategories(): List<Category>
     fun getChildrenByParent(parentCategoryId: Long?): List<Category>
     fun getById(id: Long): Category?
     fun save(category: Category): Category?
+    fun save(category: NewCategory): Category?
     fun delete(id: Long): Category?
 }
 interface ISettingRepository{

@@ -212,7 +212,7 @@ class ColorView(private val colorViewModel: ColorViewModel) {
                 else{
                     when(inp.toInt()){
                         1 -> {
-                            val newColor: Color.PersistedColor
+                            val newColor: Color.ExistingColor
                             val stateNewColor = startColorSelectionMenu(color)
                             when(stateNewColor){
                                 is StateDomain.Error -> {
@@ -300,7 +300,7 @@ class ColorView(private val colorViewModel: ColorViewModel) {
             }
         }
     }
-    fun startColorSelectionMenu(excludeColor: Color.PersistedColor? =null): StateDomain<Color.PersistedColor> {
+    fun startColorSelectionMenu(excludeColor: Color.ExistingColor? =null): StateDomain<Color.ExistingColor> {
         while (true){
             println("====================================")
             println("       Меню выбора цвета")
@@ -343,7 +343,7 @@ class ColorView(private val colorViewModel: ColorViewModel) {
             }
         }
     }
-    private fun displayColor(list: List<Color.PersistedColor>){
+    private fun displayColor(list: List<Color.ExistingColor>){
         list.forEach {
             when(it){
                 is Color.UserColor -> {

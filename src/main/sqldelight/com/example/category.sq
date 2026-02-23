@@ -51,7 +51,7 @@ FROM CategoryEntity cat
 LEFT JOIN  ColorEntity col ON cat.color_id = col.id
 WHERE cat.parent_category_id =: parentCategoryId;
 
-selectById:
+categorySelectById:
 SELECT
     cat.id AS category_id,
     cat.path_icon AS category_path_icon,

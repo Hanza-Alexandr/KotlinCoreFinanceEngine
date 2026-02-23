@@ -3,6 +3,7 @@ package org.example.views.category
 import org.example.InputState
 import org.example.NavigationIntent
 import org.example.model.domain.Category
+import org.example.model.domain.CategoryOwner
 import org.example.model.domain.Color
 import org.example.model.domain.NeedCategory
 import org.example.model.domain.StateDomain
@@ -177,7 +178,7 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
             println("     ${currentCategory.name}")
             println("====================================")
             val inp = readln()
-            if (currentCategory.isSystem){
+            if (currentCategory.owner is CategoryOwner.System){
                 println("1. Скрыть")
                 println("====================================")
                 println("-1. Назад")
@@ -210,7 +211,7 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
                 var newColor: Color? = null
                 var newNeed: NeedCategory? = null
                 var newParent: Category? = null
-                var isHide: Boolean = currentCategory.isHide
+                var isHide: Boolean = currentCategory.isHidden
 
                 val inp = readln().toIntOrNull() ?: run { println("❌ОШИБКА: нужно число"); continue }
                 when(inp){
@@ -440,13 +441,13 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
                 if (excludeCategory!=null){
                     list.remove(excludeCategory)
                 }
-               list.forEach { println("|id - ${it.id}| name - ${it.name}| ${it.color.hexCode} ${if(it.isSystem)"🖥️" else "🙎‍♂️"}") }
+               list.forEach { println("|id - ${it.id}| name - ${it.name}| ${it.color.hexCode} ${if(it.owner is CategoryOwner.User)"🖥️" else "🙎‍♂️"}") }
                 println("<номер категории>. Выбор категории")
             }
         }
     }
     private fun displayCategory(list: List<Category>) {
-        list.forEach { println("|id - ${it.id}| name - ${it.name}| ${it.color.hexCode} ${if(it.isSystem)"🖥️" else "🙎‍♂️"}") }
+        list.forEach { println("|id - ${it.id}| name - ${it.name}| ${it.color.hexCode} ${if(it.owner is CategoryOwner.System)"🖥️" else "🙎‍♂️"}") }
     }
 
 

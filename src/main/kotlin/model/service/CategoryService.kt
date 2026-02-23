@@ -1,8 +1,11 @@
 package org.example.model.service
 
 import org.example.model.domain.Category
+import org.example.model.domain.CategoryOwner
+import org.example.model.domain.CategoryHierarchy
 import org.example.model.domain.Color
 import org.example.model.domain.NeedCategory
+import org.example.model.domain.NewCategory
 import org.example.model.domain.StateDomain
 import org.example.model.domain.StateDomainList
 import org.example.model.repository.ICategoryRepository
@@ -27,17 +30,16 @@ class CategoryService(private val repo: ICategoryRepository, private val current
         return StateDomain.Success(category)
     }
 
-    fun createCategory(name: String, parentCategoryId: Int?,  color: Color.PersistedColor, iconPath: String, need: NeedCategory): StateDomain<Category>{
-        val category = repo.save(Category(
-            id = null,
-            userId = currentUserService.userId,
+    fun createCategory(name: String, parentCategoryId: Int?, color: Color.ExistingColor, iconPath: String, need: NeedCategory): StateDomain<Category>{
+        val structure =  if (parentCategoryId==null) CategoryHierarchy.Root else CategoryHierarchy.Child(parentCategoryId.toLong())
+        val category = repo.save(NewCategory(
             name = name,
             color = color,
-            pathIcon = iconPath,
-            parentCategoryId = parentCategoryId?.toLong(),
+            owner = CategoryOwner.User(currentUserService.userId),
+            icon = iconPath,
+            structure = structure,
             need = need,
-            isHide = false,
-            isSystem = false
+            isHidden = false,
         )) ?: return StateDomain.Error("❌Ошибка при создание категории ")
         return StateDomain.Success(category)
     }

@@ -3,13 +3,12 @@ package org.example.model.repository.sqldelightdb
 import com.example.ColorEntity
 import com.example.ColorQueries
 import org.example.model.domain.Color
-import org.example.model.domain.User
 import org.example.model.repository.IColorRepository
 
 class ColorRepositorySQLDelight(private val queries: ColorQueries): IColorRepository {
-    override fun getByHex(hex: String): Color.PersistedColor? = queries.selectByHex(hex).executeAsOneOrNull()?.toDomain()
-    override fun getById(id: Long): Color.PersistedColor = queries.selectById(id).executeAsOne().toDomain()
-    override fun getAll(): List<Color.PersistedColor> = queries.selectAll().executeAsList().map { it.toDomain() }
+    override fun getByHex(hex: String): Color.ExistingColor? = queries.selectByHex(hex).executeAsOneOrNull()?.toDomain()
+    override fun getById(id: Long): Color.ExistingColor = queries.selectById(id).executeAsOne().toDomain()
+    override fun getAll(): List<Color.ExistingColor> = queries.selectAll().executeAsList().map { it.toDomain() }
 
 
     override fun save(color: Color.UserColor): Color.UserColor {
@@ -52,13 +51,13 @@ class ColorRepositorySQLDelight(private val queries: ColorQueries): IColorReposi
         else return false
     }
 
-    override fun replaceColorEverywhere(color: Color.UserColor, newColor: Color.PersistedColor) {
+    override fun replaceColorEverywhere(color: Color.UserColor, newColor: Color.ExistingColor) {
         queries.updateStorageColor(newColor.id, color.id)
         queries.updateCategoryColor(newColor.id, color.id)
     }
 
 }
-fun ColorEntity.toDomain(): Color.PersistedColor{
+fun ColorEntity.toDomain(): Color.ExistingColor{
     return if (user_id==null){
         Color.SystemColor(
             id = id,

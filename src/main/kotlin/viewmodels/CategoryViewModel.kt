@@ -18,7 +18,7 @@ class CategoryViewModel(private val service: CategoryService) {
     fun getCategory(categoryId: Int): StateDomain<Category>{
         return service.getCategory(categoryId)
     }
-    fun createCategory(name: String, parentCategoryId: Int?, color: Color.PersistedColor, iconPath: String,  need: NeedCategory): StateDomain<Category>{
+    fun createCategory(name: String, parentCategoryId: Int?, color: Color.ExistingColor, iconPath: String, need: NeedCategory): StateDomain<Category>{
         return service.createCategory(name,parentCategoryId,color,iconPath,need)
     }
 }

@@ -31,10 +31,6 @@ import org.example.views.category.CategoryView
 import org.example.views.storage.StorageView
 import java.io.File
 
-const val STANDARD_COLOR_HEX = "ABABAB"
-
-
-
 sealed class InputState<out T> {
     data class Error(val message: String) : InputState<Nothing>()
     data class Success<T>(val obj: T) : InputState<T>()

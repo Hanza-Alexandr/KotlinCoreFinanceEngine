@@ -1,11 +1,9 @@
 package org.example.model.service
 
-import org.example.STANDARD_COLOR_HEX
 import org.example.model.domain.Color
 import org.example.model.domain.StateDomain
 import org.example.model.domain.StateDomainList
 import org.example.model.repository.IColorRepository
-import java.lang.NullPointerException
 
 class ColorService(private val repo: IColorRepository, private val userService: CurrentUserService) {
     fun createColor(hexCode: String): StateDomain<Color.UserColor> {
@@ -24,13 +22,13 @@ class ColorService(private val repo: IColorRepository, private val userService: 
             return StateDomain.Error("Ошибка создания нового цвета ${e.message}")
         }
     }
-    fun getColors(): StateDomainList<Color.PersistedColor> {
+    fun getColors(): StateDomainList<Color.ExistingColor> {
         val listColor = repo.getAll()
         return if (listColor.isEmpty()) StateDomainList.Empty
 
         else StateDomainList.Success(listColor)
     }
-    fun getColor(colorId: Int): StateDomain<Color.PersistedColor>{
+    fun getColor(colorId: Int): StateDomain<Color.ExistingColor>{
         try {
             val color = repo.getById(colorId.toLong())
             return StateDomain.Success(color)
@@ -75,7 +73,7 @@ class ColorService(private val repo: IColorRepository, private val userService: 
     /**
      * Сложное удаление с сохранением данных. newColor это замена во всех записях цвета который будет удален
      */
-    fun deleteColor(color: Color.UserColor, newColor: Color.PersistedColor): StateDomain<Color.UserColor>{
+    fun deleteColor(color: Color.UserColor, newColor: Color.ExistingColor): StateDomain<Color.UserColor>{
         try {
             repo.replaceColorEverywhere(color,newColor)
             val delete = repo.delete(color)
@@ -86,7 +84,7 @@ class ColorService(private val repo: IColorRepository, private val userService: 
         }
 
     }
-    fun hasRelations(color: Color.PersistedColor): Boolean{
+    fun hasRelations(color: Color.ExistingColor): Boolean{
         return repo.hasRelation(color.id)
     }
 }
