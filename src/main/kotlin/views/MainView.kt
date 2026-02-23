@@ -1,10 +1,8 @@
-package org.example.views.main
+package org.example.views
 
 import org.example.viewmodels.AccountViewModel
-import org.example.views.color.ColorView
 import org.example.views.authentication.AuthenticationView
-import org.example.views.category.CategoryView
-import org.example.views.storage.StorageView
+import org.example.views.StorageView
 
 class MainView(
     private val storageView: StorageView,
@@ -49,4 +47,3 @@ class MainView(
         }
     }
 }
-

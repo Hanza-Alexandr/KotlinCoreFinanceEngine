@@ -1,10 +1,10 @@
-package org.example.views.color
+package org.example.views
 
-import org.example.model.domain.Color
-import org.example.viewmodels.ColorViewModel
 import org.example.NavigationIntent
+import org.example.model.domain.Color
 import org.example.model.domain.StateDomain
 import org.example.model.domain.StateDomainList
+import org.example.viewmodels.ColorViewModel
 
 class ColorView(private val colorViewModel: ColorViewModel) {
     fun start(){

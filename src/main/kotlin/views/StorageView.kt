@@ -1,7 +1,6 @@
-package org.example.views.storage
+package org.example.views
 
 import org.example.viewmodels.StorageViewModel
-import org.example.views.OperationView
 
 class StorageView(private val storageViewModel: StorageViewModel, private val operationView: OperationView,){
 

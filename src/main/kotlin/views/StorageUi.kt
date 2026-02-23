@@ -1,4 +1,4 @@
-package org.example.views.storage
+package org.example.views
 
 data class StorageUi(
     val name: String,
@@ -6,4 +6,3 @@ data class StorageUi(
     val type: String,
     val note: String?
 )
-

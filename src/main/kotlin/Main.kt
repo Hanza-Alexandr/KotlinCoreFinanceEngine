@@ -20,15 +20,15 @@ import org.example.viewmodels.CategoryViewModel
 import org.example.viewmodels.ColorViewModel
 import org.example.viewmodels.OperationViewModel
 import org.example.viewmodels.StorageViewModel
-import org.example.views.color.ColorView
+import org.example.views.ColorView
 import org.example.views.authentication.AccountRecoveryView
 import org.example.views.authentication.AuthenticationView
 import org.example.views.authentication.CreateAccountView
 import org.example.views.authentication.LogInView
-import org.example.views.main.MainView
+import org.example.views.MainView
 import org.example.views.OperationView
-import org.example.views.category.CategoryView
-import org.example.views.storage.StorageView
+import org.example.views.CategoryView
+import org.example.views.StorageView
 import java.io.File
 
 sealed class InputState<out T> {

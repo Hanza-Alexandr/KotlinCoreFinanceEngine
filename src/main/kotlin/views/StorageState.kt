@@ -1,4 +1,6 @@
-package org.example.views.storage
+package org.example.views
+
+import org.example.views.StorageUi
 
 sealed class StorageListState {
     object Empty : StorageListState()

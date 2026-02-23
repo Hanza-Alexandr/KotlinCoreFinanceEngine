@@ -1,14 +1,11 @@
 package org.example.viewmodels
 
-
 import org.example.model.domain.Currency
 import org.example.model.domain.TypeStorage
 import org.example.model.service.StorageService
-import org.example.views.storage.StorageListState
-import org.example.views.storage.StorageState
-import org.example.views.storage.StorageUi
-
-
+import org.example.views.StorageListState
+import org.example.views.StorageState
+import org.example.views.StorageUi
 
 class StorageViewModel(private val service: StorageService){
 

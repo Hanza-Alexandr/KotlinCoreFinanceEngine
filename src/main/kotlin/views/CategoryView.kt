@@ -1,4 +1,4 @@
-package org.example.views.category
+package org.example.views
 
 import org.example.InputState
 import org.example.NavigationIntent
@@ -9,7 +9,7 @@ import org.example.model.domain.NeedCategory
 import org.example.model.domain.StateDomain
 import org.example.model.domain.StateDomainList
 import org.example.viewmodels.CategoryViewModel
-import org.example.views.color.ColorView
+import org.example.views.ColorView
 
 class CategoryView(private val categoryViewModel: CategoryViewModel, private val colorView: ColorView) {
 
@@ -148,7 +148,7 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
                     }
                 }
             println("Необходимость")
-            val need = NeedCategory.selectNeed() ?: continue //Если вернулся null это зачит что в меню выбора необходимости было выбрано действие "назад"
+            val need = NeedCategory.Companion.selectNeed() ?: continue //Если вернулся null это зачит что в меню выбора необходимости было выбрано действие "назад"
             when(val createState = categoryViewModel.createCategory(name= name, parentCategoryId= currentCategoryId,iconPath= iconPath, color= color, need= need)){
                 is StateDomain.Error -> {
                     println(createState.message)
@@ -161,7 +161,7 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
             }
         }
     }
-    private fun startCategoryEditingMenu(currentCategoryId: Int): NavigationIntent{
+    private fun startCategoryEditingMenu(currentCategoryId: Int): NavigationIntent {
         while (true){
             val currentCategory: Category
             when(val stateCurrentCategory = categoryViewModel.getCategory(currentCategoryId)) {
@@ -237,7 +237,7 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
                     }
                     4 ->{
                         print("Новая необходимость:")
-                        val inpState = NeedCategory.getObj(readln())
+                        val inpState = NeedCategory.Companion.getObj(readln())
                         when(inpState){
                             is InputState.Error -> {println(inpState.message); continue}
                             is InputState.Success<NeedCategory> -> {
@@ -285,7 +285,7 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
             }
         }
     }
-    private fun startCategoryDeletingMenu(currentCategoryId: Int): NavigationIntent{
+    private fun startCategoryDeletingMenu(currentCategoryId: Int): NavigationIntent {
         while (true){
             val hasRelatedItems: Boolean = false//TODO(сделать получение из сервиса)
             val hasChildren: Boolean = false //TODO(сдеаоть получение из сервиса)
@@ -318,7 +318,7 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
         }
     }
 
-    fun startCategorySelectionMenu(excludeCategory: Category?=null): Category{
+    fun startCategorySelectionMenu(excludeCategory: Category?=null): Category {
         while(true){
             while (true) {
                 val categoriesState = categoryViewModel.getBaseCategories()
