@@ -39,7 +39,7 @@ class MainView(
 
     private fun useActions(num: Int){
         when (num) {
-            1 -> storageView.start()
+            1 -> TODO()
             2 -> categoryView.startMainMenu()
             3 -> colorView.start()
             -1 -> accountViewModel.logOut()

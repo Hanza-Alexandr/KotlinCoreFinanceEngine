@@ -9,17 +9,16 @@ import org.example.model.domain.Storage
 import org.example.model.domain.User
 
 interface IStorageRepository{
+    //TODO()
+    /*
     fun getById(id: Long): Storage
     fun getAll(): List<Storage>
     fun save(storage: Storage)
     fun delete(id: Long)
+     */
 }
 interface IOperationRepository{
-    fun getAllByStorage(storageId: Long): List<Operation>
-    fun getById(id: Long): Operation
-    fun getAll(): List<Operation>
-    fun save(operation: Operation)
-    fun delete(id: Long)
+    //TODO()
 }
 interface IColorRepository{
     fun getByHex(hex: String): Color.ExistingColor?
