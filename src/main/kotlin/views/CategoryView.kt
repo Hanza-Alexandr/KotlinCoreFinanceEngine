@@ -3,9 +3,11 @@ package org.example.views
 import org.example.InputState
 import org.example.NavigationIntent
 import org.example.model.domain.Category
+import org.example.model.domain.CategoryHierarchy
 import org.example.model.domain.CategoryOwner
 import org.example.model.domain.Color
 import org.example.model.domain.NeedCategory
+import org.example.model.domain.NewCategory
 import org.example.model.domain.StateDomain
 import org.example.model.domain.StateDomainList
 import org.example.viewmodels.CategoryViewModel
@@ -162,128 +164,130 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
         }
     }
     private fun startCategoryEditingMenu(currentCategoryId: Int): NavigationIntent {
+        var newName: String? = null
+        var newIcon: String? = null
+        var newColor: Color? = null
+        var newNeed: NeedCategory? = null
+        var isHide: Boolean? = null
+        val newParent: CategoryHierarchy? = null
+
         while (true){
-            val currentCategory: Category
-            when(val stateCurrentCategory = categoryViewModel.getCategory(currentCategoryId)) {
+            /** Получение текущей категории из бд + обработчик ошибок */
+            val currentCategory: Category = when(val stateCurrentCategory = categoryViewModel.getCategory(currentCategoryId)) {
                 is StateDomain.Error -> {
                     println(stateCurrentCategory.message)
                     return NavigationIntent.Back
                 }
                 is StateDomain.Success -> {
-                    currentCategory = stateCurrentCategory.domain
+                     stateCurrentCategory.domain
                 }
             }
+            /**  Показ шапки меню */
             println("====================================")
-            println("   Меню редактирвоания категории")
-            println("     ${currentCategory.name}")
+            println("   Меню редактирования категории")
+            println("     |${currentCategory.name}|${currentCategory.icon}|${currentCategory.color}|${currentCategory.need}|${currentCategory.structure.run { println("Как то крч надо получать название родительской категории если она есть")}}|${currentCategory.isHidden}")
             println("====================================")
-            val inp = readln()
-            if (currentCategory.owner is CategoryOwner.System){
-                println("1. Скрыть")
-                println("====================================")
-                println("-1. Назад")
-                val inp = readln().toIntOrNull() ?: run { println("❌ОШИБКА: нужно число"); continue }
-                when(inp){
-                    1 ->{
-                        TODO("Сделать скрытие категории")
-                    }
-                    -1 -> {
-                       return NavigationIntent.Back
-                    }
-                    else -> {
-                        println("❌ОШИБКА: нет такого действия")
-                        continue
-                    }
-                }
-            }
-            else{
-                println("1. Изменить название")
-                println("2. Изменить иконку")
-                println("3. Изменить цвет")
-                println("4. Изменить необходимость")
-                println("5. Изменить родительскую категорию")
-                println("6. Скрыть|Показать")
-                println("====================================")
-                println("-1. Сохранить")
-                println("-2. Назад")
-                var newName: String? = null
-                var newIcon: String? = null
-                var newColor: Color? = null
-                var newNeed: NeedCategory? = null
-                var newParent: Category? = null
-                var isHide: Boolean = currentCategory.isHidden
-
-                val inp = readln().toIntOrNull() ?: run { println("❌ОШИБКА: нужно число"); continue }
-                when(inp){
-                    1 ->{
-                        print("Новое название:")
-                        newName = readln()
-                        continue
-                    }
-                    2 ->{
-                        print("Новая иконка:")
-                        newIcon = readln()
-                        continue
-                    }
-                    3 ->{
-                        print("Новый цвет:")
-                        val state =colorView.startColorSelectionMenu(currentCategory.color)
-                        when(state){
-                            is StateDomain.Error -> {println(state.message); continue}
-                            is StateDomain.Success -> {
-                                newColor = state.domain
-                            }
+            /** Развитие событий в зависимости от принадлежности категории(системная или пользовательская) */
+            when(currentCategory.owner){
+                is CategoryOwner.System -> {
+                    println("1. Скрыть")
+                    println("====================================")
+                    println("-1. Назад")
+                    val inp = readln().toIntOrNull() ?: run { println("❌ОШИБКА: нужно число"); continue }
+                    when(inp){
+                        1 ->{
+                            TODO("Сделать скрытие категории")
                         }
-                    }
-                    4 ->{
-                        print("Новая необходимость:")
-                        val inpState = NeedCategory.Companion.getObj(readln())
-                        when(inpState){
-                            is InputState.Error -> {println(inpState.message); continue}
-                            is InputState.Success<NeedCategory> -> {
-                                newNeed = inpState.obj
-                            }
-                        }
-
-                    }
-                    5 ->{
-                        print("Новая родительская категория")
-                        TODO("Продумать как не дать изменить родительскую категорию на свою же дочернюю")
-                    }
-                    6 ->{
-                        if (isHide){
-                            print("Показать?")
-                        }
-                        else{
-                            print("Скрыть?")
-                        }
-                        isHide = readln().toBoolean()
-                    }
-                    -1 -> {
-                        if (newName==null || newIcon ==null || newColor ==null || newNeed == null || newParent ==null){
+                        -1 -> {
                             return NavigationIntent.Back
                         }
-                        else(
+                        else -> {
+                            println("❌ОШИБКА: нет такого действия")
+                            continue
+                        }
+                    }
+                }
+                is CategoryOwner.User -> {
+                    println("1. Изменить название")
+                    println("2. Изменить иконку")
+                    println("3. Изменить цвет")
+                    println("4. Изменить необходимость")
+                    println("5. Изменить родительскую категорию")
+                    println("6. Скрыть|Показать")
+                    println("====================================")
+                    println("-1. Сохранить")
+                    println("-2. Назад")
 
+                    val inp = readln().toIntOrNull() ?: run { println("❌ОШИБКА: нужно число"); continue }
+                    when(inp){
+                        1 ->{
+                            print("Новое название:")
+                            newName = readln()
+                            continue
+                        }
+                        2 ->{
+                            print("Новая иконка:")
+                            newIcon = readln()
+                            continue
+                        }
+                        3 ->{
+                            print("Новый цвет:")
+                            when(val state =colorView.startColorSelectionMenu(currentCategory.color)){
+                                is StateDomain.Error -> println(state.message)
+                                is StateDomain.Success -> newColor = state.domain
+                            }
+                            continue
+                        }
+                        4 ->{
+                            print("Новая необходимость:")
+                            val inpState = NeedCategory.getObj(readln())
+                            when(inpState){
+                                is InputState.Error -> println(inpState.message)
+                                is InputState.Success<NeedCategory> -> newNeed = inpState.obj
+                            }
+                            continue
+                        }
+                        5 ->{
+                            print("Новая родительская категория")
+                            TODO("Для реализации еще нужно меню выбора категории. Продумать как не дать изменить родительскую категорию на свою же дочернюю")
+                        }
+                        6 ->{
+                            // is hide = true - значит скрыт
+                            if (currentCategory.isHidden){
+                                print("Показать?")
+                                isHide = !readln().toBoolean()
+                            }
+                            else{
+                                print("Скрыть?")
+                                isHide = readln().toBoolean()
+                            }
+                            continue
+                        }
+
+                        -1 ->{
+                            if (newName==null || newIcon ==null || newColor ==null || newNeed == null|| newParent == null || isHide == null){
+                                return NavigationIntent.Back
+                            }
+                            else(
                                 TODO("тупо передавать newName newIcon и тд дальше в viewModel она в service и там уже разибратся что обновлять. " +
                                         "И возврашть состояние обновления." +
                                         "Так же потом тут сделать меню сохранения <Были изменены .. перечисление...сохранить? > ")
 
                                 )
-                    }
-                    -2->{
-                        TODO("тупо передавать newName newIcon и тд дальше в viewModel она в service и там уже разибратся что обновлять. " +
-                                "И возврашть состояние обновления.")
-                    }
-
-                    else -> {
-                        println("❌ОШИБКА: нет такого действия")
-                        continue
+                        }
+                        -2->{
+                            TODO("тупо передавать newName newIcon и тд дальше в viewModel она в service и там уже разибратся что обновлять. " +
+                                    "И возврашть состояние обновления.")
+                        }
+                        else -> {
+                            println("❌ОШИБКА: нет такого действия")
+                            continue
+                        }
                     }
                 }
-
             }
         }
+
     }
     private fun startCategoryDeletingMenu(currentCategoryId: Int): NavigationIntent {
         while (true){
