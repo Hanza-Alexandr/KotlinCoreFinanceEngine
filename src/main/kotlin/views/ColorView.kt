@@ -9,83 +9,71 @@ import org.example.viewmodels.ColorViewModel
 class ColorView(private val colorViewModel: ColorViewModel) {
     fun start(){
         while (true){
-            val state = startMainMenu()
-            when(state){
+            when(startMainMenu()){
                 NavigationIntent.Back -> continue
                 NavigationIntent.BackHome -> continue
                 NavigationIntent.Exit -> return
             }
         }
     }
+
+    private fun displayColorWithWarring(stateListColor: StateDomainList<Color.ExistingColor>){
+        when(stateListColor){
+            is StateDomainList.Empty -> {
+                println("⚠️ПРЕДУПРЕЖДЕНИЕ: Нет ни одного цвета")
+            }
+            is StateDomainList.Success ->{
+                val colorList = stateListColor.domainList
+                displayColor(colorList)
+                println("<номер цвета>. Выбор цвета")
+
+            }
+        }
+    }
+
     private fun startMainMenu(): NavigationIntent {
         while (true){
             println("====================================")
-            println("       Меню цветов")
+            println("            Color menu")
+            println("------------------------------------")
+            displayColorWithWarring(colorViewModel.getColors())
+            println("0. Create color")
+            println("------------------------------------")
+            println("-1. Exit")
             println("====================================")
-            val stateListColor = colorViewModel.getColors()
-            when(stateListColor){
-                is StateDomainList.Empty -> {
-                    println("⚠️ПРЕДУПРЕЖДЕНИЕ: Нет ни одного цвета")
+            val inp = readln().toIntOrNull() ?: run { println("❌Error: need number"); continue }
+            when(inp){
+                0 -> {
+                    when(startColorCreationMenu()){
+                        NavigationIntent.Back -> continue
+                        NavigationIntent.Exit -> return NavigationIntent.Exit
+                        NavigationIntent.BackHome -> continue
+                    }
                 }
-                is StateDomainList.Success ->{
-                    val colorList = stateListColor.domainList
-                    displayColor(colorList)
-                    println("<номер цвета>. Выбор цвета")
-
+                -1 -> {
+                    return NavigationIntent.Exit
                 }
-            }
-            println("0. Создать цвет")
-            println("====================================")
-            println("-1. Выйти")
-            val inp = readln()
-            if (inp.toIntOrNull()==null) {
-                println("Нужен номер!!!")
-                continue
-            }
-            else
-            {
-                val numberActionOrId = inp.toInt()
-
-                when(numberActionOrId){
-                    0 -> {
-                        val navIntent = startColorCreationMenu()
-                        when(navIntent){
+                else -> {
+                    try {
+                        when(startColorMenu(inp)){
                             NavigationIntent.Back -> continue
                             NavigationIntent.Exit -> return NavigationIntent.Exit
                             NavigationIntent.BackHome -> continue
                         }
                     }
-                    -1 -> {
-                        return NavigationIntent.Exit
-                    }
-                    else -> {
-                        try {
-                           val navIntent = startColorMenu(numberActionOrId)
-
-                            when(navIntent){
-                                NavigationIntent.Back -> continue
-                                NavigationIntent.Exit -> return NavigationIntent.Exit
-                                NavigationIntent.BackHome -> continue
-                            }
-                        }
-                        catch (e: IllegalArgumentException){
-                            println("❌ОШИБКА: Некорректный номер действия")
-                            continue
-                        }
-
+                    catch (e: IllegalArgumentException){
+                        println("❌Error: Некорректный номер действия")
+                        continue
                     }
                 }
-
-
             }
         }
-
     }
     private fun startColorMenu(colorId: Int): NavigationIntent {
         while (true){
             println("====================================")
-            println("       Меню цвета")
-            println("====================================")
+            println("       Color menu")
+            println("------------------------------------")
             when(val stateCurrentColor = colorViewModel.getColor(colorId)){
                 is StateDomain.Error -> {
                     println(stateCurrentColor.message)
@@ -95,58 +83,47 @@ class ColorView(private val colorViewModel: ColorViewModel) {
                     val currentColor = when(stateCurrentColor.domain){
                         is Color.UserColor -> {stateCurrentColor.domain}
                         is Color.SystemColor -> {
-                            println("⚠️ПРЕДУПРЕЖДЕНИЕ: Системные цвета нельзя редактировать")
+                            println("⚠️Warring: Системные цвета нельзя редактировать")
                             return NavigationIntent.BackHome
                         }
                     }
 
-                    println("ЦВЕТ: ${currentColor.hexCode}")
-                    println("1. Редактировать")
-                    println("2. УДАЛИТЬ")
+                    println("Color: ${currentColor.hexCode}")
+                    println("1. Edit")
+                    println("2. Delete")
+                    println("------------------------------------")
+                    println("-1. Back")
+                    println("-2. Get out ")
                     println("====================================")
-                    println("-1. Назад")
-                    println("-2. Выйти из меню цветов")
 
-                    val inp = readln()
-                    if (inp.toIntOrNull()==null) {
-                        println("⚠️ПРЕДУПРЕЖДЕНИЕ: Нужен номер!!!")
-                        continue
-                    }
-                    else {
-                        when (val numberActionOrId = inp.toInt()) {
-                            1 -> {
-                                val navIntent = startColorEditingMenu(currentColor)
-                                return when(navIntent){
-                                    NavigationIntent.Back -> continue
-                                    NavigationIntent.Exit -> NavigationIntent.Exit
-                                    NavigationIntent.BackHome -> NavigationIntent.BackHome
-                                }
+                    val inp = readln().toIntOrNull() ?: run { println("❌ОШИБКА: нужно число"); continue }
+                    when (inp) {
+                        1 -> {
+                            return when(startColorEditingMenu(currentColor)){
+                                NavigationIntent.Back -> continue
+                                NavigationIntent.Exit -> NavigationIntent.Exit
+                                NavigationIntent.BackHome -> NavigationIntent.BackHome
                             }
-
-                            2 -> {
-                                val navIntent = startDeleteMenu(currentColor)
-                                return when(navIntent){
-                                    NavigationIntent.Back -> continue
-                                    NavigationIntent.Exit -> NavigationIntent.Exit
-                                    NavigationIntent.BackHome -> NavigationIntent.BackHome
-                                }
+                        }
+                        2 -> {
+                            return when(startDeleteMenu(currentColor)){
+                                NavigationIntent.Back -> continue
+                                NavigationIntent.Exit -> NavigationIntent.Exit
+                                NavigationIntent.BackHome -> NavigationIntent.BackHome
                             }
-
-                            -1 -> {
-                                return NavigationIntent.Back
-                            }
-
-                            -2 -> {
-                                return NavigationIntent.Exit
-                            }
-
-                            else -> {
-                                try {
-                                    startColorMenu(numberActionOrId)
-                                } catch (e: IllegalArgumentException) {
-                                    println("❌ОШИБКА: Некорректный номер действия")
-                                    continue
-                                }
+                        }
+                        -1 -> {
+                            return NavigationIntent.Back
+                        }
+                        -2 -> {
+                            return NavigationIntent.Exit
+                        }
+                        else -> {
+                            try {
+                                startColorMenu(inp)
+                            } catch (e: IllegalArgumentException) {
+                                println("❌ОШИБКА: Некорректный номер действия")
+                                continue
                             }
                         }
                     }
@@ -158,13 +135,15 @@ class ColorView(private val colorViewModel: ColorViewModel) {
         while (true){
             println("====================================")
             println("       Меню редактирования цвета")
-            println("====================================")
+            println("------------------------------------")
             println("-1. Назад")
             println("-2. Вернуться на главную")
             println("-3. Выйти из меню цветов")
-            println("====================================")
+            println("------------------------------------")
             println("           Новый Hex_code")
             print("Hex_cod: #")
+            println("====================================")
+
             val inp = readln()
             if (inp.toIntOrNull()==null){
                 when(val stateEditing = colorViewModel.updateColor(oldColor = currentColor, newHexCode= inp)){
@@ -196,58 +175,55 @@ class ColorView(private val colorViewModel: ColorViewModel) {
         while(true){
             val hasRelatedItems: Boolean = colorViewModel.hasRelations(color)
             if (hasRelatedItems){
-                println("Этот цвет используется в записях!!!")
                 println("====================================")
-                println("1. Заменить на другой")
+                println("        Delete color menu")
+                println("  This color is used in entity!!!!")
+                println("------------------------------------")
+                println("1. Replace with another")
+                println("------------------------------------")
+                println("-1. Back")
+                println("-2. Back to home")
+                println("-3. Exit")
+                println("------------------------------------")
+                print("choose: ")
+                val inp = readln().toIntOrNull() ?: run { println("❌ОШИБКА: нужно число"); continue }
                 println("====================================")
-                println("-1. Назад")
-                println("-2. Вернуться на главную")
-                println("-3. Выйти из меню цветов")
-                println("====================================")
-                val inp = readln()
-                if (inp.toIntOrNull() == null) {
-                    println("❌ОШИБКА: Некорректный ввод")
-                    continue
-                }
-                else{
-                    when(inp.toInt()){
-                        1 -> {
-                            val newColor: Color.ExistingColor
-                            val stateNewColor = startColorSelectionMenu(color)
-                            when(stateNewColor){
-                                is StateDomain.Error -> {
-                                    println(stateNewColor.message)
-                                    continue
-                                }
-                                is StateDomain.Success -> {
-                                    newColor = stateNewColor.domain
-                                }
+                when(inp){
+                    1 -> {
+                        val newColor: Color.ExistingColor
+                        val stateNewColor = startColorSelectionMenu(color)
+                        when(stateNewColor){
+                            is StateDomain.Error -> {
+                                println(stateNewColor.message)
+                                continue
                             }
+                            is StateDomain.Success -> {
+                                newColor = stateNewColor.domain
+                            }
+                        }
 
-                            val stateDelete = colorViewModel.deleteColor(color, newColor)
-                            when(stateDelete){
-                                is StateDomain.Error -> {
-                                    println(stateDelete.message)
-                                    return NavigationIntent.BackHome
-                                }
-                                is StateDomain.Success -> {
-                                    println("✅Успешно")
-                                    return NavigationIntent.BackHome
-                                }
+                        val stateDelete = colorViewModel.deleteColor(color, newColor)
+                        when(stateDelete){
+                            is StateDomain.Error -> {
+                                println(stateDelete.message)
+                                return NavigationIntent.BackHome
+                            }
+                            is StateDomain.Success -> {
+                                println("✅Успешно")
+                                return NavigationIntent.BackHome
                             }
                         }
-                        -1 -> return NavigationIntent.Back
-                        -2 -> return NavigationIntent.BackHome
-                        -3 -> return NavigationIntent.Exit
-                        else -> {
-                            println("❌ОШИБКА: Некорректный номер действия")
-                        }
+                    }
+                    -1 -> return NavigationIntent.Back
+                    -2 -> return NavigationIntent.BackHome
+                    -3 -> return NavigationIntent.Exit
+                    else -> {
+                        println("❌ОШИБКА: Некорректный номер действия")
                     }
                 }
             }
             else{
-                val stateDelete = colorViewModel.deleteColor(color)
-                when(stateDelete){
+                when( val stateDelete = colorViewModel.deleteColor(color)){
                     is StateDomain.Error -> {
                         println(stateDelete.message)
                         return NavigationIntent.BackHome
@@ -263,15 +239,17 @@ class ColorView(private val colorViewModel: ColorViewModel) {
     private fun startColorCreationMenu(): NavigationIntent {
         while (true){
             println("====================================")
-            println("       Меню создания цвета")
-            println("====================================")
-            println("-1. Назад")
-            println("-2. Вернуться на главную")
-            println("-3. Выйти из меню цветов")
-            println("====================================")
-            println("           Новый цвет")
-            print("Действие или Hex_cod: #")
+            println("         Create color menu")
+            println("------------------------------------")
+            println("-1. Back")
+            println("-2. Back to home")
+            println("-3. Exit")
+            println("------------------------------------")
+            println("           New color")
+            print("Action or Hex_cod: #")
             val inp = readln()
+            println("====================================")
+
             if (inp.toIntOrNull()==null){  //Проверка если это не цифра значит хекс код
 
                 val stateCreation = colorViewModel.createColor(hexCode = inp)
@@ -304,41 +282,24 @@ class ColorView(private val colorViewModel: ColorViewModel) {
         while (true){
             println("====================================")
             println("       Меню выбора цвета")
-            println("====================================")
-            val stateListColor = colorViewModel.getColors()
-            when(stateListColor){
-                is StateDomainList.Empty -> {
-                    println("⚠️ПРЕДУПРЕЖДЕНИЕ: Нет ни одного цвета")
-                }
-                is StateDomainList.Success -> {
-                    val list = stateListColor.domainList.toMutableList()
-                    if (excludeColor!=null) {
-                        list.remove(excludeColor)
-                    }
-                    displayColor(list)
-
-                }
-            }
-            println("<номер цвета>. Выбрать")
+            println("------------------------------------")
+            displayColorWithWarring(colorViewModel.getColors())
             println("0. Создать новый")
             println("-1. Выйти")
+            val inp = readln().toIntOrNull() ?: run { println("❌ОШИБКА: нужно число"); continue }
+            println("====================================")
+            return when(inp){
+                0 -> {
+                    startColorCreationMenu()
+                    continue
+                }
 
-            val inp = readln()
-            if (inp.toIntOrNull()==null){
-                println("❌ОШИБКА: Некорректный ввод")
-                continue
-            }else{
-                when(val actionOrId = inp.toInt()){
-                    0 -> {
-                        startColorCreationMenu()
-                        continue
-                    }
-                    -1 -> {
-                        return StateDomain.Error(message = "выход из меню")
-                    }
-                    else -> {
-                        return colorViewModel.getColor(actionOrId)
-                    }
+                -1 -> {
+                    StateDomain.Error(message = "выход из меню")
+                }
+
+                else -> {
+                    colorViewModel.getColor(inp)
                 }
             }
         }

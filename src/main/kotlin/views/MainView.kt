@@ -14,14 +14,14 @@ class MainView(
     private fun showMainMenu() {
         println("====================================")
         println("            FINANCE APP")
-        println("====================================")
-        println("1. Счета")
-        println("2. Категории")
-        println("3. Цвета")
-
-        println("====================================")
+        println("------------------------------------")
+        println("1. Storage")
+        println("2. Categories")
+        println("3. Colors")
+        println("------------------------------------")
         println("-1. LogOut")
         print("Choose option: ")
+        println("====================================")
     }
 
     fun start(){

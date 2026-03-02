@@ -171,7 +171,7 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
         var newColor: Color.ExistingColor? = null
         var newNeed: NeedCategory? = null
         var newIsHide: Boolean? = null
-        val newParent: CategoryHierarchy? = null
+        var newParent: CategoryHierarchy? = null
 
         while (true){
             /** Получение текущей категории из бд + обработчик ошибок */
@@ -254,7 +254,16 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
                         }
                         5 ->{
                             print("Новая родительская категория")
-                            TODO("Для реализации еще нужно меню выбора категории. Продумать как не дать изменить родительскую категорию на свою же дочернюю")
+                            val newParentCategory = startParentCategorySelectionMenu(excludeCategoryId = if(currentCategory.structure is CategoryHierarchy.Child) currentCategory.structure.parentId.toInt() else null)
+                            newParent = when(newParentCategory){
+                                null -> {
+                                    CategoryHierarchy.Root
+                                }
+
+                                is Category ->{
+                                    CategoryHierarchy.Child(newParentCategory.id)
+                                }
+                            }
                         }
                         6 ->{
                             // is hide = true - значит скрыт
@@ -300,9 +309,6 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
                 }
             }
         }
-
-
-
     }
     private fun startCategoryDeletingMenu(currentCategoryId: Int): NavigationIntent {
         while (true){
@@ -336,7 +342,6 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
             }
         }
     }
-
     fun startCategorySelectionMenu(excludeCategory: Category?=null): Category {
         while(true){
             while (true) {
@@ -374,6 +379,58 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
 
         }
     }
+    fun startParentCategorySelectionMenu(excludeCategoryId: Int?=null): Category? {
+        while(true){
+            val stateExcludeCategory = if (excludeCategoryId!=null) categoryViewModel.getCategory(excludeCategoryId) else null
+            val excludeCategory = if(stateExcludeCategory==null) null else {
+                when(stateExcludeCategory){
+                    is StateDomain.Error ->{
+                        println(stateExcludeCategory.message)
+                        throw Exception()
+                    }
+                    is StateDomain.Success -> stateExcludeCategory.domain
+                }
+            }
+            while (true) {
+                val categoriesState = categoryViewModel.getBaseCategories()
+
+                println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+                println("         Меню категорий")
+                println("            Главная")
+                println("====================================")
+                displayCategory(categoriesState,excludeCategory)
+                println("-1. Сделать категорию базовой")
+                println("0. Создать категорию")
+                println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+                val inp = readln().toIntOrNull() ?: run { println("❌ОШИБКА: нужно число"); continue }
+                when(inp){
+                    0 ->{
+                        val navIntent = startCategoryCreationMenu(null)
+                        when(navIntent){
+                            is NavigationIntent.Back -> continue
+                            is NavigationIntent.BackHome -> continue
+                            is NavigationIntent.Exit -> continue
+                        }
+                    }
+                    -1 ->{
+                        return null
+                    }
+                    else -> {
+                        val category = startCategorySelectionMenu(inp.toInt())
+                        if (  category==null){
+                            continue
+                        }
+                        else{
+                            return category
+                        }
+                    }
+                }
+            }
+
+
+        }
+    }
+
     private fun startCategorySelectionMenu(parentCategory: Int,excludeCategory: Category?=null): Category?{
         while(true){
             while (true) {
