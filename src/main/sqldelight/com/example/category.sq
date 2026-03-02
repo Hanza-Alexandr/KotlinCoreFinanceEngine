@@ -13,6 +13,19 @@ CREATE TABLE CategoryEntity (
     is_hide INTEGER NOT NULL
 );
 
+updateCategory:
+UPDATE CategoryEntity
+SET
+    name = :name,
+    path_icon = :icon,
+    color_id = :colorId,
+    need = :need,
+    is_hide = :isHide,
+    parent_category_id = :parentId,
+    user_id = :userId
+WHERE id = :id;
+
+
 selectBaseCategories:
 SELECT
     cat.id AS category_id,

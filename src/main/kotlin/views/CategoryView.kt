@@ -29,7 +29,7 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
         while (true) {
             val categoriesState = categoryViewModel.getBaseCategories()
 
-            println("====================================")
+            println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
             println("         Меню категорий")
             println("            Главная")
             println("====================================")
@@ -37,6 +37,7 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
             println("0. Создать категорию")
             println("====================================")
             println("-1. Выйти")
+            println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 
             val inp = readln().toIntOrNull() ?: run { println("❌ОШИБКА: нужно число"); continue }
             when(inp){
@@ -75,7 +76,7 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
                 }
             }
             val categoriesState = categoryViewModel.getCategoriesByParent(currentCategoryId)
-            println("====================================")
+            println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
             println("         Меню категорий")
             println("            ${currentCategory.name}")
             println("====================================")
@@ -86,6 +87,7 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
             println("-2. Удалить")
             println("-3. Назад")
             println("-4. Выйти")
+            println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 
             val inp = readln().toIntOrNull() ?: run { println("❌ОШИБКА: нужно число"); continue }
             when(inp){
@@ -132,7 +134,7 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
     }
     private fun startCategoryCreationMenu(currentCategoryId: Int?): NavigationIntent {
         while (true) {
-            println("====================================")
+            println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
             println("      Меню создания категории")
             println("====================================")
             print("Название: ")
@@ -166,9 +168,9 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
     private fun startCategoryEditingMenu(currentCategoryId: Int): NavigationIntent {
         var newName: String? = null
         var newIcon: String? = null
-        var newColor: Color? = null
+        var newColor: Color.ExistingColor? = null
         var newNeed: NeedCategory? = null
-        var isHide: Boolean? = null
+        var newIsHide: Boolean? = null
         val newParent: CategoryHierarchy? = null
 
         while (true){
@@ -183,27 +185,29 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
                 }
             }
             /**  Показ шапки меню */
-            println("====================================")
+            println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
             println("   Меню редактирования категории")
-            println("     |${currentCategory.name}|${currentCategory.icon}|${currentCategory.color}|${currentCategory.need}|${currentCategory.structure.run { println("Как то крч надо получать название родительской категории если она есть")}}|${currentCategory.isHidden}")
+            println("     |${currentCategory.name}|${currentCategory.icon}|${currentCategory.color}|${currentCategory.need}|${if(currentCategory.structure is CategoryHierarchy.Child) categoryViewModel.getCategory(currentCategory.structure.parentId.toInt()) else null}|${currentCategory.isHidden}")
             println("====================================")
             /** Развитие событий в зависимости от принадлежности категории(системная или пользовательская) */
             when(currentCategory.owner){
                 is CategoryOwner.System -> {
-                    println("1. Скрыть")
-                    println("====================================")
-                    println("-1. Назад")
-                    val inp = readln().toIntOrNull() ?: run { println("❌ОШИБКА: нужно число"); continue }
-                    when(inp){
-                        1 ->{
-                            TODO("Сделать скрытие категории")
-                        }
-                        -1 -> {
+                    if (currentCategory.isHidden){
+                        print("Показать?")
+                        newIsHide = !readln().toBoolean()
+                    }
+                    else{
+                        print("Скрыть?")
+                        newIsHide = readln().toBoolean()
+                    }
+                    when(val state = categoryViewModel.changeCategorySystem(currentCategory, newIsHide)){
+                        is StateDomain.Error -> {
+                            println(state.message)
                             return NavigationIntent.Back
                         }
-                        else -> {
-                            println("❌ОШИБКА: нет такого действия")
-                            continue
+                        is StateDomain.Success -> {
+                            println("✅Успешно")
+                            return NavigationIntent.Back
                         }
                     }
                 }
@@ -217,6 +221,7 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
                     println("====================================")
                     println("-1. Сохранить")
                     println("-2. Назад")
+                    println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 
                     val inp = readln().toIntOrNull() ?: run { println("❌ОШИБКА: нужно число"); continue }
                     when(inp){
@@ -255,29 +260,37 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
                             // is hide = true - значит скрыт
                             if (currentCategory.isHidden){
                                 print("Показать?")
-                                isHide = !readln().toBoolean()
+                                newIsHide = !readln().toBoolean()
                             }
                             else{
                                 print("Скрыть?")
-                                isHide = readln().toBoolean()
+                                newIsHide = readln().toBoolean()
                             }
                             continue
                         }
 
                         -1 ->{
-                            if (newName==null || newIcon ==null || newColor ==null || newNeed == null|| newParent == null || isHide == null){
-                                return NavigationIntent.Back
+                            when(val state = categoryViewModel.changeCategory(
+                                newName = newName,
+                                newIcon = newIcon,
+                                newColor = newColor,
+                                newNeed = newNeed,
+                                newIsHide = newIsHide,
+                                newParent = newParent,
+                                currentCategory = currentCategory
+                            )){
+                                is StateDomain.Error -> {
+                                    println(state.message)
+                                    continue
+                                }
+                                is StateDomain.Success -> {
+                                    println("✅Успешно")
+                                    return NavigationIntent.Back
+                                }
                             }
-                            else(
-                                TODO("тупо передавать newName newIcon и тд дальше в viewModel она в service и там уже разибратся что обновлять. " +
-                                        "И возврашть состояние обновления." +
-                                        "Так же потом тут сделать меню сохранения <Были изменены .. перечисление...сохранить? > ")
-
-                                )
                         }
                         -2->{
-                            TODO("тупо передавать newName newIcon и тд дальше в viewModel она в service и там уже разибратся что обновлять. " +
-                                    "И возврашть состояние обновления.")
+                            return NavigationIntent.Back
                         }
                         else -> {
                             println("❌ОШИБКА: нет такого действия")
@@ -287,6 +300,8 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
                 }
             }
         }
+
+
 
     }
     private fun startCategoryDeletingMenu(currentCategoryId: Int): NavigationIntent {
@@ -327,12 +342,13 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
             while (true) {
                 val categoriesState = categoryViewModel.getBaseCategories()
 
-                println("====================================")
+                println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
                 println("         Меню категорий")
                 println("            Главная")
                 println("====================================")
                 displayCategory(categoriesState,excludeCategory)
                 println("0. Создать категорию")
+                println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
                 val inp = readln().toIntOrNull() ?: run { println("❌ОШИБКА: нужно число"); continue }
                 when(inp){
                     0 ->{
@@ -445,7 +461,7 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
                 if (excludeCategory!=null){
                     list.remove(excludeCategory)
                 }
-               list.forEach { println("|id - ${it.id}| name - ${it.name}| ${it.color.hexCode} ${if(it.owner is CategoryOwner.User)"🖥️" else "🙎‍♂️"}") }
+               list.forEach { println("|id - ${it.id}| name - ${it.name}| ${it.color.hexCode} ${if(it.owner is CategoryOwner.System)"🖥️" else "🙎‍♂️"}") }
                 println("<номер категории>. Выбор категории")
             }
         }

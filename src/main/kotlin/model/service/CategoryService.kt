@@ -43,4 +43,43 @@ class CategoryService(private val repo: ICategoryRepository, private val current
         )) ?: return StateDomain.Error("❌Ошибка при создание категории ")
         return StateDomain.Success(category)
     }
+
+    fun changeCategory(category: Category, newName: String?, newIcon: String?, newColor: Color.ExistingColor?, newNeed: NeedCategory?, newIsHide: Boolean?, newParent: CategoryHierarchy?): StateDomain<Category>{
+        when(val returned = repo.save(Category(
+            id = category.id,
+            name = newName?: category.name,
+            color = newColor?: category.color,
+            icon = newIcon?: category.icon,
+            need = newNeed?: category.need,
+            isHidden = newIsHide ?: category.isHidden,
+            owner = category.owner,
+            structure = newParent ?: category.structure
+        ))){
+            null -> {
+                return StateDomain.Error("❌Ошибка при изменении в БД")
+            }
+            is Category -> {
+                return StateDomain.Success(returned)
+            }
+        }
+    }
+    fun changeSystemCategory(category: Category, newIsHide: Boolean): StateDomain<Category>{
+       when(val returned =  repo.save(Category(
+            id = category.id,
+            name = category.name,
+            color = category.color,
+            icon = category.icon,
+            need = category.need,
+            isHidden = newIsHide,
+            owner = category.owner,
+            structure = category.structure
+        ))){
+           null -> {
+               return StateDomain.Error("❌Ошибка при изменении isHide у системной категории в БД")
+           }
+           is Category -> {
+               return StateDomain.Success(returned)
+           }
+       }
+    }
 }

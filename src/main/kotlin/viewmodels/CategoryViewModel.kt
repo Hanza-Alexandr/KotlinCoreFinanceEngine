@@ -1,6 +1,7 @@
 package org.example.viewmodels
 
 import org.example.model.domain.Category
+import org.example.model.domain.CategoryHierarchy
 import org.example.model.domain.Color
 import org.example.model.domain.NeedCategory
 import org.example.model.domain.StateDomain
@@ -20,5 +21,11 @@ class CategoryViewModel(private val service: CategoryService) {
     }
     fun createCategory(name: String, parentCategoryId: Int?, color: Color.ExistingColor, iconPath: String, need: NeedCategory): StateDomain<Category>{
         return service.createCategory(name,parentCategoryId,color,iconPath,need)
+    }
+    fun changeCategorySystem(currentCategory: Category, newIsHide: Boolean): StateDomain<Category>{
+        return service.changeSystemCategory(currentCategory, newIsHide)
+    }
+    fun changeCategory(currentCategory: Category,newName: String?, newIcon: String?, newColor: Color.ExistingColor?, newNeed: NeedCategory?, newIsHide: Boolean?, newParent: CategoryHierarchy? ): StateDomain<Category>{
+        return service.changeCategory(currentCategory, newName, newIcon, newColor, newNeed, newIsHide, newParent)
     }
 }

@@ -83,7 +83,29 @@ class CategoryRepositorySQLDelight(private val queries: CategoryQueries): ICateg
         return getById(newId)
     }
     override fun save(category: Category): Category? {
-        TODO("Not yet implemented")
+        try {
+            queries.updateCategory(
+                name = category.name,
+                icon = category.icon,
+                colorId = category.color.id,
+                need = category.need.toString(),
+                isHide = if(category.isHidden)1L else 0,
+                parentId = when(category.structure){
+                    is CategoryHierarchy.Child -> category.structure.parentId
+                    is CategoryHierarchy.Root -> null
+                },
+                userId = when(category.owner){
+                    is CategoryOwner.User -> category.owner.userId
+                    is CategoryOwner.System -> null
+                },
+                id = category.id
+            )
+
+            return queries.categorySelectById(category.id).executeAsOne().toDomain()
+        } catch (e: Exception){
+            return null
+        }
+
     }
 
     override fun delete(id: Long): Category? {
