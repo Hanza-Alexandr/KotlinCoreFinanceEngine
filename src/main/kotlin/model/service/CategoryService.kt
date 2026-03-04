@@ -43,7 +43,7 @@ class CategoryService(private val repo: ICategoryRepository, private val current
         )) ?: return StateDomain.Error("❌Ошибка при создание категории ")
         return StateDomain.Success(category)
     }
-
+    /** Метод возвращающий id всей ветки дочерних категорий по id родителя*/
     private fun getAllDescendants(
         rootId: Long,
         visited: MutableSet<Long> = mutableSetOf()
@@ -70,7 +70,10 @@ class CategoryService(private val repo: ICategoryRepository, private val current
             icon = newIcon?: category.icon,
             need = newNeed?: category.need,
             isHidden = newIsHide ?: category.isHidden,
-            owner = category.owner,
+            owner = when(category.owner){
+                is CategoryOwner.System -> {return StateDomain.Error("❌Ошибка. Нельзя менять системные категории")}
+                is CategoryOwner.User -> {category.owner}
+            },
             structure = when(newParent){
                 /** Проверка не совпадает ли новая родительская категория своей же дочерней категорией */
                 is CategoryHierarchy.Root -> {newParent}
