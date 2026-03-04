@@ -2,6 +2,7 @@ package org.example.views
 
 import org.example.InputState
 import org.example.NavigationIntent
+import org.example.ViewService
 import org.example.model.domain.Category
 import org.example.model.domain.CategoryHierarchy
 import org.example.model.domain.CategoryOwner
@@ -12,6 +13,7 @@ import org.example.model.domain.StateDomain
 import org.example.model.domain.StateDomainList
 import org.example.viewmodels.CategoryViewModel
 import org.example.views.ColorView
+import javax.swing.text.View
 
 class CategoryView(private val categoryViewModel: CategoryViewModel, private val colorView: ColorView) {
 
@@ -28,17 +30,11 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
     private fun startCategoryMenu(): NavigationIntent {
         while (true) {
             val categoriesState = categoryViewModel.getBaseCategories()
-
-            println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-            println("         Меню категорий")
-            println("            Главная")
-            println("====================================")
+            ViewService.printHeadersForMenu("Меню категорий", "Главная")
             displayCategory(categoriesState)
-            println("0. Создать категорию")
-            println("====================================")
-            println("-1. Выйти")
-            println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-
+            ViewService.printActionsForMenu("0. Создать категорию","-1. Выйти" )
+            ViewService.printBottom()
+            ViewService.printHeaderChoose()
             val inp = readln().toIntOrNull() ?: run { println("❌ОШИБКА: нужно число"); continue }
             when(inp){
                 0 ->{
@@ -76,19 +72,11 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
                 }
             }
             val categoriesState = categoryViewModel.getCategoriesByParent(currentCategoryId)
-            println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-            println("         Меню категорий")
-            println("            ${currentCategory.name}")
-            println("====================================")
+            ViewService.printHeadersForMenu("Меню категорий",currentCategory.name)
             displayCategory(categoriesState)
-            println("0. Создать категорию")
-            println("====================================")
-            println("-1. Редактировать")
-            println("-2. Удалить")
-            println("-3. Назад")
-            println("-4. Выйти")
-            println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-
+            ViewService.printActionsForMenu("0. Создать категорию","-1. Редактировать","-2. Удалить","-3. Назад","-4. Выйти")
+            ViewService.printBottom()
+            ViewService.printHeaderChoose()
             val inp = readln().toIntOrNull() ?: run { println("❌ОШИБКА: нужно число"); continue }
             when(inp){
                 0 ->{
@@ -134,13 +122,12 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
     }
     private fun startCategoryCreationMenu(currentCategoryId: Int?): NavigationIntent {
         while (true) {
-            println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-            println("      Меню создания категории")
-            println("====================================")
-            print("Название: ")
+            ViewService.printHeadersForMenu("Create category menu")
+            ViewService.printActionsForMenu("Name")
             val name = readln()
-            print("Икнонка(Emoji):")
+            ViewService.printActionsForMenu("Icon(Emoji):")
             val iconPath = readln()
+            ViewService.printActionsForMenu("Color:")
             val color =
                 when(val colorState =colorView.startColorSelectionMenu()){
                     is StateDomain.Error ->{
@@ -151,15 +138,18 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
                         colorState.domain
                     }
                 }
-            println("Необходимость")
-            val need = NeedCategory.Companion.selectNeed() ?: continue //Если вернулся null это зачит что в меню выбора необходимости было выбрано действие "назад"
+            ViewService.printActionsForMenu("Need")
+            val need = NeedCategory.selectNeed() ?: continue //Если вернулся null это зачит что в меню выбора необходимости было выбрано действие "назад"
+
             when(val createState = categoryViewModel.createCategory(name= name, parentCategoryId= currentCategoryId,iconPath= iconPath, color= color, need= need)){
                 is StateDomain.Error -> {
                     println(createState.message)
+                    ViewService.printBottom()
                     continue
                 }
                 is StateDomain.Success -> {
                     println("✅Успешно")
+                    ViewService.printBottom()
                     return NavigationIntent.Back
                 }
             }
@@ -174,7 +164,6 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
         var newParent: CategoryHierarchy? = null
 
         while (true){
-            /** Получение текущей категории из бд + обработчик ошибок */
             val currentCategory: Category = when(val stateCurrentCategory = categoryViewModel.getCategory(currentCategoryId)) {
                 is StateDomain.Error -> {
                     println(stateCurrentCategory.message)
@@ -184,11 +173,7 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
                      stateCurrentCategory.domain
                 }
             }
-            /**  Показ шапки меню */
-            println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-            println("   Меню редактирования категории")
-            println("     |${currentCategory.name}|${currentCategory.icon}|${currentCategory.color}|${currentCategory.need}|${if(currentCategory.structure is CategoryHierarchy.Child) categoryViewModel.getCategory(currentCategory.structure.parentId.toInt()) else null}|${currentCategory.isHidden}")
-            println("====================================")
+            ViewService.printHeadersForMenu("Editing category menu", "     |${currentCategory.name}|${currentCategory.icon}|${currentCategory.color}|${currentCategory.need}|${if(currentCategory.structure is CategoryHierarchy.Child) categoryViewModel.getCategory(currentCategory.structure.parentId.toInt()) else null}|${currentCategory.isHidden}")
             /** Развитие событий в зависимости от принадлежности категории(системная или пользовательская) */
             when(currentCategory.owner){
                 is CategoryOwner.System -> {
@@ -212,17 +197,9 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
                     }
                 }
                 is CategoryOwner.User -> {
-                    println("1. Изменить название")
-                    println("2. Изменить иконку")
-                    println("3. Изменить цвет")
-                    println("4. Изменить необходимость")
-                    println("5. Изменить родительскую категорию")
-                    println("6. Скрыть|Показать")
-                    println("====================================")
-                    println("-1. Сохранить")
-                    println("-2. Назад")
-                    println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-
+                    ViewService.printActionsForMenu("1. Изменить название","2. Изменить иконку","3. Изменить цвет","4. Изменить необходимость","5. Изменить родительскую категорию","6. Скрыть|Показать","-1. Сохранить","-2. Назад")
+                    ViewService.printBottom()
+                    ViewService.printHeaderChoose()
                     val inp = readln().toIntOrNull() ?: run { println("❌ОШИБКА: нужно число"); continue }
                     when(inp){
                         1 ->{
@@ -254,7 +231,7 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
                         }
                         5 ->{
                             print("Новая родительская категория")
-                            val newParentCategory = startParentCategorySelectionMenu(excludeCategoryId = if(currentCategory.structure is CategoryHierarchy.Child) currentCategory.structure.parentId.toInt() else null)
+                            val newParentCategory = startCategorySelectionMenu()
                             newParent = when(newParentCategory){
                                 null -> {
                                     CategoryHierarchy.Root
@@ -342,7 +319,7 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
             }
         }
     }
-    fun startCategorySelectionMenu(excludeCategory: Category?=null): Category {
+    private fun startCategorySelectionMenu(excludeCategory: Category?=null): Category {
         while(true){
             while (true) {
                 val categoriesState = categoryViewModel.getBaseCategories()
@@ -379,7 +356,8 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
 
         }
     }
-    fun startParentCategorySelectionMenu(excludeCategoryId: Int?=null): Category? {
+    /*
+    private fun startParentCategorySelectionMenu(excludeCategoryId: Int?=null): Category? {
         while(true){
             val stateExcludeCategory = if (excludeCategoryId!=null) categoryViewModel.getCategory(excludeCategoryId) else null
             val excludeCategory = if(stateExcludeCategory==null) null else {
@@ -430,6 +408,7 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
 
         }
     }
+     */
 
     private fun startCategorySelectionMenu(parentCategory: Int,excludeCategory: Category?=null): Category?{
         while(true){
@@ -445,6 +424,7 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
                     }
                 }
                 val categoriesState = categoryViewModel.getCategoriesByParent(parentCategory)
+
 
                 println("====================================")
                 println("  Меню выбора дочерних категорий")
@@ -508,6 +488,9 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
         }
     }
 
+    /**
+     * Additional methods:
+     */
     private fun displayCategory(state: StateDomainList<Category>, excludeCategory: Category?=null) {
         when(state){
             is StateDomainList.Empty -> {
@@ -526,6 +509,4 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
     private fun displayCategory(list: List<Category>) {
         list.forEach { println("|id - ${it.id}| name - ${it.name}| ${it.color.hexCode} ${if(it.owner is CategoryOwner.System)"🖥️" else "🙎‍♂️"}") }
     }
-
-
 }

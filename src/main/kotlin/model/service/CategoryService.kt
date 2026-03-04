@@ -44,6 +44,24 @@ class CategoryService(private val repo: ICategoryRepository, private val current
         return StateDomain.Success(category)
     }
 
+    private fun getAllDescendants(
+        rootId: Long,
+        visited: MutableSet<Long> = mutableSetOf()
+    ): List<Long> {
+
+        // защита от циклов
+        if (!visited.add(rootId)) return emptyList()
+
+        val directChildren = repo.getChildrenByParent(rootId)
+        val result = mutableListOf<Long>()
+
+        for (child in directChildren) {
+            result += child.id
+            result += getAllDescendants( child.id, visited)
+        }
+        return result
+    }
+
     fun changeCategory(category: Category, newName: String?, newIcon: String?, newColor: Color.ExistingColor?, newNeed: NeedCategory?, newIsHide: Boolean?, newParent: CategoryHierarchy?): StateDomain<Category>{
         when(val returned = repo.save(Category(
             id = category.id,
@@ -53,7 +71,17 @@ class CategoryService(private val repo: ICategoryRepository, private val current
             need = newNeed?: category.need,
             isHidden = newIsHide ?: category.isHidden,
             owner = category.owner,
-            structure = newParent ?: category.structure
+            structure = when(newParent){
+                /** Проверка не совпадает ли новая родительская категория своей же дочерней категорией */
+                is CategoryHierarchy.Root -> {newParent}
+                is CategoryHierarchy.Child -> {
+                    if (getAllDescendants(category.id).contains(newParent.parentId)) {
+                        return StateDomain.Error("❌Ошибка. Новая родительская категория это дочерняя категория данной категории")
+                    }
+                    else newParent
+                }
+                null -> category.structure
+            }
         ))){
             null -> {
                 return StateDomain.Error("❌Ошибка при изменении в БД")

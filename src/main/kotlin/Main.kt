@@ -2,6 +2,9 @@ package org.example
 
 import org.example.model.service.AccountService
 import org.example.model.database.DatabaseProvider
+import org.example.model.domain.Category
+import org.example.model.domain.Color
+import org.example.model.domain.Storage
 import org.example.model.repository.sqldelightdb.CurrentUserRepositorySQLDelight
 import org.example.model.repository.infile.SettingsRepositoryInFile
 import org.example.model.repository.sqldelightdb.CategoryRepositorySQLDelight
@@ -30,10 +33,42 @@ import org.example.views.OperationView
 import org.example.views.CategoryView
 import org.example.views.StorageView
 import java.io.File
+import javax.xml.catalog.Catalog
 
 sealed class InputState<out T> {
     data class Error(val message: String) : InputState<Nothing>()
     data class Success<T>(val obj: T) : InputState<T>()
+}
+
+class ViewService{
+    companion object{
+        private val red = "\u001B[31m"
+        private val green = "\u001B[32m"
+        private val yellow = "\u001B[33m"
+        private val blue = "\u001B[34m"
+        private val reset = "\u001B[0m"
+
+        fun printHeadersForMenu(title: String, vararg optionalInfo: String = emptyArray()){
+            println("====================================")
+            println("${blue}$title$reset")
+            for (i in optionalInfo){
+                println(i)
+            }
+            println("------------------------------------")
+        }
+        fun printActionsForMenu(vararg yourActions: String){
+            for (i in yourActions){
+                println(i)
+            }
+        }
+
+        fun printBottom(){
+            println("====================================")
+        }
+        fun printHeaderChoose(){
+            print("${green}Choose option:$reset")
+        }
+    }
 }
 
 

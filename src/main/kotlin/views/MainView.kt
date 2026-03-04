@@ -1,8 +1,10 @@
 package org.example.views
 
+import org.example.ViewService
 import org.example.viewmodels.AccountViewModel
 import org.example.views.authentication.AuthenticationView
 import org.example.views.StorageView
+import javax.swing.text.View
 
 class MainView(
     private val storageView: StorageView,
@@ -11,19 +13,6 @@ class MainView(
     private val colorView: ColorView,
     private val accountViewModel: AccountViewModel
 ){
-    private fun showMainMenu() {
-        println("====================================")
-        println("            FINANCE APP")
-        println("------------------------------------")
-        println("1. Storage")
-        println("2. Categories")
-        println("3. Colors")
-        println("------------------------------------")
-        println("-1. LogOut")
-        print("Choose option: ")
-        println("====================================")
-    }
-
     fun start(){
         while (true){
             authenticationView.start()
@@ -32,14 +21,17 @@ class MainView(
     }
 
     private fun startMainMenu(){
-        showMainMenu()
+        ViewService.printHeadersForMenu("FINANCE APP")
+        ViewService.printActionsForMenu("1. Storage", "2. Categories", "3. Colors", "-1. LogOut")
+        ViewService.printBottom()
+        ViewService.printHeaderChoose()
         val input = readln()
         useActions(input.toInt())
     }
 
     private fun useActions(num: Int){
         when (num) {
-            1 -> TODO()
+            1 -> TODO("Счета не сделаны")
             2 -> categoryView.startMainMenu()
             3 -> colorView.start()
             -1 -> accountViewModel.logOut()
