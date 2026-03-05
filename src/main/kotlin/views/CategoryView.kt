@@ -289,6 +289,7 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
         }
     }
     private fun startCategoryDeletingMenu(currentCategoryId: Int): NavigationIntent {
+        TODO("Не реализованно. И не будет пока не будут сделаны Operation")
         fun startActionsMenuOnRecords(): NavigationIntent{
             while (true){
                 lateinit var recordList: StateDomainList<Operation> //TODO сделать получение операций с текущей категорией
@@ -353,13 +354,13 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
             }
         }
     }
-    private fun startCategorySelectionMenu(): Category? {
+    private fun startCategorySelectionMenu(): Category {
         while(true){
             while (true) {
                 val categoriesState = categoryViewModel.getBaseCategories()
                 ViewService.printHeadersForMenu("Меню категорий", "Выбор")
                 displayCategory(categoriesState)
-                ViewService.printActionsForMenu("0. Создать категорию", "-1. Выбрать корневой каталог")
+                ViewService.printActionsForMenu("0. Создать категорию")
                 ViewService.printBottom()
                 ViewService.printHeaderChoose()
                 val inp = readln().toIntOrNull() ?: run { println("❌ОШИБКА: нужно число"); continue }
@@ -368,17 +369,24 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
                         startCategoryCreationMenu(null)
                         continue
                     }
-                    -1 -> {
-                        return null
-                    }
                     else -> {
-                        return startCategorySelectionMenu(inp)
+
+                        when(val state = startCategorySelectionMenu(inp)){
+                            is StateDomain.Error -> {
+                                println(state.message)
+                                continue
+                            }
+                            is StateDomain.Success -> {
+                                return state.domain
+                            }
+                            null -> continue
+                        }
                     }
                 }
             }
         }
     }
-    private fun startCategorySelectionMenu(parentCategory: Int): Category?{
+    private fun startCategorySelectionMenu(parentCategory: Int): StateDomain<Category>?{
         while(true){
             while (true) {
                 val currentCategory: Category
@@ -405,7 +413,7 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
                                 println(catState.message)
                                 return null
                             }
-                            is StateDomain.Success -> {return catState.domain}
+                            is StateDomain.Success -> {return catState}
                         }
                     }
                     -2 -> {
