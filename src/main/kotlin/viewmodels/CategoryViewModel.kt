@@ -29,6 +29,6 @@ class CategoryViewModel(private val service: CategoryService) {
         return service.changeCategory(currentCategory, newName, newIcon, newColor, newNeed, newIsHide, newParent)
     }
     fun deleteCategory(categoryId: Int): StateDomain<Category>{
-
+        TODO()
     }
 }
