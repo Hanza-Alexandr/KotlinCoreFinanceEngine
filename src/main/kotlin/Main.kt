@@ -4,6 +4,7 @@ import org.example.model.service.AccountService
 import org.example.model.database.DatabaseProvider
 import org.example.model.domain.Category
 import org.example.model.domain.Color
+import org.example.model.domain.StateDomainList
 import org.example.model.domain.Storage
 import org.example.model.repository.sqldelightdb.CurrentUserRepositorySQLDelight
 import org.example.model.repository.infile.SettingsRepositoryInFile
@@ -67,6 +68,19 @@ class ViewService{
         }
         fun printHeaderChoose(){
             print("${green}Choose option:$reset")
+        }
+
+        fun <T> printListDomain(list: StateDomainList<T>,print: (T)-> Unit){
+            when(list){
+                is StateDomainList.Empty -> {
+                    println("⚠️Предупреждение: Список пустой")
+                }
+                is StateDomainList.Success -> {
+                    for (i in list.domainList){
+                        print(i)
+                    }
+                }
+            }
         }
     }
 }

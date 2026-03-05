@@ -29,7 +29,6 @@ class CategoryService(private val repo: ICategoryRepository, private val current
         val category = repo.getById(categoryId.toLong()) ?: return StateDomain.Error("❌ошибка получении категории")
         return StateDomain.Success(category)
     }
-
     fun createCategory(name: String, parentCategoryId: Int?, color: Color.ExistingColor, iconPath: String, need: NeedCategory): StateDomain<Category>{
         val structure =  if (parentCategoryId==null) CategoryHierarchy.Root else CategoryHierarchy.Child(parentCategoryId.toLong())
         val category = repo.save(NewCategory(
@@ -43,25 +42,6 @@ class CategoryService(private val repo: ICategoryRepository, private val current
         )) ?: return StateDomain.Error("❌Ошибка при создание категории ")
         return StateDomain.Success(category)
     }
-    /** Метод возвращающий id всей ветки дочерних категорий по id родителя*/
-    private fun getAllDescendants(
-        rootId: Long,
-        visited: MutableSet<Long> = mutableSetOf()
-    ): List<Long> {
-
-        // защита от циклов
-        if (!visited.add(rootId)) return emptyList()
-
-        val directChildren = repo.getChildrenByParent(rootId)
-        val result = mutableListOf<Long>()
-
-        for (child in directChildren) {
-            result += child.id
-            result += getAllDescendants( child.id, visited)
-        }
-        return result
-    }
-
     fun changeCategory(category: Category, newName: String?, newIcon: String?, newColor: Color.ExistingColor?, newNeed: NeedCategory?, newIsHide: Boolean?, newParent: CategoryHierarchy?): StateDomain<Category>{
         when(val returned = repo.save(Category(
             id = category.id,
@@ -112,5 +92,23 @@ class CategoryService(private val repo: ICategoryRepository, private val current
                return StateDomain.Success(returned)
            }
        }
+    }
+
+    /** Auxiliary methods */
+
+    /** Метод возвращающий id всей ветки дочерних категорий по id родителя*/
+    private fun getAllDescendants(rootId: Long, visited: MutableSet<Long> = mutableSetOf()): List<Long> {
+
+        // защита от циклов
+        if (!visited.add(rootId)) return emptyList()
+
+        val directChildren = repo.getChildrenByParent(rootId)
+        val result = mutableListOf<Long>()
+
+        for (child in directChildren) {
+            result += child.id
+            result += getAllDescendants( child.id, visited)
+        }
+        return result
     }
 }

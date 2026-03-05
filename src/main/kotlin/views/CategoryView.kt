@@ -7,8 +7,10 @@ import org.example.model.domain.Category
 import org.example.model.domain.CategoryHierarchy
 import org.example.model.domain.CategoryOwner
 import org.example.model.domain.Color
+import org.example.model.domain.GeneralTransaction
 import org.example.model.domain.NeedCategory
 import org.example.model.domain.NewCategory
+import org.example.model.domain.Operation
 import org.example.model.domain.StateDomain
 import org.example.model.domain.StateDomainList
 import org.example.viewmodels.CategoryViewModel
@@ -288,34 +290,68 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
         }
     }
     private fun startCategoryDeletingMenu(currentCategoryId: Int): NavigationIntent {
-        while (true){
-            val hasRelatedItems: Boolean = false//TODO(сделать получение из сервиса)
-            val hasChildren: Boolean = false //TODO(сдеаоть получение из сервиса)
-            if (!hasRelatedItems || !hasChildren){
-                TODO("Простое удаление")
+        fun startActionsMenuOnRecords(): NavigationIntent{
+            while (true){
+                lateinit var recordList: StateDomainList<Operation> //TODO сделать получение операций с текущей категорией
+                ViewService.printHeadersForMenu("Действия над записиями с данной категорией")
+                ViewService.printListDomain(recordList){
+                    TODO("Реализовать после реализации операций")
+                }
+                ViewService.printActionsForMenu("-1. Выйти", "-2. Заменить у всех записей категорию", "-3 Удалить все записи")
             }
-            else{
-                println("1. Полное удалени.(Удаялтся все записи и дочерние категори)")
-                println("2. Удалить с сохранением данных")
-                println("3. Назад")
+        }
+        fun startActionMenuOverChildrenCategories(): NavigationIntent{
+            while (true){
+                val childrenList = categoryViewModel.getCategoriesByParent(currentCategoryId)
+                ViewService.printHeadersForMenu("Действия над дочерними категориями")
+                ViewService.printListDomain(childrenList){
+                    println("|${it.id}|${it.name}")
+                }
+                ViewService.printActionsForMenu("-1. Выйти", "-2. Заменить родителя у всех дочерних категорий", "-3. Удалить все дочерние категории с со всеми данными")
                 val inp = readln().toIntOrNull() ?: run { println("❌ОШИБКА: нужно число"); continue }
                 when(inp){
-                    1 ->{
-                        TODO("Полное удаоение. Думю это уже дело на стороне сервиса. Так что нужно вызывать метод удаления с параметрами либло отдельныый метод полного удаления")
-                        return NavigationIntent.Back
+                    -1 -> {
+                        return NavigationIntent.Exit
                     }
-                    2 ->{
-                        TODO("Тут интререснее. Надо узнать есть ли записи в данной категори и куда их прееместить. И что делать с дочернимим категориями. Точнее как их прекрипить к другому родителю")
-                        return NavigationIntent.Back
+                    -2 -> {
+                        TODO()
                     }
-                    3 ->{
-                        return NavigationIntent.Back
+                    -3 -> {
+                        TODO()
                     }
                     else -> {
-                        println("Нет такого действия")
-                        continue
+                        TODO()
                     }
+
                 }
+            }
+        }
+
+        val hasRelatedItems: Boolean = false//TODO(сделать получение из сервиса)
+        val hasChildren: Boolean = false //TODO(сделать получение из сервиса)
+
+        if (hasRelatedItems){
+            when(startActionsMenuOnRecords()){
+                is NavigationIntent.Back -> {}
+                is NavigationIntent.BackHome -> {throw IllegalArgumentException("BackHome не должен возвращаться")}
+                is NavigationIntent.Exit -> {return NavigationIntent.Back}
+            }
+        }
+        if (hasChildren){
+            when(startActionMenuOverChildrenCategories()){
+                is NavigationIntent.Back -> {}
+                is NavigationIntent.BackHome -> {throw IllegalArgumentException("BackHome не должен возвращаться")}
+                is NavigationIntent.Exit -> {return NavigationIntent.Back}
+            }
+        }
+
+        when(val deleteState = categoryViewModel.deleteCategory(currentCategoryId)){
+            is StateDomain.Error ->{
+                println(deleteState.message)
+                return NavigationIntent.Back
+            }
+            is StateDomain.Success -> {
+                return NavigationIntent.Back
             }
         }
     }
@@ -356,60 +392,6 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
 
         }
     }
-    /*
-    private fun startParentCategorySelectionMenu(excludeCategoryId: Int?=null): Category? {
-        while(true){
-            val stateExcludeCategory = if (excludeCategoryId!=null) categoryViewModel.getCategory(excludeCategoryId) else null
-            val excludeCategory = if(stateExcludeCategory==null) null else {
-                when(stateExcludeCategory){
-                    is StateDomain.Error ->{
-                        println(stateExcludeCategory.message)
-                        throw Exception()
-                    }
-                    is StateDomain.Success -> stateExcludeCategory.domain
-                }
-            }
-            while (true) {
-                val categoriesState = categoryViewModel.getBaseCategories()
-
-                println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-                println("         Меню категорий")
-                println("            Главная")
-                println("====================================")
-                displayCategory(categoriesState,excludeCategory)
-                println("-1. Сделать категорию базовой")
-                println("0. Создать категорию")
-                println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-                val inp = readln().toIntOrNull() ?: run { println("❌ОШИБКА: нужно число"); continue }
-                when(inp){
-                    0 ->{
-                        val navIntent = startCategoryCreationMenu(null)
-                        when(navIntent){
-                            is NavigationIntent.Back -> continue
-                            is NavigationIntent.BackHome -> continue
-                            is NavigationIntent.Exit -> continue
-                        }
-                    }
-                    -1 ->{
-                        return null
-                    }
-                    else -> {
-                        val category = startCategorySelectionMenu(inp.toInt())
-                        if (  category==null){
-                            continue
-                        }
-                        else{
-                            return category
-                        }
-                    }
-                }
-            }
-
-
-        }
-    }
-     */
-
     private fun startCategorySelectionMenu(parentCategory: Int,excludeCategory: Category?=null): Category?{
         while(true){
             while (true) {
@@ -487,6 +469,7 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
             }
         }
     }
+
 
     /**
      * Additional methods:

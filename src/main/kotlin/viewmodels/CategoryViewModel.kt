@@ -28,4 +28,7 @@ class CategoryViewModel(private val service: CategoryService) {
     fun changeCategory(currentCategory: Category,newName: String?, newIcon: String?, newColor: Color.ExistingColor?, newNeed: NeedCategory?, newIsHide: Boolean?, newParent: CategoryHierarchy? ): StateDomain<Category>{
         return service.changeCategory(currentCategory, newName, newIcon, newColor, newNeed, newIsHide, newParent)
     }
+    fun deleteCategory(categoryId: Int): StateDomain<Category>{
+
+    }
 }
