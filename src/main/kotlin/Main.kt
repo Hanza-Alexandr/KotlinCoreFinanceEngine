@@ -70,7 +70,7 @@ class ViewService{
             print("${green}Choose option:$reset")
         }
 
-        fun <T> printListDomain(list: StateDomainList<T>,print: (T)-> Unit){
+        fun <T> printListDomain(list: StateDomainList<T>,printSelectionTittle: Boolean = true, print: (T)-> Unit){
             when(list){
                 is StateDomainList.Empty -> {
                     println("⚠️Предупреждение: Список пустой")
@@ -79,6 +79,7 @@ class ViewService{
                     for (i in list.domainList){
                         print(i)
                     }
+                    if (printSelectionTittle) println("<id>. Выбор: ")
                 }
             }
         }
