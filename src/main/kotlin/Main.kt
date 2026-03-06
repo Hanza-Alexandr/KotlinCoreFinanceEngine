@@ -4,6 +4,7 @@ import org.example.model.service.AccountService
 import org.example.model.database.DatabaseProvider
 import org.example.model.domain.Category
 import org.example.model.domain.Color
+import org.example.model.domain.StateDomain
 import org.example.model.domain.StateDomainList
 import org.example.model.domain.Storage
 import org.example.model.repository.sqldelightdb.CurrentUserRepositorySQLDelight
@@ -42,41 +43,44 @@ sealed class InputState<out T> {
 }
 
 class ViewService{
-    companion object{
+    companion object {
         private val red = "\u001B[31m"
         private val green = "\u001B[32m"
         private val yellow = "\u001B[33m"
         private val blue = "\u001B[34m"
         private val reset = "\u001B[0m"
 
-        fun printHeadersForMenu(title: String, vararg optionalInfo: String = emptyArray()){
+        fun printHeadersForMenu(title: String, vararg optionalInfo: String = emptyArray()) {
             println("====================================")
             println("${blue}$title$reset")
-            for (i in optionalInfo){
+            for (i in optionalInfo) {
                 println(i)
             }
             println("------------------------------------")
         }
-        fun printActionsForMenu(vararg yourActions: String){
-            for (i in yourActions){
+
+        fun printActionsForMenu(vararg yourActions: String) {
+            for (i in yourActions) {
                 println(i)
             }
         }
 
-        fun printBottom(){
+        fun printBottom() {
             println("====================================")
         }
-        fun printHeaderChoose(){
+
+        fun printHeaderChoose() {
             print("${green}Choose option:$reset")
         }
 
-        fun <T> printListDomain(list: StateDomainList<T>,printSelectionTittle: Boolean = true, print: (T)-> Unit){
-            when(list){
+        fun <T> printListDomain(list: StateDomainList<T>, printSelectionTittle: Boolean = true, print: (T) -> Unit) {
+            when (list) {
                 is StateDomainList.Empty -> {
                     println("⚠️Предупреждение: Список пустой")
                 }
+
                 is StateDomainList.Success -> {
-                    for (i in list.domainList){
+                    for (i in list.domainList) {
                         print(i)
                     }
                     if (printSelectionTittle) println("<id>. Выбор: ")

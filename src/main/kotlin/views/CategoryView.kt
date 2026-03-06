@@ -7,7 +7,7 @@ import org.example.model.domain.Category
 import org.example.model.domain.CategoryHierarchy
 import org.example.model.domain.CategoryOwner
 import org.example.model.domain.Color
-import org.example.model.domain.ResultSelectionMenu
+import org.example.model.domain.ResultMenu
 import org.example.model.domain.NeedCategory
 import org.example.model.domain.Operation
 import org.example.model.domain.StateDomain
@@ -230,14 +230,14 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
                             print("Новая родительская категория")
                             val resMenuSelection = startParentCategorySelectionMenu()
                             newParent = when(resMenuSelection){
-                                is ResultSelectionMenu.Selected -> {
+                                is ResultMenu.Complete -> {
                                     if (resMenuSelection.item==null) CategoryHierarchy.Root else CategoryHierarchy.Child(resMenuSelection.item.id)
                                 }
-                                is ResultSelectionMenu.Exception -> {
+                                is ResultMenu.Exception -> {
                                     println(resMenuSelection.message)
                                     continue
                                 }
-                                is ResultSelectionMenu.NavigationOnly -> {
+                                is ResultMenu.NavigationOnly -> {
                                     continue
                                 }
                             }
@@ -354,7 +354,7 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
         }
     }
 
-    private fun startCategorySelectionMenu(): ResultSelectionMenu<Category> {
+    private fun startCategorySelectionMenu(): ResultMenu<Category> {
         while(true){
             while (true) {
                 val categoriesState = categoryViewModel.getBaseCategories()
@@ -370,17 +370,17 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
                         continue
                     }
                     -1 -> {
-                        return ResultSelectionMenu.NavigationOnly(NavigationIntent.Exit)
+                        return ResultMenu.NavigationOnly(NavigationIntent.Exit)
                     }
                     else -> {
                         when(val menuIntent = startCategorySelectionMenu(inp)){
-                            is ResultSelectionMenu.Exception -> {
-                                return ResultSelectionMenu.Exception(menuIntent.message)
+                            is ResultMenu.Exception -> {
+                                return ResultMenu.Exception(menuIntent.message)
                             }
-                            is ResultSelectionMenu.NavigationOnly -> {
+                            is ResultMenu.NavigationOnly -> {
                                 continue
                             }
-                            is ResultSelectionMenu.Selected -> {
+                            is ResultMenu.Complete -> {
                                 return menuIntent
                             }
                         }
@@ -389,13 +389,13 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
             }
         }
     }
-    private fun startCategorySelectionMenu(parentCategory: Int): ResultSelectionMenu<Category>{
+    private fun startCategorySelectionMenu(parentCategory: Int): ResultMenu<Category>{
         while(true){
             while (true) {
                 val currentCategory: Category
                 when(val stateCurrentCategory = categoryViewModel.getCategory(parentCategory)) {
                     is StateDomain.Error -> {
-                        return ResultSelectionMenu.Exception(stateCurrentCategory.message)
+                        return ResultMenu.Exception(stateCurrentCategory.message)
                     }
                     is StateDomain.Success -> {
                         currentCategory = stateCurrentCategory.domain
@@ -413,10 +413,10 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
                     -1 -> {
                         return when(val catState = categoryViewModel.getCategory(parentCategory)){
                             is StateDomain.Error -> {
-                                ResultSelectionMenu.Exception(catState.message)
+                                ResultMenu.Exception(catState.message)
                             }
                             is StateDomain.Success -> {
-                                ResultSelectionMenu.Selected(catState.domain, NavigationIntent.Exit)
+                                ResultMenu.Complete(catState.domain, NavigationIntent.Exit)
                             }
                         }
                     }
@@ -429,19 +429,19 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
                         continue
                     }
                     -4 -> {
-                        return ResultSelectionMenu.NavigationOnly(NavigationIntent.Back)
+                        return ResultMenu.NavigationOnly(NavigationIntent.Back)
                     }
                     else -> {
                         return when(val menuIntent = startCategorySelectionMenu(inp)) {
-                            is ResultSelectionMenu.Exception -> {
-                                ResultSelectionMenu.Exception(menuIntent.message)
+                            is ResultMenu.Exception -> {
+                                ResultMenu.Exception(menuIntent.message)
                             }
 
-                            is ResultSelectionMenu.NavigationOnly -> {
+                            is ResultMenu.NavigationOnly -> {
                                 continue
                             }
 
-                            is ResultSelectionMenu.Selected -> {
+                            is ResultMenu.Complete -> {
                                 menuIntent
                             }
                         }
@@ -450,7 +450,7 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
             }
         }
     }
-    private fun startParentCategorySelectionMenu(): ResultSelectionMenu<Category?>{
+    private fun startParentCategorySelectionMenu(): ResultMenu<Category?>{
         while(true){
             while (true) {
                 val categoriesState = categoryViewModel.getBaseCategories()
@@ -466,20 +466,20 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
                         continue
                     }
                     -1 -> {
-                        return ResultSelectionMenu.Selected(null, NavigationIntent.Exit)
+                        return ResultMenu.Complete(null, NavigationIntent.Exit)
                     }
                     -2 -> {
-                        return ResultSelectionMenu.NavigationOnly(NavigationIntent.Exit)
+                        return ResultMenu.NavigationOnly(NavigationIntent.Exit)
                     }
                     else -> {
                         when(val menuIntent = startCategorySelectionMenu(inp)){
-                            is ResultSelectionMenu.Exception -> {
-                                return ResultSelectionMenu.Exception(menuIntent.message)
+                            is ResultMenu.Exception -> {
+                                return ResultMenu.Exception(menuIntent.message)
                             }
-                            is ResultSelectionMenu.NavigationOnly -> {
+                            is ResultMenu.NavigationOnly -> {
                                 continue
                             }
-                            is ResultSelectionMenu.Selected -> {
+                            is ResultMenu.Complete -> {
                                 return menuIntent
                             }
                         }
