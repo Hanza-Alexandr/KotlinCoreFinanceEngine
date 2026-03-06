@@ -8,5 +8,10 @@ import org.example.model.domain.TypeStorage
 import org.example.model.service.StorageService
 
 class StorageViewModel(private val service: StorageService){
-    //TODO()
+    fun getStorages(): StateDomainList<Storage>{
+        TODO()
+    }
+    fun getStorage(storageId: Int): StateDomain<Storage>{
+        TODO()
+    }
 }

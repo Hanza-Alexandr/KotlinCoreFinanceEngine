@@ -12,10 +12,10 @@ abstract class Operation {
     abstract val time: Time
     abstract val status: String
 
-    abstract fun changeAmount(newAmount: BigDecimal): Operation
-    abstract fun changeDate(newDate: Date): Operation
-    abstract fun changeTime(newTime: Time): Operation
-    abstract fun changeStatus(newStatus: String): Operation
+    abstract fun changeAmount(newAmount: BigDecimal): StateDomain<Operation>
+    abstract fun changeDate(newDate: Date): StateDomain<Operation>
+    abstract fun changeTime(newTime: Time): StateDomain<Operation>
+    abstract fun changeStatus(newStatus: String): StateDomain<Operation>
 }
 
 abstract class GeneralTransaction: Operation(){
@@ -23,9 +23,9 @@ abstract class GeneralTransaction: Operation(){
    abstract val category: Category
    abstract val typeOperation: TypeOperation
 
-   abstract fun changeStorage(newStorage: Storage): GeneralTransaction
-   abstract fun changeCategory(newCategory: Category): GeneralTransaction
-   abstract fun changeType(newType: TypeOperation): GeneralTransaction
+   abstract fun changeStorage(newStorage: Storage): StateDomain<GeneralTransaction>
+   abstract fun changeCategory(newCategory: Category): StateDomain<GeneralTransaction>
+   abstract fun changeType(newType: TypeOperation): StateDomain<GeneralTransaction>
 
 }
 
@@ -39,31 +39,31 @@ data class CreditTransaction(
     override val status: String
 ): GeneralTransaction(){
     override val typeOperation: TypeOperation = TypeOperation.CREDIT
-    override fun changeStorage(newStorage: Storage): GeneralTransaction {
+    override fun changeStorage(newStorage: Storage): StateDomain<GeneralTransaction> {
         TODO("Not yet implemented")
     }
 
-    override fun changeCategory(newCategory: Category): GeneralTransaction {
+    override fun changeCategory(newCategory: Category): StateDomain<GeneralTransaction> {
         TODO("Not yet implemented")
     }
 
-    override fun changeType(newType: TypeOperation): GeneralTransaction {
+    override fun changeType(newType: TypeOperation): StateDomain<GeneralTransaction> {
         TODO("Not yet implemented")
     }
 
-    override fun changeAmount(newAmount: BigDecimal): Operation {
+    override fun changeAmount(newAmount: BigDecimal): StateDomain<Operation> {
         TODO("Not yet implemented")
     }
 
-    override fun changeDate(newDate: Date): Operation {
+    override fun changeDate(newDate: Date): StateDomain<Operation> {
         TODO("Not yet implemented")
     }
 
-    override fun changeTime(newTime: Time): Operation {
+    override fun changeTime(newTime: Time): StateDomain<Operation> {
         TODO("Not yet implemented")
     }
 
-    override fun changeStatus(newStatus: String): Operation {
+    override fun changeStatus(newStatus: String): StateDomain<Operation> {
         TODO("Not yet implemented")
     }
 }
@@ -78,31 +78,31 @@ data class DebitTransaction(
     override val status: String
 ): GeneralTransaction(){
     override val typeOperation: TypeOperation = TypeOperation.DEBIT
-    override fun changeStorage(newStorage: Storage): GeneralTransaction {
+    override fun changeStorage(newStorage: Storage): StateDomain<GeneralTransaction> {
         TODO("Not yet implemented")
     }
 
-    override fun changeCategory(newCategory: Category): GeneralTransaction {
+    override fun changeCategory(newCategory: Category): StateDomain<GeneralTransaction> {
         TODO("Not yet implemented")
     }
 
-    override fun changeType(newType: TypeOperation): GeneralTransaction {
+    override fun changeType(newType: TypeOperation): StateDomain<GeneralTransaction> {
         TODO("Not yet implemented")
     }
 
-    override fun changeAmount(newAmount: BigDecimal): Operation {
+    override fun changeAmount(newAmount: BigDecimal): StateDomain<Operation> {
         TODO("Not yet implemented")
     }
 
-    override fun changeDate(newDate: Date): Operation {
+    override fun changeDate(newDate: Date): StateDomain<Operation> {
         TODO("Not yet implemented")
     }
 
-    override fun changeTime(newTime: Time): Operation {
+    override fun changeTime(newTime: Time): StateDomain<Operation> {
         TODO("Not yet implemented")
     }
 
-    override fun changeStatus(newStatus: String): Operation {
+    override fun changeStatus(newStatus: String): StateDomain<Operation> {
         TODO("Not yet implemented")
     }
 }
@@ -117,29 +117,27 @@ data class TransferTransaction(
     override val status: String
 
 ): Operation() {
-    fun changeFromStorage(newFrom: Storage): TransferTransaction {
-        require(newFrom != toStorage)
-        return copy(fromStorage = newFrom)
-    }
-
-    fun changeToStorage(newTo: Storage): TransferTransaction {
-        require(newTo != fromStorage)
-        return copy(toStorage = newTo)
-    }
-
-    override fun changeAmount(newAmount: BigDecimal): Operation {
+    fun changeFromStorage(newFrom: Storage): StateDomain<TransferTransaction>  {
         TODO("Not yet implemented")
     }
 
-    override fun changeDate(newDate: Date): Operation {
+    fun changeToStorage(newTo: Storage): StateDomain<TransferTransaction> {
         TODO("Not yet implemented")
     }
 
-    override fun changeTime(newTime: Time): Operation {
+    override fun changeAmount(newAmount: BigDecimal): StateDomain<Operation> {
         TODO("Not yet implemented")
     }
 
-    override fun changeStatus(newStatus: String): Operation {
+    override fun changeDate(newDate: Date): StateDomain<Operation> {
+        TODO("Not yet implemented")
+    }
+
+    override fun changeTime(newTime: Time): StateDomain<Operation> {
+        TODO("Not yet implemented")
+    }
+
+    override fun changeStatus(newStatus: String): StateDomain<Operation> {
         TODO("Not yet implemented")
     }
 }
