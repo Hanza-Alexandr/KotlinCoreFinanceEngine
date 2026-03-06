@@ -7,17 +7,12 @@ import org.example.model.domain.Category
 import org.example.model.domain.CategoryHierarchy
 import org.example.model.domain.CategoryOwner
 import org.example.model.domain.Color
-import org.example.model.domain.GeneralTransaction
+import org.example.model.domain.ResultSelectionMenu
 import org.example.model.domain.NeedCategory
-import org.example.model.domain.NewCategory
 import org.example.model.domain.Operation
 import org.example.model.domain.StateDomain
 import org.example.model.domain.StateDomainList
 import org.example.viewmodels.CategoryViewModel
-import org.example.views.ColorView
-import java.text.Bidi
-import javax.swing.text.View
-import javax.swing.text.html.BlockView
 
 class CategoryView(private val categoryViewModel: CategoryViewModel, private val colorView: ColorView) {
 
@@ -233,13 +228,17 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
                         }
                         5 ->{
                             print("Новая родительская категория")
-                            val newParentCategory = startCategorySelectionMenu()
-                            newParent = when(newParentCategory){
-                                null -> {
-                                    CategoryHierarchy.Root
+                            val resMenuSelection = startParentCategorySelectionMenu()
+                            newParent = when(resMenuSelection){
+                                is ResultSelectionMenu.Selected -> {
+                                    if (resMenuSelection.item==null) CategoryHierarchy.Root else CategoryHierarchy.Child(resMenuSelection.item.id)
                                 }
-                                is Category ->{
-                                    CategoryHierarchy.Child(newParentCategory.id)
+                                is ResultSelectionMenu.Exception -> {
+                                    println(resMenuSelection.message)
+                                    continue
+                                }
+                                is ResultSelectionMenu.NavigationOnly -> {
+                                    continue
                                 }
                             }
                         }
@@ -354,13 +353,14 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
             }
         }
     }
-    private fun startCategorySelectionMenu(): Category {
+
+    private fun startCategorySelectionMenu(): ResultSelectionMenu<Category> {
         while(true){
             while (true) {
                 val categoriesState = categoryViewModel.getBaseCategories()
                 ViewService.printHeadersForMenu("Меню категорий", "Выбор")
                 displayCategory(categoriesState)
-                ViewService.printActionsForMenu("0. Создать категорию")
+                ViewService.printActionsForMenu("0. Создать категорию", "-1. Назад")
                 ViewService.printBottom()
                 ViewService.printHeaderChoose()
                 val inp = readln().toIntOrNull() ?: run { println("❌ОШИБКА: нужно число"); continue }
@@ -369,31 +369,33 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
                         startCategoryCreationMenu(null)
                         continue
                     }
+                    -1 -> {
+                        return ResultSelectionMenu.NavigationOnly(NavigationIntent.Exit)
+                    }
                     else -> {
-
-                        when(val state = startCategorySelectionMenu(inp)){
-                            is StateDomain.Error -> {
-                                println(state.message)
+                        when(val menuIntent = startCategorySelectionMenu(inp)){
+                            is ResultSelectionMenu.Exception -> {
+                                return ResultSelectionMenu.Exception(menuIntent.message)
+                            }
+                            is ResultSelectionMenu.NavigationOnly -> {
                                 continue
                             }
-                            is StateDomain.Success -> {
-                                return state.domain
+                            is ResultSelectionMenu.Selected -> {
+                                return menuIntent
                             }
-                            null -> continue
                         }
                     }
                 }
             }
         }
     }
-    private fun startCategorySelectionMenu(parentCategory: Int): StateDomain<Category>?{
+    private fun startCategorySelectionMenu(parentCategory: Int): ResultSelectionMenu<Category>{
         while(true){
             while (true) {
                 val currentCategory: Category
                 when(val stateCurrentCategory = categoryViewModel.getCategory(parentCategory)) {
                     is StateDomain.Error -> {
-                        println(stateCurrentCategory.message)
-                        return null
+                        return ResultSelectionMenu.Exception(stateCurrentCategory.message)
                     }
                     is StateDomain.Success -> {
                         currentCategory = stateCurrentCategory.domain
@@ -401,38 +403,91 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
                 }
                 ViewService.printHeadersForMenu("Меню выбора дочерних категорий", currentCategory.name)
                 displayCategory(categoryViewModel.getCategoriesByParent(parentCategory))
-                ViewService.printActionsForMenu("0. Создать категорию","-1. Выбрать","-2. Редактировать","-3. Удалить","-4. Выйти")
+                ViewService.printActionsForMenu("0. Создать категорию","-1. Выбрать","-2. Редактировать","-3. Удалить","-4. Назад")
                 val inp = readln().toIntOrNull() ?: run { println("❌ОШИБКА: нужно число"); continue }
                 when(inp){
                     0 ->{
-                        return if (startCategoryCreationMenu(parentCategory) is NavigationIntent.Back) continue else null
+                        startCategoryCreationMenu(parentCategory)
+                        continue
                     }
                     -1 -> {
-                        when(val catState = categoryViewModel.getCategory(parentCategory)){
+                        return when(val catState = categoryViewModel.getCategory(parentCategory)){
                             is StateDomain.Error -> {
-                                println(catState.message)
-                                return null
+                                ResultSelectionMenu.Exception(catState.message)
                             }
-                            is StateDomain.Success -> {return catState}
+                            is StateDomain.Success -> {
+                                ResultSelectionMenu.Selected(catState.domain, NavigationIntent.Exit)
+                            }
                         }
                     }
                     -2 -> {
-                        return if (startCategoryEditingMenu(parentCategory) is NavigationIntent.Back) continue else null
+                        startCategoryEditingMenu(parentCategory)
+                        continue
                     }
                     -3 ->{
-                        return if (startCategoryDeletingMenu(parentCategory) is NavigationIntent.Back) continue else null
+                        startCategoryDeletingMenu(parentCategory)
+                        continue
                     }
                     -4 -> {
-                        return null
+                        return ResultSelectionMenu.NavigationOnly(NavigationIntent.Back)
                     }
                     else -> {
-                        return startCategorySelectionMenu(inp)
+                        return when(val menuIntent = startCategorySelectionMenu(inp)) {
+                            is ResultSelectionMenu.Exception -> {
+                                ResultSelectionMenu.Exception(menuIntent.message)
+                            }
+
+                            is ResultSelectionMenu.NavigationOnly -> {
+                                continue
+                            }
+
+                            is ResultSelectionMenu.Selected -> {
+                                menuIntent
+                            }
+                        }
                     }
                 }
             }
         }
     }
-
+    private fun startParentCategorySelectionMenu(): ResultSelectionMenu<Category?>{
+        while(true){
+            while (true) {
+                val categoriesState = categoryViewModel.getBaseCategories()
+                ViewService.printHeadersForMenu("Меню категорий", "Выбор")
+                displayCategory(categoriesState)
+                ViewService.printActionsForMenu("0. Создать категорию", "-1. Выбрать", "-2. Выйти")
+                ViewService.printBottom()
+                ViewService.printHeaderChoose()
+                val inp = readln().toIntOrNull() ?: run { println("❌ОШИБКА: нужно число"); continue }
+                when(inp){
+                    0 ->{
+                        startCategoryCreationMenu(null)
+                        continue
+                    }
+                    -1 -> {
+                        return ResultSelectionMenu.Selected(null, NavigationIntent.Exit)
+                    }
+                    -2 -> {
+                        return ResultSelectionMenu.NavigationOnly(NavigationIntent.Exit)
+                    }
+                    else -> {
+                        when(val menuIntent = startCategorySelectionMenu(inp)){
+                            is ResultSelectionMenu.Exception -> {
+                                return ResultSelectionMenu.Exception(menuIntent.message)
+                            }
+                            is ResultSelectionMenu.NavigationOnly -> {
+                                continue
+                            }
+                            is ResultSelectionMenu.Selected -> {
+                                return menuIntent
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
     /**
      * Additional methods:
      */
