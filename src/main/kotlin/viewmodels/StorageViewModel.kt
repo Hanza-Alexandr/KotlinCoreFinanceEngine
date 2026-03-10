@@ -9,7 +9,7 @@ import org.example.model.service.StorageService
 
 class StorageViewModel(private val service: StorageService){
     fun getStorages(): StateDomainList<Storage>{
-        TODO()
+        return service.getStorageList()
     }
     fun getStorage(storageId: Int): StateDomain<Storage>{
         TODO()

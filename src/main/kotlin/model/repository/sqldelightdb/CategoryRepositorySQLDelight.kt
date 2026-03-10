@@ -5,8 +5,9 @@ import com.example.CategoryQueries
 import com.example.ColorEntity
 import org.example.model.domain.Category
 import org.example.model.domain.CategoryOwner
-import org.example.model.domain.CategoryHierarchy
+import org.example.model.domain.CategoryStructure
 import org.example.model.domain.NewCategory
+import org.example.model.domain.StateDomain
 import org.example.model.domain.toDomain
 import org.example.model.repository.ICategoryRepository
 
@@ -27,8 +28,7 @@ class CategoryRepositorySQLDelight(private val queries: CategoryQueries): ICateg
                 ColorEntity(
                     it.color_id,
                     it.color_user_id,
-                    it.color_hex_code?:throw NullPointerException(),
-                ).toDomain()
+                    it.color_hex_code?:throw NullPointerException()).toDomain()
             )
         }
     }
@@ -44,12 +44,10 @@ class CategoryRepositorySQLDelight(private val queries: CategoryQueries): ICateg
                 parent_category_id =it.parent_category_id,
                 need = it.category_need,
                 is_hide = it.category_isHide
-            ).toDomain(
-                ColorEntity(
-                    it.color_id,
-                    it.color_user_id,
-                    it.color_hex_code?:throw NullPointerException()
-                    ).toDomain()
+            ).toDomain(ColorEntity(
+                        it.color_id,
+                        it.color_user_id,
+                        it.color_hex_code?:throw NullPointerException()).toDomain()
             )
         }
     }
@@ -74,8 +72,8 @@ class CategoryRepositorySQLDelight(private val queries: CategoryQueries): ICateg
             color_id = category.color.id,
             name = category.name,
             parent_category_id = when(val structure = category.structure){
-                CategoryHierarchy.Root ->{null}
-                is CategoryHierarchy.Child -> {structure.parentId}
+                CategoryStructure.Root ->{null}
+                is CategoryStructure.Child -> {structure.parentId}
             },
             need = category.need.toString(),
             is_hide = if (category.isHidden)1L else 0
@@ -91,8 +89,8 @@ class CategoryRepositorySQLDelight(private val queries: CategoryQueries): ICateg
                 need = category.need.toString(),
                 isHide = if(category.isHidden)1L else 0,
                 parentId = when(category.structure){
-                    is CategoryHierarchy.Child -> category.structure.parentId
-                    is CategoryHierarchy.Root -> null
+                    is CategoryStructure.Child -> category.structure.parentId
+                    is CategoryStructure.Root -> null
                 },
                 userId = when(category.owner){
                     is CategoryOwner.User -> category.owner.userId

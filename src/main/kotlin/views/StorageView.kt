@@ -133,7 +133,6 @@ class StorageView(private val storageViewModel: StorageViewModel, private val op
     private fun displayOperationsByStorage(storage: Storage){
         TODO()
     }
-
 }
 
 //Отображать список счетов

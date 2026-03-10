@@ -8,9 +8,9 @@ data class Storage(
     val currency: Currency,
     val typeStorage: TypeStorage,
     val note: String?,
-    val color: Color.ExistingColor,
-    val isStatistics: Boolean = true,
-    val isArchive: Boolean = false
+    val color: ExistColor,
+    val isStatistics: Boolean,
+    val isArchive: Boolean
 ){
     fun rename(newName: String): Storage {
         require(newName.isNotBlank())
@@ -29,7 +29,7 @@ data class Storage(
     fun changeNote(newNote: String?): Storage =
         copy(note = newNote)
 
-    fun changeColor(newColor: Color.ExistingColor): Storage =
+    fun changeColor(newColor: ExistColor): Storage =
         copy(color = newColor)
 
     fun enableStatistics(): Storage =
@@ -45,5 +45,15 @@ data class Storage(
         copy(isArchive = false)
 
 }
+
+data class NewStorage(
+    val name: String,
+    val currency: Currency,
+    val typeStorage: TypeStorage,
+    val note: String?,
+    val color: ExistColor,
+    val isStatistics: Boolean = true,
+    val isArchive: Boolean = false
+)
 
 

@@ -1,9 +1,9 @@
 package org.example.model.service
 
+import org.example.model.domain.ExistColor
 import org.example.model.domain.Category
 import org.example.model.domain.CategoryOwner
-import org.example.model.domain.CategoryHierarchy
-import org.example.model.domain.Color
+import org.example.model.domain.CategoryStructure
 import org.example.model.domain.NeedCategory
 import org.example.model.domain.NewCategory
 import org.example.model.domain.StateDomain
@@ -29,8 +29,8 @@ class CategoryService(private val repo: ICategoryRepository, private val current
         val category = repo.getById(categoryId.toLong()) ?: return StateDomain.Error("❌ошибка получении категории")
         return StateDomain.Success(category)
     }
-    fun createCategory(name: String, parentCategoryId: Int?, color: Color.ExistingColor, iconPath: String, need: NeedCategory): StateDomain<Category>{
-        val structure =  if (parentCategoryId==null) CategoryHierarchy.Root else CategoryHierarchy.Child(parentCategoryId.toLong())
+    fun createCategory(name: String, parentCategoryId: Int?, color: ExistColor, iconPath: String, need: NeedCategory): StateDomain<Category>{
+        val structure =  if (parentCategoryId==null) CategoryStructure.Root else CategoryStructure.Child(parentCategoryId.toLong())
         val category = repo.save(NewCategory(
             name = name,
             color = color,
@@ -42,7 +42,7 @@ class CategoryService(private val repo: ICategoryRepository, private val current
         )) ?: return StateDomain.Error("❌Ошибка при создание категории ")
         return StateDomain.Success(category)
     }
-    fun changeCategory(category: Category, newName: String?, newIcon: String?, newColor: Color.ExistingColor?, newNeed: NeedCategory?, newIsHide: Boolean?, newParent: CategoryHierarchy?): StateDomain<Category>{
+    fun changeCategory(category: Category, newName: String?, newIcon: String?, newColor: ExistColor?, newNeed: NeedCategory?, newIsHide: Boolean?, newParent: CategoryStructure?): StateDomain<Category>{
         when(val returned = repo.save(Category(
             id = category.id,
             name = newName?: category.name,
@@ -56,8 +56,8 @@ class CategoryService(private val repo: ICategoryRepository, private val current
             },
             structure = when(newParent){
                 /** Проверка не совпадает ли новая родительская категория своей же дочерней категорией */
-                is CategoryHierarchy.Root -> {newParent}
-                is CategoryHierarchy.Child -> {
+                is CategoryStructure.Root -> {newParent}
+                is CategoryStructure.Child -> {
                     if (getAllDescendants(category.id).contains(newParent.parentId)) {
                         return StateDomain.Error("❌Ошибка. Новая родительская категория это дочерняя категория данной категории")
                     }

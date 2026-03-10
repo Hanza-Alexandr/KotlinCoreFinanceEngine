@@ -11,34 +11,34 @@ sealed class CategoryOwner {
     data class User(val userId: Long) : CategoryOwner()
 }
 
-sealed class CategoryHierarchy {
-    object Root : CategoryHierarchy()
-    data class Child(val parentId: Long) : CategoryHierarchy()
+sealed class CategoryStructure {
+    object Root : CategoryStructure()
+    data class Child(val parentId: Long) : CategoryStructure()
 }
 data class Category(
     val id: Long,
     val name: String,
-    val color: Color.ExistingColor,
+    val color: ExistColor,
     val icon: String,
     val need: NeedCategory,
     val isHidden: Boolean,
     val owner: CategoryOwner,
-    val structure: CategoryHierarchy
+    val structure: CategoryStructure
 )
 data class NewCategory(
     val name: String,
-    val color: Color.ExistingColor,
+    val color: ExistColor,
     val icon: String,
     val need: NeedCategory,
     val isHidden: Boolean,
     val owner: CategoryOwner.User,
-    val structure: CategoryHierarchy
+    val structure: CategoryStructure
 )
 
 
-fun CategoryEntity.toDomain(color: Color.ExistingColor): Category{
+fun CategoryEntity.toDomain(color: ExistColor): Category{
     val owner = if(user_id == null) CategoryOwner.System else CategoryOwner.User(user_id)
-    val structure = if (parent_category_id == null) CategoryHierarchy.Root else CategoryHierarchy.Child(parent_category_id)
+    val structure = if (parent_category_id == null) CategoryStructure.Root else CategoryStructure.Child(parent_category_id)
     return Category(
         id = id,
         name = name,
@@ -52,15 +52,15 @@ fun CategoryEntity.toDomain(color: Color.ExistingColor): Category{
 }
 fun CategorySelectById.toDomain(): Category{
     val owner = if(category_user_id == null) CategoryOwner.System else CategoryOwner.User(category_user_id)
-    val structure = if (parent_category_id == null) CategoryHierarchy.Root else CategoryHierarchy.Child(parent_category_id)
+    val structure = if (parent_category_id == null) CategoryStructure.Root else CategoryStructure.Child(parent_category_id)
     return Category(
         id = category_id,
         name = category_name,
         color = ColorEntity(
-            id = color_id!!,
-            user_id = color_user_id,
-            hex_code = color_hex_code!!
-        ).toDomain(),
+                id = color_id!!,
+                user_id = color_user_id,
+                hex_code = color_hex_code!!
+            ).toDomain(),
         icon = category_path_icon,
         need = NeedCategory.valueOf(category_need),
         isHidden = category_is_hide == 1L,

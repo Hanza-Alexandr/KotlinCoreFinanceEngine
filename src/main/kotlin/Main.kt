@@ -3,7 +3,6 @@ package org.example
 import org.example.model.service.AccountService
 import org.example.model.database.DatabaseProvider
 import org.example.model.domain.Category
-import org.example.model.domain.Color
 import org.example.model.domain.StateDomain
 import org.example.model.domain.StateDomainList
 import org.example.model.domain.Storage
@@ -89,7 +88,6 @@ class ViewService{
         }
     }
 }
-
 
 fun main() {
     val databaseProvider = DatabaseProvider()

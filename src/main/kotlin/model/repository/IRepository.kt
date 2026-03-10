@@ -1,18 +1,19 @@
 package org.example.model.repository
 
+import org.example.model.domain.ExistColor
 import org.example.model.domain.Category
-import org.example.model.domain.Color
 import org.example.model.domain.NewCategory
-import org.example.model.domain.Operation
+import org.example.model.domain.NewColor
 import org.example.model.domain.Setting
 import org.example.model.domain.Storage
 import org.example.model.domain.User
+import org.example.model.domain.UserColor
 
 interface IStorageRepository{
+    fun getAll(): List<Storage>
     //TODO()
     /*
     fun getById(id: Long): Storage
-    fun getAll(): List<Storage>
     fun save(storage: Storage)
     fun delete(id: Long)
      */
@@ -21,15 +22,15 @@ interface IOperationRepository{
     //TODO()
 }
 interface IColorRepository{
-    fun getByHex(hex: String): Color.ExistingColor?
-    fun getById(id: Long): Color.ExistingColor
-    fun getAll(): List<Color.ExistingColor>
-    fun save(color: Color.UserColor): Color.UserColor
-    fun save(color: Color.NewColor): Color.UserColor
-    fun delete(color: Color.UserColor): Color.UserColor
+    fun getByHex(hex: String): ExistColor?
+    fun getById(id: Long): ExistColor?
+    fun getAll(): List<ExistColor>
+    fun save(color: UserColor): UserColor?
+    fun save(color: NewColor): UserColor?
+    fun delete(color: UserColor): UserColor?
 
     fun hasRelation(colorId: Long): Boolean
-    fun replaceColorEverywhere(color: Color.UserColor, newColor: Color.ExistingColor)
+    fun replaceColorEverywhere(color: ExistColor, newColor: ExistColor): ExistColor?
 }
 interface ICategoryRepository{
     fun getBaseCategories(): List<Category>

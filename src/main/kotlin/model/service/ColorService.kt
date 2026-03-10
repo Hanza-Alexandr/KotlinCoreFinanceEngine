@@ -1,55 +1,45 @@
 package org.example.model.service
 
-import org.example.model.domain.Color
+import org.example.model.domain.ExistColor
+import org.example.model.domain.ColorOwner
+import org.example.model.domain.NewColor
 import org.example.model.domain.StateDomain
 import org.example.model.domain.StateDomainList
+import org.example.model.domain.UserColor
 import org.example.model.repository.IColorRepository
 
 class ColorService(private val repo: IColorRepository, private val userService: CurrentUserService) {
-    fun createColor(hexCode: String): StateDomain<Color.UserColor> {
-        if (hexCode.toCharArray().size != 6) return StateDomain.Error("Неправильная длина hex кода. <Должно быть 6 символов>")
-        if(repo.getByHex(hexCode)!=null) return StateDomain.Error("Не может быть двух одинаковых цветов")
-        try {
-            val newColor =  repo.save(
-                Color.NewColor(
-                    userId = userService.userId,
-                    hexCode = hexCode,
-                )
-            )
-            return StateDomain.Success(newColor)
-        }
-        catch (e: Exception){
-            return StateDomain.Error("Ошибка создания нового цвета ${e.message}")
+    fun createColor(hexCode: String): StateDomain<UserColor> {
+        if (repo.getByHex(hexCode)!=null) return StateDomain.Error("Не может быть двух одинаковых цветов")
+        val newColor = NewColor.create(hexCode, ColorOwner.User(userService.userId))
+        when (newColor){
+            is StateDomain.Error-> return StateDomain.Error(newColor.message)
+            is StateDomain.Success-> {
+                val create =  repo.save(newColor.domain)
+                return if (create==null) StateDomain.Error("❌Ошибка при создании")
+                else StateDomain.Success(create)
+            }
         }
     }
-    fun getColors(): StateDomainList<Color.ExistingColor> {
-        val listColor = repo.getAll()
-        return if (listColor.isEmpty()) StateDomainList.Empty
-
-        else StateDomainList.Success(listColor)
+    fun getColors(): StateDomainList<ExistColor> {
+        val colors = repo.getAll()
+        return if (colors.isEmpty()) StateDomainList.Empty
+        else StateDomainList.Success(colors)
     }
-    fun getColor(colorId: Int): StateDomain<Color.ExistingColor>{
-        try {
-            val color = repo.getById(colorId.toLong())
-            return StateDomain.Success(color)
-        }
-        catch (e: Exception){
-            return StateDomain.Error("Ошибка получения цвета ${e.message}")
-        }
+    fun getColor(colorId: Int): StateDomain<ExistColor>{
+        val color = repo.getById(colorId.toLong())
+        return if(color==null) StateDomain.Error("❌Ошибка при получении цвета")
+        else StateDomain.Success(color)
     }
-    fun updateColor(oldColor: Color.UserColor, newHexCode: String): StateDomain<Color.UserColor>{
-        try {
-            val newColor = Color.UserColor(
-                id = oldColor.id,
-                userId = oldColor.userId,
-                hexCode = newHexCode,
-            )
-            return StateDomain.Success(repo.save(newColor))
+    fun updateColor(oldColor: UserColor, newHexCode: String): StateDomain<UserColor>{
+        when(val upColor = oldColor.hexChange(newHexCode)){
+            is StateDomain.Error-> return StateDomain.Error(upColor.message)
+            is StateDomain.Success -> {
+                val update = repo.save(upColor.domain)
+                return if(update == null) StateDomain.Error("❌Ошибка при обновлении цвета")
+                else StateDomain.Success(update)
+            }
         }
-        catch (e: Exception){
-            return StateDomain.Error("Ошибка обновления цвета ${e.message}")
-        }
-
     }
     /**
      * 3 варианта:
@@ -61,30 +51,20 @@ class ColorService(private val repo: IColorRepository, private val userService: 
     /**
      * Простое удаление если связанных данных нет
      */
-    fun deleteColor(color: Color.UserColor): StateDomain<Color.UserColor>{
-        try {
-            val delete = repo.delete(color)
-            return StateDomain.Success(delete)
-        }
-        catch (e: Exception){
-            return StateDomain.Error( "Ошибка простого удаления ${e.message}")
-        }
+    fun deleteColor(color: UserColor): StateDomain<UserColor>{
+        val delete = repo.delete(color)
+        return if (delete == null) StateDomain.Error("❌Ошибка при удалении")
+        else StateDomain.Success(delete)
     }
     /**
      * Сложное удаление с сохранением данных. newColor это замена во всех записях цвета который будет удален
      */
-    fun deleteColor(color: Color.UserColor, newColor: Color.ExistingColor): StateDomain<Color.UserColor>{
-        try {
-            repo.replaceColorEverywhere(color,newColor)
-            val delete = repo.delete(color)
-            return StateDomain.Success(delete)
-        }
-        catch (e: Exception){
-            return StateDomain.Error("Ошибка при удалении с заменой на выбранный цвет ${e.message}")
-        }
-
+    fun deleteColor(color: UserColor, newColor: ExistColor): StateDomain<UserColor>{
+        repo.replaceColorEverywhere(color, newColor) ?: return StateDomain.Error("❌Ошибка замены цвета")
+        val delete = repo.delete(color) ?: return StateDomain.Error("❌Ошибка удаления цвета")
+        return StateDomain.Success(delete)
     }
-    fun hasRelations(color: Color.ExistingColor): Boolean{
+    fun hasRelations(color: UserColor): Boolean{
         return repo.hasRelation(color.id)
     }
 }

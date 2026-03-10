@@ -3,10 +3,10 @@ package org.example.views
 import org.example.InputState
 import org.example.NavigationIntent
 import org.example.ViewService
+import org.example.model.domain.ExistColor
 import org.example.model.domain.Category
-import org.example.model.domain.CategoryHierarchy
+import org.example.model.domain.CategoryStructure
 import org.example.model.domain.CategoryOwner
-import org.example.model.domain.Color
 import org.example.model.domain.ResultMenu
 import org.example.model.domain.NeedCategory
 import org.example.model.domain.Operation
@@ -156,10 +156,10 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
     private fun startCategoryEditingMenu(currentCategoryId: Int): NavigationIntent {
         var newName: String? = null
         var newIcon: String? = null
-        var newColor: Color.ExistingColor? = null
+        var newColor: ExistColor? = null
         var newNeed: NeedCategory? = null
         var newIsHide: Boolean? = null
-        var newParent: CategoryHierarchy? = null
+        var newParent: CategoryStructure? = null
         while (true){
             val currentCategory: Category = when(val stateCurrentCategory = categoryViewModel.getCategory(currentCategoryId)) {
                 is StateDomain.Error -> {
@@ -170,7 +170,7 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
                      stateCurrentCategory.domain
                 }
             }
-            ViewService.printHeadersForMenu("Editing category menu", "     |${currentCategory.name}|${currentCategory.icon}|${currentCategory.color}|${currentCategory.need}|${if(currentCategory.structure is CategoryHierarchy.Child) categoryViewModel.getCategory(currentCategory.structure.parentId.toInt()) else null}|${currentCategory.isHidden}")
+            ViewService.printHeadersForMenu("Editing category menu", "     |${currentCategory.name}|${currentCategory.icon}|${currentCategory.color}|${currentCategory.need}|${if(currentCategory.structure is CategoryStructure.Child) categoryViewModel.getCategory(currentCategory.structure.parentId.toInt()) else null}|${currentCategory.isHidden}")
             /** Развитие событий в зависимости от принадлежности категории(системная или пользовательская) */
             when(currentCategory.owner){
                 is CategoryOwner.System -> {
@@ -231,7 +231,7 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
                             val resMenuSelection = startParentCategorySelectionMenu()
                             newParent = when(resMenuSelection){
                                 is ResultMenu.Complete -> {
-                                    if (resMenuSelection.item==null) CategoryHierarchy.Root else CategoryHierarchy.Child(resMenuSelection.item.id)
+                                    if (resMenuSelection.item==null) CategoryStructure.Root else CategoryStructure.Child(resMenuSelection.item.id)
                                 }
                                 is ResultMenu.Exception -> {
                                     println(resMenuSelection.message)

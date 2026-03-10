@@ -13,6 +13,24 @@ CREATE TABLE StorageEntity (
     is_statistics INTEGER NOT NULL DEFAULT 1,
     is_archive INTEGER NOT NULL DEFAULT 0
 );
+
+selectAllStorage:
+SELECT
+    s.id,
+    s.name,
+    s.user_id,
+    s.currency,
+    s.type_storage,
+    s.note,
+    s.color_id,
+    s.is_statistics,
+    s.is_archive,
+    c.hex_code AS color_hex,
+    c.user_id AS color_user_id
+FROM StorageEntity AS s
+JOIN ColorEntity AS c ON s.color_id = c.id;
+
+
 setStorage:
 INSERT INTO StorageEntity (
     name,

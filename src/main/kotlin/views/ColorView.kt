@@ -1,9 +1,11 @@
 package org.example.views
 
 import org.example.NavigationIntent
-import org.example.model.domain.Color
+import org.example.model.domain.ExistColor
 import org.example.model.domain.StateDomain
 import org.example.model.domain.StateDomainList
+import org.example.model.domain.SystemColor
+import org.example.model.domain.UserColor
 import org.example.viewmodels.ColorViewModel
 
 class ColorView(private val colorViewModel: ColorViewModel) {
@@ -17,7 +19,7 @@ class ColorView(private val colorViewModel: ColorViewModel) {
         }
     }
 
-    private fun displayColorWithWarring(stateListColor: StateDomainList<Color.ExistingColor>){
+    private fun displayColorWithWarring(stateListColor: StateDomainList<ExistColor>){
         when(stateListColor){
             is StateDomainList.Empty -> {
                 println("⚠️ПРЕДУПРЕЖДЕНИЕ: Нет ни одного цвета")
@@ -81,11 +83,12 @@ class ColorView(private val colorViewModel: ColorViewModel) {
                 }
                 is StateDomain.Success -> {
                     val currentColor = when(stateCurrentColor.domain){
-                        is Color.UserColor -> {stateCurrentColor.domain}
-                        is Color.SystemColor -> {
+                        is UserColor -> {stateCurrentColor.domain}
+                        is SystemColor -> {
                             println("⚠️Warring: Системные цвета нельзя редактировать")
                             return NavigationIntent.BackHome
                         }
+                        else -> throw IllegalArgumentException()
                     }
 
                     println("Color: ${currentColor.hexCode}")
@@ -131,7 +134,7 @@ class ColorView(private val colorViewModel: ColorViewModel) {
             }
         }
     }
-    private fun startColorEditingMenu(currentColor: Color.UserColor): NavigationIntent {
+    private fun startColorEditingMenu(currentColor: UserColor): NavigationIntent {
         while (true){
             println("====================================")
             println("       Меню редактирования цвета")
@@ -171,7 +174,7 @@ class ColorView(private val colorViewModel: ColorViewModel) {
             }
         }
     }
-    private fun startDeleteMenu(color: Color.UserColor): NavigationIntent {
+    private fun startDeleteMenu(color: UserColor): NavigationIntent {
         while(true){
             val hasRelatedItems: Boolean = colorViewModel.hasRelations(color)
             if (hasRelatedItems){
@@ -190,7 +193,7 @@ class ColorView(private val colorViewModel: ColorViewModel) {
                 println("====================================")
                 when(inp){
                     1 -> {
-                        val newColor: Color.ExistingColor
+                        val newColor: ExistColor
                         val stateNewColor = startColorSelectionMenu(color)
                         when(stateNewColor){
                             is StateDomain.Error -> {
@@ -278,7 +281,7 @@ class ColorView(private val colorViewModel: ColorViewModel) {
             }
         }
     }
-    fun startColorSelectionMenu(excludeColor: Color.ExistingColor? =null): StateDomain<Color.ExistingColor> {
+    fun startColorSelectionMenu(excludeColor: ExistColor? =null): StateDomain<ExistColor> {
         while (true){
             println("====================================")
             println("       Меню выбора цвета")
@@ -304,13 +307,13 @@ class ColorView(private val colorViewModel: ColorViewModel) {
             }
         }
     }
-    private fun displayColor(list: List<Color.ExistingColor>){
+    private fun displayColor(list: List<ExistColor>){
         list.forEach {
             when(it){
-                is Color.UserColor -> {
+                is UserColor -> {
                     println("${it.id}|${"🙎‍♂️"} |${it.hexCode}")
                 }
-                is Color.SystemColor -> {
+                is SystemColor -> {
                     println("${it.id}|${"🖥️"} |${it.hexCode}")
                 }
             }

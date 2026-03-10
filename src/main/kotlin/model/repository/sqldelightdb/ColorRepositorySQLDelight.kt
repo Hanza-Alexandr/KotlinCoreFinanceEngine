@@ -2,72 +2,48 @@ package org.example.model.repository.sqldelightdb
 
 import com.example.ColorEntity
 import com.example.ColorQueries
-import org.example.model.domain.Color
+import org.example.model.domain.ExistColor
+import org.example.model.domain.ColorOwner
+import org.example.model.domain.NewColor
+import org.example.model.domain.SystemColor
+import org.example.model.domain.UserColor
 import org.example.model.repository.IColorRepository
 
 class ColorRepositorySQLDelight(private val queries: ColorQueries): IColorRepository {
-    override fun getByHex(hex: String): Color.ExistingColor? = queries.selectByHex(hex).executeAsOneOrNull()?.toDomain()
-    override fun getById(id: Long): Color.ExistingColor = queries.selectById(id).executeAsOne().toDomain()
-    override fun getAll(): List<Color.ExistingColor> = queries.selectAll().executeAsList().map { it.toDomain() }
-
-
-    override fun save(color: Color.UserColor): Color.UserColor {
-        val update = queries.updateColor(
-            user_id = color.userId,
-            hex_code = color.hexCode,
-            id = color.id
-        ).executeAsOne()
-        return Color.UserColor(
-            id = update.id,
-            userId = requireNotNull(update.user_id) { "user_id must not be null for UserColor" },
-            hexCode = update.hex_code
-        )
-    }
-
-    override fun save(color: Color.NewColor): Color.UserColor {
-        val insert = queries.insertColor(
-            user_id = color.userId,
-            hex_code = color.hexCode
-        ).executeAsOne()
-        return Color.UserColor(
-            id = insert.id,
-            userId = requireNotNull(insert.user_id) { "user_id must not be null for UserColor" },
-            hexCode = insert.hex_code
-        )
-    }
-
-    override fun delete(color: Color.UserColor): Color.UserColor {
-        val delete =  queries.deleteColor(color.id).executeAsOne()
-        return Color.UserColor(
-            id = delete.id,
-            userId = requireNotNull(delete.user_id) { "user_id must not be null for UserColor" },
-            hexCode = delete.hex_code
-        )
-    }
+    override fun getByHex(hex: String): ExistColor? = queries.selectByHex(hex).executeAsOneOrNull()?.toDomain()
+    override fun getById(id: Long): ExistColor? = queries.selectById(id).executeAsOneOrNull()?.toDomain()
+    override fun getAll(): List<ExistColor> = queries.selectAll().executeAsList().map { it.toDomain() }
+    override fun save(color: UserColor): UserColor? = queries.updateColor(color.owner.userId,color.hexCode, color.id).executeAsOneOrNull()?.toDomain() as? UserColor
+    override fun save(color: NewColor): UserColor? = queries.insertColor(color.owner.userId, color.hexCode).executeAsOneOrNull()?.toDomain() as? UserColor
+    override fun delete(color: UserColor): UserColor? = queries.deleteColor(color.id).executeAsOneOrNull()?.toDomain() as? UserColor
 
     override fun hasRelation(colorId: Long): Boolean {
-        if(queries.countStoragesByColor(colorId).executeAsOne() != 0L) return true
-        else if(queries.countCategoriesByColor(colorId).executeAsOne() != 0L) return true
-        else return false
+        return if(queries.countStoragesByColor(colorId).executeAsOne() != 0L) true
+        else if(queries.countCategoriesByColor(colorId).executeAsOne() != 0L) true
+        else false
     }
-
-    override fun replaceColorEverywhere(color: Color.UserColor, newColor: Color.ExistingColor) {
-        queries.updateStorageColor(newColor.id, color.id)
-        queries.updateCategoryColor(newColor.id, color.id)
+    override fun replaceColorEverywhere(color: ExistColor, newColor: ExistColor): ExistColor? {
+        try {
+            queries.updateStorageColor(newColor.id, color.id)
+            queries.updateCategoryColor(newColor.id, color.id)
+            return newColor
+        }
+        catch (e: Exception){
+            return null
+        }
     }
-
 }
-fun ColorEntity.toDomain(): Color.ExistingColor{
+fun ColorEntity.toDomain(): ExistColor{
     return if (user_id==null){
-        Color.SystemColor(
-            id = id,
-            hexCode = hex_code
+        SystemColor.create(
+            id,
+            hex_code,
         )
     } else{
-        Color.UserColor(
-            id = id,
-            userId = user_id,
-            hexCode = hex_code
+        UserColor.create(
+            id,
+            hex_code,
+            ColorOwner.User(user_id)
         )
     }
 }
