@@ -4,10 +4,9 @@ import com.example.CategoryEntity
 import com.example.CategoryQueries
 import com.example.ColorEntity
 import org.example.model.domain.Category
-import org.example.model.domain.CategoryOwner
+import org.example.model.domain.Owner
 import org.example.model.domain.CategoryStructure
 import org.example.model.domain.NewCategory
-import org.example.model.domain.StateDomain
 import org.example.model.domain.toDomain
 import org.example.model.repository.ICategoryRepository
 
@@ -66,8 +65,8 @@ class CategoryRepositorySQLDelight(private val queries: CategoryQueries): ICateg
             id = null,
             path_icon = category.icon,
             user_id = when(val owner = category.owner){
-                CategoryOwner.System -> {null}
-                is CategoryOwner.User -> {owner.userId}
+                Owner.System -> {null}
+                is Owner.User -> {owner.userId}
             },
             color_id = category.color.id,
             name = category.name,
@@ -93,8 +92,8 @@ class CategoryRepositorySQLDelight(private val queries: CategoryQueries): ICateg
                     is CategoryStructure.Root -> null
                 },
                 userId = when(category.owner){
-                    is CategoryOwner.User -> category.owner.userId
-                    is CategoryOwner.System -> null
+                    is Owner.User -> category.owner.userId
+                    is Owner.System -> null
                 },
                 id = category.id
             )

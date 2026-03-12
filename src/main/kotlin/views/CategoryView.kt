@@ -6,7 +6,7 @@ import org.example.ViewService
 import org.example.model.domain.ExistColor
 import org.example.model.domain.Category
 import org.example.model.domain.CategoryStructure
-import org.example.model.domain.CategoryOwner
+import org.example.model.domain.Owner
 import org.example.model.domain.ResultMenu
 import org.example.model.domain.NeedCategory
 import org.example.model.domain.Operation
@@ -173,7 +173,7 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
             ViewService.printHeadersForMenu("Editing category menu", "     |${currentCategory.name}|${currentCategory.icon}|${currentCategory.color}|${currentCategory.need}|${if(currentCategory.structure is CategoryStructure.Child) categoryViewModel.getCategory(currentCategory.structure.parentId.toInt()) else null}|${currentCategory.isHidden}")
             /** Развитие событий в зависимости от принадлежности категории(системная или пользовательская) */
             when(currentCategory.owner){
-                is CategoryOwner.System -> {
+                is Owner.System -> {
                     if (currentCategory.isHidden){
                         print("Показать?")
                         newIsHide = !readln().toBoolean()
@@ -193,7 +193,7 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
                         }
                     }
                 }
-                is CategoryOwner.User -> {
+                is Owner.User -> {
                     ViewService.printActionsForMenu("1. Изменить название","2. Изменить иконку","3. Изменить цвет","4. Изменить необходимость","5. Изменить родительскую категорию","6. Скрыть|Показать","-1. Сохранить","-2. Назад")
                     ViewService.printBottom()
                     ViewService.printHeaderChoose()
@@ -493,7 +493,7 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
      */
     private fun displayCategory(state: StateDomainList<Category>) {
         ViewService.printListDomain(state){
-            println("|${it.id}|${it.name}|${if (it.owner is CategoryOwner.System) "🖥️" else "🙎‍♂️"}")
+            println("|${it.id}|${it.name}|${if (it.owner is Owner.System) "🖥️" else "🙎‍♂️"}")
         }
     }
 }

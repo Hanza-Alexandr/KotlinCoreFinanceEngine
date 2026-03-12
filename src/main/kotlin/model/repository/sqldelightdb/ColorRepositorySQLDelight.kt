@@ -3,7 +3,7 @@ package org.example.model.repository.sqldelightdb
 import com.example.ColorEntity
 import com.example.ColorQueries
 import org.example.model.domain.ExistColor
-import org.example.model.domain.ColorOwner
+import org.example.model.domain.Owner
 import org.example.model.domain.NewColor
 import org.example.model.domain.SystemColor
 import org.example.model.domain.UserColor
@@ -43,7 +43,7 @@ fun ColorEntity.toDomain(): ExistColor{
         UserColor.create(
             id,
             hex_code,
-            ColorOwner.User(user_id)
+            Owner.User(user_id)
         )
     }
 }

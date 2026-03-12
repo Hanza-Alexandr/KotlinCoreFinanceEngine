@@ -2,7 +2,7 @@ package org.example.model.service
 
 import org.example.model.domain.ExistColor
 import org.example.model.domain.Category
-import org.example.model.domain.CategoryOwner
+import org.example.model.domain.Owner
 import org.example.model.domain.CategoryStructure
 import org.example.model.domain.NeedCategory
 import org.example.model.domain.NewCategory
@@ -34,7 +34,7 @@ class CategoryService(private val repo: ICategoryRepository, private val current
         val category = repo.save(NewCategory(
             name = name,
             color = color,
-            owner = CategoryOwner.User(currentUserService.userId),
+            owner = Owner.User(currentUserService.userId),
             icon = iconPath,
             structure = structure,
             need = need,
@@ -51,8 +51,8 @@ class CategoryService(private val repo: ICategoryRepository, private val current
             need = newNeed?: category.need,
             isHidden = newIsHide ?: category.isHidden,
             owner = when(category.owner){
-                is CategoryOwner.System -> {return StateDomain.Error("❌Ошибка. Нельзя менять системные категории")}
-                is CategoryOwner.User -> {category.owner}
+                is Owner.System -> {return StateDomain.Error("❌Ошибка. Нельзя менять системные категории")}
+                is Owner.User -> {category.owner}
             },
             structure = when(newParent){
                 /** Проверка не совпадает ли новая родительская категория своей же дочерней категорией */

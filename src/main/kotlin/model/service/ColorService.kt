@@ -1,7 +1,7 @@
 package org.example.model.service
 
 import org.example.model.domain.ExistColor
-import org.example.model.domain.ColorOwner
+import org.example.model.domain.Owner
 import org.example.model.domain.NewColor
 import org.example.model.domain.StateDomain
 import org.example.model.domain.StateDomainList
@@ -11,7 +11,7 @@ import org.example.model.repository.IColorRepository
 class ColorService(private val repo: IColorRepository, private val userService: CurrentUserService) {
     fun createColor(hexCode: String): StateDomain<UserColor> {
         if (repo.getByHex(hexCode)!=null) return StateDomain.Error("Не может быть двух одинаковых цветов")
-        val newColor = NewColor.create(hexCode, ColorOwner.User(userService.userId))
+        val newColor = NewColor.create(hexCode, Owner.User(userService.userId))
         when (newColor){
             is StateDomain.Error-> return StateDomain.Error(newColor.message)
             is StateDomain.Success-> {

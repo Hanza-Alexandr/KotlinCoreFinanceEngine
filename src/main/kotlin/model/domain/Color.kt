@@ -22,7 +22,7 @@ sealed class Color{
 */
 abstract class AppColor{
     abstract val hexCode: String
-    abstract val owner: ColorOwner
+    abstract val owner: Owner
     companion object{
         fun isValidHex(hexCode: String): Boolean{
             val code = hexCode.lowercase()
@@ -40,11 +40,11 @@ abstract class ExistColor: AppColor() {
 class UserColor private constructor(
     override val id: Long,
     override val hexCode: String,
-    user: ColorOwner.User
+    user: Owner.User
 ): ExistColor(){
     override val owner = user
     companion object{
-        fun create(id: Long, hexCode: String, user: ColorOwner.User): UserColor{
+        fun create(id: Long, hexCode: String, user: Owner.User): UserColor{
             if (id<=0) throw IllegalArgumentException("❌Ошибка при создании объекта. Некорректный ID")
             if (!isValidHex(hexCode)) throw IllegalArgumentException("❌Ошибка при создании объекта. Некорректный Hex")
             return UserColor(id,hexCode, user)
@@ -61,7 +61,7 @@ class SystemColor private constructor(
     override val id: Long,
     override val hexCode: String
 ): ExistColor(){
-    override val owner: ColorOwner = ColorOwner.System
+    override val owner: Owner = Owner.System
 
     companion object{
         fun create(id: Long, hexCode: String): SystemColor{
@@ -74,18 +74,14 @@ class SystemColor private constructor(
 
 class NewColor private constructor(
     override val hexCode: String,
-    override val owner: ColorOwner.User
+    override val owner: Owner.User
 
 ): AppColor(){
     companion object{
-        fun create(hexCode: String, structure: ColorOwner.User): StateDomain<NewColor>{
+        fun create(hexCode: String, structure: Owner.User): StateDomain<NewColor>{
             if (!isValidHex(hexCode)) return StateDomain.Error("❌Ошибка при создании объекта. Некорректный Hex")
             return StateDomain.Success(NewColor(hexCode,structure))
         }
     }
 }
 
-sealed class ColorOwner() {
-    object System : ColorOwner()
-    data class User(val userId: Long) : ColorOwner()
-}

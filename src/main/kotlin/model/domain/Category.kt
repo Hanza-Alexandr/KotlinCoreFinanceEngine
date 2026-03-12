@@ -6,9 +6,9 @@ import com.example.ColorEntity
 import org.example.model.repository.sqldelightdb.toDomain
 
 
-sealed class CategoryOwner {
-    object System : CategoryOwner()
-    data class User(val userId: Long) : CategoryOwner()
+sealed class Owner {
+    object System : Owner()
+    data class User(val userId: Long) : Owner()
 }
 
 sealed class CategoryStructure {
@@ -22,7 +22,7 @@ data class Category(
     val icon: String,
     val need: NeedCategory,
     val isHidden: Boolean,
-    val owner: CategoryOwner,
+    val owner: Owner,
     val structure: CategoryStructure
 )
 data class NewCategory(
@@ -31,13 +31,13 @@ data class NewCategory(
     val icon: String,
     val need: NeedCategory,
     val isHidden: Boolean,
-    val owner: CategoryOwner.User,
+    val owner: Owner.User,
     val structure: CategoryStructure
 )
 
 
 fun CategoryEntity.toDomain(color: ExistColor): Category{
-    val owner = if(user_id == null) CategoryOwner.System else CategoryOwner.User(user_id)
+    val owner = if(user_id == null) Owner.System else Owner.User(user_id)
     val structure = if (parent_category_id == null) CategoryStructure.Root else CategoryStructure.Child(parent_category_id)
     return Category(
         id = id,
@@ -51,7 +51,7 @@ fun CategoryEntity.toDomain(color: ExistColor): Category{
     )
 }
 fun CategorySelectById.toDomain(): Category{
-    val owner = if(category_user_id == null) CategoryOwner.System else CategoryOwner.User(category_user_id)
+    val owner = if(category_user_id == null) Owner.System else Owner.User(category_user_id)
     val structure = if (parent_category_id == null) CategoryStructure.Root else CategoryStructure.Child(parent_category_id)
     return Category(
         id = category_id,
