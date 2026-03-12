@@ -1,6 +1,8 @@
 package org.example.model.domain
 
 import org.example.InputState
+import org.example.NavigationIntent
+import org.example.ViewService
 
 enum class TypeOperation{
     DEBIT,
@@ -49,6 +51,22 @@ enum class TypeStorage {
             }
 
         }
+        fun selectTypeStorage(): ResultMenu<TypeStorage>{
+            while (true){
+                ViewService.printHeadersForMenu("Selection Type Storage  menu ")
+                ViewService.printActionsForMenu("1.GENERAL", "2.BANK_ACCOUNT", "3. CASH", "4. CARD", "-1. Exit")
+                ViewService.printBottom()
+                val inp = readln().toIntOrNull() ?: run { println("❌ОШИБКА: нужно число"); continue }
+                return when (inp){
+                    1 -> ResultMenu.Complete(TypeStorage.GENERAL, NavigationIntent.Back)
+                    2 -> ResultMenu.Complete(TypeStorage.BANK_ACCOUNT, NavigationIntent.Back)
+                    3 -> ResultMenu.Complete(TypeStorage.CASH, NavigationIntent.Back)
+                    4 -> ResultMenu.Complete(TypeStorage.CARD, NavigationIntent.Back)
+                    -1 -> ResultMenu.NavigationOnly(NavigationIntent.Back)
+                    else -> ResultMenu.Exception("Некорректный ввод")
+                }
+            }
+        }
     }
 }
 enum class Currency{
@@ -63,6 +81,21 @@ enum class Currency{
                 InputState.Error("Нет такой Валюты")
             }
 
+        }
+        fun selectCurrency(): ResultMenu<Currency>{
+            while (true){
+                ViewService.printHeadersForMenu("Selection Currency menu ")
+                ViewService.printActionsForMenu("1.RUB", "2.USD", "-1. Назад")
+                ViewService.printBottom()
+                val inp = readln().toIntOrNull() ?: run { println("❌ОШИБКА: нужно число"); continue }
+
+                return when (inp){
+                    1 -> ResultMenu.Complete(Currency.RUB, NavigationIntent.Back)
+                    2 -> ResultMenu.Complete(Currency.USD, NavigationIntent.Back)
+                    -1 -> ResultMenu.NavigationOnly(NavigationIntent.Back)
+                    else -> ResultMenu.Exception("Некорректный ввод")
+                }
+            }
         }
     }
 }
