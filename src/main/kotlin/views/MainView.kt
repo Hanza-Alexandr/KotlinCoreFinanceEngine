@@ -31,7 +31,7 @@ class MainView(
 
     private fun useActions(num: Int){
         when (num) {
-            1 -> TODO("Счета не сделаны")
+            1 -> storageView.startMainMenu()
             2 -> categoryView.startMainMenu()
             3 -> colorView.start()
             -1 -> accountViewModel.logOut()

@@ -115,14 +115,14 @@ fun main() {
     val accVM = AccountViewModel(accSer)
     val catVM = CategoryViewModel(catSer)
     val colVM = ColorViewModel(colSer)
+    val colV = ColorView(colVM)
 
     val opV = OperationView(opVM)
-    val stV = StorageView(stVM, opV)
+    val stV = StorageView(stVM, opV, colV)
     val logView = LogInView(accVM)
     val createAccountView = CreateAccountView(accVM)
     val recoveryView = AccountRecoveryView(accVM)
 
-    val colV = ColorView(colVM)
     val catV = CategoryView(catVM,colV)
 
     val authV = AuthenticationView(accVM,logView, createAccountView, recoveryView)
