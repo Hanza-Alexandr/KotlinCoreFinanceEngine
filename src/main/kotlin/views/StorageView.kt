@@ -2,10 +2,15 @@ package org.example.views
 
 import org.example.NavigationIntent
 import org.example.ViewService
+import org.example.model.domain.AppColor
+import org.example.model.domain.BaseStorage
+import org.example.model.domain.Currency
+import org.example.model.domain.ExistColor
 import org.example.model.domain.ResultMenu
 import org.example.model.domain.StateDomain
 import org.example.model.domain.StateDomainList
 import org.example.model.domain.Storage
+import org.example.model.domain.TypeStorage
 import org.example.viewmodels.StorageViewModel
 
 class StorageView(private val storageViewModel: StorageViewModel, private val operationView: OperationView,){
@@ -67,7 +72,6 @@ class StorageView(private val storageViewModel: StorageViewModel, private val op
                 }
             }
             ViewService.printHeadersForMenu("Меню счета", currentStorage.name)
-            displayOperationsByStorage(currentStorage)
             ViewService.printActionsForMenu("0. Добавить операцию", "-1. Выйти", "-2. Изменить", "-3. Удалить")
             ViewService.printBottom()
             ViewService.printHeaderChoose()
@@ -122,7 +126,37 @@ class StorageView(private val storageViewModel: StorageViewModel, private val op
     }
     private fun startCreateStorageMenu(): ResultMenu<Storage>{
         while (true){
-            TODO()
+            ViewService.printHeadersForMenu("Storage menu creation")
+            println("Название:")
+            val name = readln()
+            if (!BaseStorage.isNameValid(name)) {println("❌Некорректное имя"); continue}
+            println("Валюта:")
+            val currency: Currency = when(val stateCurrency = Currency.selectCurrency()){
+                is ResultMenu.NavigationOnly -> continue
+                is ResultMenu.Exception -> {println(stateCurrency.message); continue}
+                is ResultMenu.Complete -> stateCurrency.item
+            }
+            println("Тип:")
+            val typeStorage: TypeStorage = when(val stateTypeStorage = TypeStorage.selectTypeStorage()){
+                is ResultMenu.NavigationOnly -> continue
+                is ResultMenu.Exception -> {println(stateTypeStorage.message); continue}
+                is ResultMenu.Complete -> stateTypeStorage.item
+            }
+            println("Заметка:")
+            val inpNote: String = readln() //Ну да так калечно. че поделать
+            val note =if(inpNote=="") null else inpNote
+            if (!BaseStorage.isNoteValid(note)) {println("❌Некорректная заметка"); continue}
+            val color = when(val stateColor = colorView.startColorSelectionMenu()){
+                is StateDomain.Error -> {println(stateColor.message); continue}
+                is StateDomain.Success -> stateColor.domain
+            }
+            when(val stateCreate = storageViewModel.createStorage(name,currency,typeStorage, note,color)){
+                is StateDomain.Error -> return ResultMenu.Exception(stateCreate.message)
+                is StateDomain.Success -> {
+                    println("✅Успешно");
+                    return ResultMenu.Complete(stateCreate.domain, NavigationIntent.Exit)
+                }
+            }
         }
     }
     private fun startEditingStorageMenu(storage: Storage): ResultMenu<Storage>{
