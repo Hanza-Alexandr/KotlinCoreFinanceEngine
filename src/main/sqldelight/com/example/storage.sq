@@ -30,8 +30,24 @@ SELECT
 FROM StorageEntity AS s
 JOIN ColorEntity AS c ON s.color_id = c.id;
 
+getStorageById:
+SELECT
+    S.id,
+    S.name,
+    S.user_id,
+    S.currency,
+    S.type_storage,
+    S.note,
+    S.is_statistics,
+    S.is_archive,
+    C.id AS colorId,
+    C.hex_code AS colorHex,
+    C.user_id AS colorOwnerId
+FROM StorageEntity AS S
+INNER JOIN ColorEntity AS C ON S.color_id = C.id
+WHERE S.id = ?;
 
-setStorage:
+insertStorage:
 INSERT INTO StorageEntity (
     name,
     user_id,
@@ -41,33 +57,20 @@ INSERT INTO StorageEntity (
     color_id,
     is_statistics,
     is_archive
-) VALUES (
-    :name,
-    :user_id,
-    :currency,
-    :type_storage,
-    :note,
-    :color_id,
-    :is_statistics,
-    :is_archive
-);
+)
+VALUES ( ?, ?, ?, ?, ?, ?, ?, ?)
+RETURNING *;
 
-
-selectStoragesByUserId:
-SELECT
-    s.id,
-    s.name,
-    s.user_id,
-    s.currency,
-    s.type_storage,
-    s.note,
-    s.color_id,
-    s.is_statistics,
-    s.is_archive,
-    c.hex_code,
-    c.user_id AS color_user_id
-FROM StorageEntity AS s
-LEFT JOIN ColorEntity AS c
-    ON s.color_id = c.id
-WHERE s.user_id = ?;
+updateStorage:
+UPDATE StorageEntity
+SET
+    name = ?,
+    currency = ?,
+    type_storage = ?,
+    note = ?,
+    color_id = ?,
+    is_statistics = ?,
+    is_archive = ?
+WHERE id = ?
+RETURNING *;
 
