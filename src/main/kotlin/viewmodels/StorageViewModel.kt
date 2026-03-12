@@ -16,6 +16,8 @@ class StorageViewModel(private val service: StorageService){
         return service.save(name, currency, typeStorage, note, color)
     }
     fun getStorage(storageId: Int): StateDomain<Storage>{
+        return service.getStorage(storageId)
+    }
         TODO()
     }
 }
