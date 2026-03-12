@@ -4,6 +4,7 @@ import org.example.model.domain.ExistColor
 import org.example.model.domain.Category
 import org.example.model.domain.NewCategory
 import org.example.model.domain.NewColor
+import org.example.model.domain.NewStorage
 import org.example.model.domain.Setting
 import org.example.model.domain.Storage
 import org.example.model.domain.User
@@ -11,12 +12,10 @@ import org.example.model.domain.UserColor
 
 interface IStorageRepository{
     fun getAll(): List<Storage>
-    //TODO()
-    /*
-    fun getById(id: Long): Storage
-    fun save(storage: Storage)
-    fun delete(id: Long)
-     */
+    fun getById(id: Long): Storage?
+    fun save(storage: Storage): Storage?
+    fun save(storage: NewStorage): Storage?
+    fun delete(storage: Storage): Storage?
 }
 interface IOperationRepository{
     //TODO()
