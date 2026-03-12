@@ -13,11 +13,12 @@ class StorageViewModel(private val service: StorageService){
         return service.getStorageList()
     }
     fun createStorage(name: String, currency: Currency, typeStorage: TypeStorage, note: String?, color: ExistColor): StateDomain<Storage>{
-        return service.save(name, currency, typeStorage, note, color)
+        return service.createStorage(name, currency, typeStorage, note, color)
     }
     fun getStorage(storageId: Int): StateDomain<Storage>{
         return service.getStorage(storageId)
     }
-        TODO()
+    fun update(changingStorage: Storage, name: String?, typeStorage: TypeStorage?, note: String?, color: ExistColor?, isStatistic: Boolean?, isArchive: Boolean?): StateDomain<Storage>{
+        return service.updateStorage(changingStorage,name,typeStorage,note, color, isStatistic, isArchive)
     }
 }

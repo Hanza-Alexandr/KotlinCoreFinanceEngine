@@ -2,18 +2,18 @@ package org.example.views
 
 import org.example.NavigationIntent
 import org.example.ViewService
-import org.example.model.domain.AppColor
 import org.example.model.domain.BaseStorage
 import org.example.model.domain.Currency
 import org.example.model.domain.ExistColor
 import org.example.model.domain.ResultMenu
 import org.example.model.domain.StateDomain
-import org.example.model.domain.StateDomainList
 import org.example.model.domain.Storage
 import org.example.model.domain.TypeStorage
 import org.example.viewmodels.StorageViewModel
+import java.awt.Color
+import javax.swing.text.View
 
-class StorageView(private val storageViewModel: StorageViewModel, private val operationView: OperationView,){
+class StorageView(private val storageViewModel: StorageViewModel, private val operationView: OperationView, private val colorView: ColorView){
     fun startMainMenu(){
         while (true){
             when(val result = startStoragesMenu()){
@@ -160,12 +160,65 @@ class StorageView(private val storageViewModel: StorageViewModel, private val op
         }
     }
     private fun startEditingStorageMenu(storage: Storage): ResultMenu<Storage>{
+        var newName: String? = null
+        var newNote: String? = null
+        var newType: TypeStorage? = null
+        var newColor: ExistColor? = null
+        var newStatistics: Boolean? = null
+        var newArchive: Boolean? = null
         while (true){
-            TODO()
+            ViewService.printHeadersForMenu("Editing storage menu", "|${storage.id}|${storage.name}|${storage.currency.name}|${storage.typeStorage.name}|${storage.note}|${storage.color.hexCode}|Саттистика = ${storage.isStatistics}| архив = ${storage.isArchive}")
+            ViewService.printActionsForMenu("-1. Выйти","1. Изменить название","2. Изменить тип","3. Редактировать заметку", "4. Изменить цвет", "5. Убрать/включить в статистику", "6. Убрать/вернуть из архива","7. Save")
+            println("Не сохраненные изменения: |${if (newName!=null)"$newName" else ""}|${if (newNote != null) "$newNote" else ""}|${if (newType != null) "$newType" else ""}|${if (newColor != null) "$newColor" else ""}|${if (newStatistics != null) "$newStatistics" else ""}|${if (newArchive != null) "$newArchive" else ""}")
+            val inp = readln().toIntOrNull() ?: run { println("❌ОШИБКА: нужно число"); continue }
+            when(inp){
+                -1 -> return ResultMenu.NavigationOnly(NavigationIntent.Exit)
+                1 -> {
+                    println("newName: ")
+                    newName = readln()
+                    if (!BaseStorage.isNameValid(newName)) {println("❌name invalid");continue}
+                }
+                2 -> {
+                    when(val stateType = TypeStorage.selectTypeStorage()){
+                        is ResultMenu.Exception -> {
+                            println(stateType.message)
+                            continue
+                        }
+                        is ResultMenu.Complete -> newType= stateType.item
+                        is ResultMenu.NavigationOnly -> continue
+                    }
+                }
+                3 -> {
+                    println("newNote: ")
+                    newNote = readln()
+                    if (!BaseStorage.isNoteValid(newNote)) {println("❌note invalid");continue}
+                }
+                4 -> {
+                    when(val stateColor = colorView.startColorSelectionMenu()){
+                        is StateDomain.Error -> {
+                            println(stateColor.message)
+                            continue
+                        }
+                        is StateDomain.Success -> newColor = stateColor.domain
+                    }
+                }
+                5 -> {
+                    newStatistics = storage.isStatistics
+                }
+                6 -> {
+                    newArchive = storage.isArchive
+                }
+                7 -> {
+                    return when(val changingState = storageViewModel.update(storage, newName,newType,newNote,newColor,newStatistics,newArchive)){
+                        is StateDomain.Error -> ResultMenu.Exception(changingState.message)
+                        is StateDomain.Success -> {
+                            println("✅Успешно")
+                            ResultMenu.Complete(changingState.domain, NavigationIntent.Exit)
+                        }
+                    }
+                }
+            }
         }
-    }
-    private fun displayOperationsByStorage(storage: Storage){
-        TODO()
     }
 }
 

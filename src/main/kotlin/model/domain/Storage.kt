@@ -21,7 +21,6 @@ abstract class BaseStorage{
     }
 }
 
-
 data class Storage(
     val id: Long,
     override val name: String,
@@ -41,32 +40,30 @@ data class Storage(
             return Storage(id, name, userId, currency, typeStorage, note, color, isStatistics, isArchive)
         }
     }
-    fun rename(newName: String): Storage {
-        require(newName.isNotBlank())
-        return copy(name = newName)
-    }
+    fun changeName(newName: String): Storage =
+        copy(name = newName) //TODO()отсутсвует проверка на корректность. Т.к я хз как сделать так что бы было удобно использовать функцию и что бы я был уверен что имя соответсвует логикик и огранияениям
 
     fun changeType(newType: TypeStorage): Storage =
-        copy(typeStorage = newType) //TODO проверка на корректность
+        copy(typeStorage = newType)
 
-    fun changeNote(newNote: String?): Storage =
-        copy(note = newNote)//TODO проверка на корректность
+    fun changeNote(newNote: String?): Storage=
+        copy(note = newNote) //TODO()отсутсвует проверка на корректность. Т.к я хз как сделать так что бы было удобно использовать функцию и что бы я был уверен что имя соответсвует логикик и огранияениям
 
     fun changeColor(newColor: ExistColor): Storage =
-        copy(color = newColor)//TODO проверка на корректность
+        copy(color = newColor)
 
-    fun enableStatistics(): Storage =
-        copy(isStatistics = true)//TODO проверка на корректность
-
-    fun disableStatistics(): Storage =
-        copy(isStatistics = false)//TODO проверка на корректность
-
-    fun archive(): Storage =
-        copy(isArchive = true)//TODO проверка на корректность
-
-    fun unarchive(): Storage =
-        copy(isArchive = false)//TODO проверка на корректность
-
+    fun switchStatistic(bool: Boolean): Storage{
+        return when(bool){
+            true -> copy(isStatistics = false)
+            false -> copy(isStatistics = true)
+        }
+    }
+    fun switchArchive(bool: Boolean): Storage{
+        return when(bool){
+            true -> copy(isArchive = false)
+            false -> copy(isArchive = true)
+        }
+    }
 }
 
 class NewStorage private constructor(

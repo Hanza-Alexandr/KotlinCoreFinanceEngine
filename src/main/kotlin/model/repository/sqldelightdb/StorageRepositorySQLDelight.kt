@@ -58,7 +58,7 @@ class StorageRepositorySQLDelight(private val queries: StorageQueries): IStorage
         return queries.updateStorage(
             name = storage.name,
             currency = storage.currency.toString(),
-            type_storage = storage.currency.toString(),
+            type_storage = storage.typeStorage.toString(),
             note = storage.note,
             color_id = storage.color.id,
             is_statistics = if(storage.isStatistics) 1L else 0,

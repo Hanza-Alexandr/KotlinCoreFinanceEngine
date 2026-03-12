@@ -9,7 +9,6 @@ import org.example.model.domain.StateDomainList
 import org.example.model.domain.Storage
 import org.example.model.domain.TypeStorage
 import org.example.model.repository.IStorageRepository
-import java.awt.Color
 
 class StorageService(private val repo: IStorageRepository, private val currentUserService: CurrentUserService) {
     fun getStorageList(): StateDomainList<Storage>{
@@ -23,7 +22,7 @@ class StorageService(private val repo: IStorageRepository, private val currentUs
            else -> StateDomain.Success(stateGet)
        }
     }
-    fun save(name: String, currency: Currency, typeStorage: TypeStorage, note: String?, color: ExistColor): StateDomain<Storage>{
+    fun createStorage(name: String, currency: Currency, typeStorage: TypeStorage, note: String?, color: ExistColor): StateDomain<Storage>{
         val stateNewStorage = NewStorage.create(
             name = name,
             userId = currentUserService.userId,
@@ -42,8 +41,18 @@ class StorageService(private val repo: IStorageRepository, private val currentUs
             }
         }
     }
-    fun save(storage: Storage): StateDomain<Storage>{
-        TODO()
+    fun updateStorage(changingStorage: Storage, name: String?, typeStorage: TypeStorage?, note: String?, color: ExistColor?, isStatistic: Boolean?, isArchive: Boolean?): StateDomain<Storage>{
+        var storage = changingStorage
+        name?.let { storage = storage.changeName(it) }
+        note?.let { storage = storage.changeNote(it) }
+        typeStorage?.let { storage = storage.changeType(it) }
+        color?.let { storage = storage.changeColor(it) }
+        isStatistic?.let { storage = storage.switchStatistic(it) }
+        isArchive?.let { storage = storage.switchArchive(it) }
+        return when(val stateChanging = repo.save(storage)){
+            null -> StateDomain.Error("❌Ошибка при попытке редактирования")
+            else -> StateDomain.Success(stateChanging)
+        }
     }
 
 }
