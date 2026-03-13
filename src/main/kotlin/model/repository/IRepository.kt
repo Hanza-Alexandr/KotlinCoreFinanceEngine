@@ -4,7 +4,9 @@ import org.example.model.domain.ExistColor
 import org.example.model.domain.Category
 import org.example.model.domain.NewCategory
 import org.example.model.domain.NewColor
+import org.example.model.domain.NewOperation
 import org.example.model.domain.NewStorage
+import org.example.model.domain.Operation
 import org.example.model.domain.Setting
 import org.example.model.domain.Storage
 import org.example.model.domain.User
@@ -18,7 +20,11 @@ interface IStorageRepository{
     fun delete(storage: Storage): Storage?
 }
 interface IOperationRepository{
-    //TODO()
+    fun getAll(): List<Operation>
+    fun getById(id: Long): Operation?
+    fun save(newOperation: NewOperation): Operation?
+    fun save(operation: Operation): Operation?
+    fun delete(operation: Operation): Operation?
 }
 interface IColorRepository{
     fun getByHex(hex: String): ExistColor?
