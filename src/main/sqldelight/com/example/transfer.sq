@@ -8,6 +8,39 @@ CREATE TABLE TransferEntity (
     status TEXT NOT NULL
 );
 
+selectTransfersByStorageId:
+SELECT
+    -- Данные самого перевода
+    tr.id AS tr_id,
+    tr.amount,
+    tr.date,
+    tr.time,
+    tr.status,
+
+    -- Данные хранилища ОТКУДА (From)
+    stFrom.id AS from_id,
+    stFrom.name AS from_name,
+    stFrom.currency AS from_currency,
+    stFrom.type_storage AS from_type,
+    colorFrom.hex_code AS from_color_hex,
+
+    -- Данные хранилища КУДА (To)
+    stTo.id AS to_id,
+    stTo.name AS to_name,
+    stTo.currency AS to_currency,
+    stTo.type_storage AS to_type,
+    colorTo.hex_code AS to_color_hex
+FROM TransferEntity AS tr
+-- Джойним отправителя и его цвет
+INNER JOIN StorageEntity AS stFrom ON tr.from_storage_id = stFrom.id
+INNER JOIN ColorEntity AS colorFrom ON stFrom.color_id = colorFrom.id
+-- Джойним получателя и его цвет
+INNER JOIN StorageEntity AS stTo ON tr.to_storage_id = stTo.id
+INNER JOIN ColorEntity AS colorTo ON stTo.color_id = colorTo.id
+-- Фильтр: если наш ID это либо отправитель, либо получатель
+WHERE tr.from_storage_id = :storageId OR tr.to_storage_id = :storageId
+ORDER BY tr.date DESC, tr.time DESC;
+
 selectTransfers:
 SELECT
     t.id,

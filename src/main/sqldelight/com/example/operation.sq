@@ -12,6 +12,47 @@ CREATE TABLE OperationEntity (
     time TEXT NOT NULL,
     status TEXT NOT NULL
 );
+selectOperationsByStorageId:
+SELECT
+    -- Данные операции
+    op.id AS op_id,
+    op.amount,
+    op.date,
+    op.time,
+    op.type_operation,
+    op.status,
+
+    -- Данные хранилища
+    st.id AS storage_id,
+    st.name AS storage_name,
+    st.currency AS storage_currency,
+    st.type_storage AS storage_type,
+    st.note AS storage_note,
+    st.is_statistics AS storage_is_statistics,
+
+    -- Цвет хранилища
+    stColor.id AS storage_color_id,
+    stColor.hex_code AS storage_color_hex,
+
+    -- Данные категории
+    cat.id AS category_id,
+    cat.name AS category_name,
+    cat.path_icon AS category_icon,
+    cat.need AS category_need,
+    cat.is_hide AS category_is_hide,
+
+    -- Цвет категории
+    catColor.id AS category_color_id,
+    catColor.hex_code AS category_color_hex
+FROM OperationEntity AS op
+INNER JOIN StorageEntity AS st ON op.storage_id = st.id
+INNER JOIN ColorEntity AS stColor ON st.color_id = stColor.id
+INNER JOIN CategoryEntity AS cat ON op.category_id = cat.id
+INNER JOIN ColorEntity AS catColor ON cat.color_id = catColor.id
+WHERE op.storage_id = :storageId;
+
+
+
 selectOperations:
 SELECT
     o.id,
