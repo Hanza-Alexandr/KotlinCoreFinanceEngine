@@ -54,5 +54,11 @@ class StorageService(private val repo: IStorageRepository, private val currentUs
             else -> StateDomain.Success(stateChanging)
         }
     }
+    fun deleteStorage(storage: Storage): StateDomain<Storage>{
+       return when(val stateDelete = repo.delete(storage)){
+            null -> StateDomain.Error("❌Ошибка удаления storage")
+            else -> StateDomain.Success(stateDelete)
+       }
+    }
 
 }

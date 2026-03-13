@@ -21,4 +21,7 @@ class StorageViewModel(private val service: StorageService){
     fun update(changingStorage: Storage, name: String?, typeStorage: TypeStorage?, note: String?, color: ExistColor?, isStatistic: Boolean?, isArchive: Boolean?): StateDomain<Storage>{
         return service.updateStorage(changingStorage,name,typeStorage,note, color, isStatistic, isArchive)
     }
+    fun delete(storage: Storage): StateDomain<Storage>{
+        return service.deleteStorage(storage)
+    }
 }

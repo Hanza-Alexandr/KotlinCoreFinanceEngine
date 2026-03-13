@@ -1,7 +1,7 @@
 CREATE TABLE TransferEntity (
     id INTEGER NOT NULL PRIMARY KEY,
-    from_storage_id INTEGER NOT NULL REFERENCES StorageEntity(id),
-    to_storage_id INTEGER NOT NULL REFERENCES StorageEntity(id),
+    from_storage_id INTEGER NOT NULL REFERENCES StorageEntity(id) ON DELETE CASCADE,
+    to_storage_id INTEGER NOT NULL REFERENCES StorageEntity(id) ON DELETE CASCADE,
     amount REAL NOT NULL,
     date TEXT NOT NULL,
     time TEXT NOT NULL,

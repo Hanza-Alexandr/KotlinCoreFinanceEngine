@@ -14,6 +14,11 @@ CREATE TABLE StorageEntity (
     is_archive INTEGER NOT NULL DEFAULT 0
 );
 
+deleteById:
+DELETE FROM StorageEntity
+WHERE id = ?
+RETURNING *;
+
 selectAllStorage:
 SELECT
     s.id,

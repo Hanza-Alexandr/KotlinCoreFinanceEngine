@@ -104,7 +104,13 @@ class StorageView(private val storageViewModel: StorageViewModel, private val op
                             println(result.message)
                             continue
                         }
-                        else -> continue
+                        is ResultMenu.Complete -> return ResultMenu.Complete(result.item, NavigationIntent.Exit)
+                        is ResultMenu.NavigationOnly -> {
+                            when(result.navigation){
+                                is NavigationIntent.Exit -> return ResultMenu.NavigationOnly(NavigationIntent.Exit)
+                                else -> continue
+                            }
+                        }
                     }
                 }
                 else -> {
@@ -121,7 +127,23 @@ class StorageView(private val storageViewModel: StorageViewModel, private val op
     }
     private fun startDeleteMenu(storage: Storage): ResultMenu<Storage>{
         while (true){
-            TODO()
+            ViewService.printHeadersForMenu("Delete storage menu", "Удаление приведет к удалению всех операций по счету")
+            ViewService.printActionsForMenu("1. Удалить", "-1. Выйти")
+            ViewService.printBottom()
+            ViewService.printHeaderChoose()
+            val inp = readln().toIntOrNull() ?: run { println("❌ОШИБКА: нужно число"); continue }
+            when(inp)
+            {
+                1 -> {
+                    when(val stateDelete = storageViewModel.delete(storage)){
+                        is StateDomain.Success -> {println("✅Успешно"); return ResultMenu.Complete(stateDelete.domain,
+                            NavigationIntent.Exit)
+                        }
+                        is StateDomain.Error -> return ResultMenu.Exception(stateDelete.message)
+                    }
+                }
+                -1 -> return ResultMenu.NavigationOnly(NavigationIntent.Exit)
+            }
         }
     }
     private fun startCreateStorageMenu(): ResultMenu<Storage>{

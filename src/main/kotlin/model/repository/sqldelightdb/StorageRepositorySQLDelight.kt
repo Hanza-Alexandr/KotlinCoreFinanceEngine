@@ -80,9 +80,7 @@ class StorageRepositorySQLDelight(private val queries: StorageQueries): IStorage
         ).executeAsOneOrNull()?.toDomain(storage.color)
     }
 
-    override fun delete(storage: Storage): Storage? {
-        TODO("Not yet implemented")
-    }
+    override fun delete(storage: Storage): Storage? = queries.deleteById(storage.id).executeAsOneOrNull()?.toDomain(storage.color)
 
     fun StorageEntity.toDomain(color: ExistColor): Storage{
         return Storage(
