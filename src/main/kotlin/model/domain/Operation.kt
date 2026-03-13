@@ -3,112 +3,63 @@ package org.example.model.domain
 import java.math.BigDecimal
 import java.sql.Time
 import java.util.Date
+/** В разных классах я пробовал создавать объекты по разному. Где то через закрытый конструктор и
+ * возвращалось состояние объекта. Где то просто если данные не проходили условия и бизнес логику выбрасывалось исключение.
+ * Тут попробуем выкидывать исключение для объектов цепляемых из бд(т.е объекты классов с ID) а при создании объектов классов для новых объектов(с приставкой New и без id)
+ * использовать обертки*/
 
-
-abstract class Operation {
-    abstract val id: Long?
-    abstract val amount: BigDecimal
-    abstract val date: Date
-    abstract val time: Time
-    abstract val status: String
-
-    abstract fun changeAmount(newAmount: BigDecimal): StateDomain<Operation>
-    abstract fun changeDate(newDate: Date): StateDomain<Operation>
-    abstract fun changeTime(newTime: Time): StateDomain<Operation>
-    abstract fun changeStatus(newStatus: String): StateDomain<Operation>
+sealed interface Operation{
+    val amount: BigDecimal
+    val date: Date
+    val time: Time
+    val status: String
 }
 
-abstract class GeneralTransaction: Operation(){
-   abstract val storage: Storage
-   abstract val category: Category
-   abstract val typeOperation: TypeOperation
-
-   abstract fun changeStorage(newStorage: Storage): StateDomain<GeneralTransaction>
-   abstract fun changeCategory(newCategory: Category): StateDomain<GeneralTransaction>
-   abstract fun changeType(newType: TypeOperation): StateDomain<GeneralTransaction>
+sealed interface GeneralTransaction: Operation{
+    val storage: Storage
+    val category: Category
+    val typeOperation: TypeOperation
 
 }
 
-data class CreditTransaction(
-    override val id: Long?,
+@ConsistentCopyVisibility
+data class CreditTransaction (
+    val id: Long,
     override val storage: Storage,
     override val category: Category,
     override val amount: BigDecimal,
     override val time: Time,
     override val date: Date,
     override val status: String
-): GeneralTransaction(){
+): GeneralTransaction{
     override val typeOperation: TypeOperation = TypeOperation.CREDIT
-    override fun changeStorage(newStorage: Storage): StateDomain<GeneralTransaction> {
-        TODO("Not yet implemented")
-    }
-
-    override fun changeCategory(newCategory: Category): StateDomain<GeneralTransaction> {
-        TODO("Not yet implemented")
-    }
-
-    override fun changeType(newType: TypeOperation): StateDomain<GeneralTransaction> {
-        TODO("Not yet implemented")
-    }
-
-    override fun changeAmount(newAmount: BigDecimal): StateDomain<Operation> {
-        TODO("Not yet implemented")
-    }
-
-    override fun changeDate(newDate: Date): StateDomain<Operation> {
-        TODO("Not yet implemented")
-    }
-
-    override fun changeTime(newTime: Time): StateDomain<Operation> {
-        TODO("Not yet implemented")
-    }
-
-    override fun changeStatus(newStatus: String): StateDomain<Operation> {
-        TODO("Not yet implemented")
-    }
 }
 
 data class DebitTransaction(
-    override val id: Long?,
+    val id: Long,
     override val storage: Storage,
     override val category: Category,
     override val amount: BigDecimal,
     override val time: Time,
     override val date: Date,
     override val status: String
-): GeneralTransaction(){
+): GeneralTransaction{
     override val typeOperation: TypeOperation = TypeOperation.DEBIT
-    override fun changeStorage(newStorage: Storage): StateDomain<GeneralTransaction> {
-        TODO("Not yet implemented")
-    }
-
-    override fun changeCategory(newCategory: Category): StateDomain<GeneralTransaction> {
-        TODO("Not yet implemented")
-    }
-
-    override fun changeType(newType: TypeOperation): StateDomain<GeneralTransaction> {
-        TODO("Not yet implemented")
-    }
-
-    override fun changeAmount(newAmount: BigDecimal): StateDomain<Operation> {
-        TODO("Not yet implemented")
-    }
-
-    override fun changeDate(newDate: Date): StateDomain<Operation> {
-        TODO("Not yet implemented")
-    }
-
-    override fun changeTime(newTime: Time): StateDomain<Operation> {
-        TODO("Not yet implemented")
-    }
-
-    override fun changeStatus(newStatus: String): StateDomain<Operation> {
-        TODO("Not yet implemented")
-    }
 }
 
-data class TransferTransaction(
-    override val id: Long?,
+data class NewGeneralOperation(
+    override val storage: Storage,
+    override val category: Category,
+    override val amount: BigDecimal,
+    override val time: Time,
+    override val date: Date,
+    override val status: String,
+    override val typeOperation: TypeOperation
+): GeneralTransaction
+
+
+
+data class NewTransferTransaction(
     val fromStorage: Storage,
     val toStorage: Storage,
     override val amount: BigDecimal,
@@ -116,28 +67,14 @@ data class TransferTransaction(
     override val time: Time,
     override val status: String
 
-): Operation() {
-    fun changeFromStorage(newFrom: Storage): StateDomain<TransferTransaction>  {
-        TODO("Not yet implemented")
-    }
+): Operation
 
-    fun changeToStorage(newTo: Storage): StateDomain<TransferTransaction> {
-        TODO("Not yet implemented")
-    }
-
-    override fun changeAmount(newAmount: BigDecimal): StateDomain<Operation> {
-        TODO("Not yet implemented")
-    }
-
-    override fun changeDate(newDate: Date): StateDomain<Operation> {
-        TODO("Not yet implemented")
-    }
-
-    override fun changeTime(newTime: Time): StateDomain<Operation> {
-        TODO("Not yet implemented")
-    }
-
-    override fun changeStatus(newStatus: String): StateDomain<Operation> {
-        TODO("Not yet implemented")
-    }
-}
+data class TransferTransaction(
+    val id: Long,
+    val fromStorage: Storage,
+    val toStorage: Storage,
+    override val amount: BigDecimal,
+    override val date: Date,
+    override val time: Time,
+    override val status: String
+): Operation
