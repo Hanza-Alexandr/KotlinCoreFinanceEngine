@@ -21,8 +21,11 @@ sealed interface Operation{
         }
     }
 }
+sealed interface NewOperation : Operation {
+    // интерфейс маркер чисто для обозначения новых операций
+}
 
-sealed interface GeneralTransaction: Operation{
+sealed interface GeneralTransaction: Operation, NewOperation{
     val storage: Storage
     val category: Category
     val typeOperation: TypeOperation
@@ -92,7 +95,7 @@ data class NewTransferTransaction private constructor(
     override val time: Time,
     override val date: Date,
     override val status: StatusOperation
-): Operation{
+): Operation, NewOperation{
     fun create(fromStorage:Storage, toStorage: Storage, amount: BigDecimal, date: Date, time: Time, status: StatusOperation): StateDomain<NewTransferTransaction>{
         try {
             if(!isValidAmount(amount)) throw IllegalArgumentException()
