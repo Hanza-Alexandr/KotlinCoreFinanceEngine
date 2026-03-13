@@ -1,5 +1,6 @@
 package org.example.model.domain
 
+import org.example.model.domain.Operation.Companion.isValidAmount
 import java.math.BigDecimal
 import java.sql.Time
 import java.util.Date
@@ -12,7 +13,13 @@ sealed interface Operation{
     val amount: BigDecimal
     val date: Date
     val time: Time
-    val status: String
+    val status: StatusOperation
+
+    companion object{
+        fun isValidAmount(amount: BigDecimal): Boolean{
+            return amount > BigDecimal.ZERO
+        }
+    }
 }
 
 sealed interface GeneralTransaction: Operation{
@@ -22,7 +29,6 @@ sealed interface GeneralTransaction: Operation{
 
 }
 
-@ConsistentCopyVisibility
 data class CreditTransaction (
     val id: Long,
     override val storage: Storage,
@@ -30,9 +36,12 @@ data class CreditTransaction (
     override val amount: BigDecimal,
     override val time: Time,
     override val date: Date,
-    override val status: String
+    override val status: StatusOperation
 ): GeneralTransaction{
     override val typeOperation: TypeOperation = TypeOperation.CREDIT
+    init {
+        if(!isValidAmount(amount)) throw IllegalArgumentException()
+    }
 }
 
 data class DebitTransaction(
@@ -42,32 +51,58 @@ data class DebitTransaction(
     override val amount: BigDecimal,
     override val time: Time,
     override val date: Date,
-    override val status: String
+    override val status: StatusOperation
 ): GeneralTransaction{
     override val typeOperation: TypeOperation = TypeOperation.DEBIT
+    init {
+        if(!isValidAmount(amount)) throw IllegalArgumentException()
+    }
 }
 
-data class NewGeneralOperation(
+@ConsistentCopyVisibility
+data class NewGeneralOperation private constructor(
     override val storage: Storage,
     override val category: Category,
     override val amount: BigDecimal,
     override val time: Time,
     override val date: Date,
-    override val status: String,
+    override val status: StatusOperation,
     override val typeOperation: TypeOperation
-): GeneralTransaction
+): GeneralTransaction{
+    companion object{
+        fun create(storage: Storage, category: Category, amount: BigDecimal, time: Time, date: Date, status: StatusOperation, typeOperation: TypeOperation): StateDomain<NewGeneralOperation>{
+            try {
+                if(!isValidAmount(amount)) throw IllegalArgumentException()
+                return StateDomain.Success(NewGeneralOperation(storage, category,amount, time, date, status, typeOperation))
+            }
+            catch (e: IllegalArgumentException){
+                return StateDomain.Error("❌Ошибка при создании new сущности")
+            }
+        }
+    }
+}
 
 
 
-data class NewTransferTransaction(
+@ConsistentCopyVisibility
+data class NewTransferTransaction private constructor(
     val fromStorage: Storage,
     val toStorage: Storage,
     override val amount: BigDecimal,
-    override val date: Date,
     override val time: Time,
-    override val status: String
-
-): Operation
+    override val date: Date,
+    override val status: StatusOperation
+): Operation{
+    fun create(fromStorage:Storage, toStorage: Storage, amount: BigDecimal, date: Date, time: Time, status: StatusOperation): StateDomain<NewTransferTransaction>{
+        try {
+            if(!isValidAmount(amount)) throw IllegalArgumentException()
+            return StateDomain.Success(NewTransferTransaction(fromStorage, toStorage,amount, time, date, status))
+        }
+        catch (e: IllegalArgumentException){
+            return StateDomain.Error("❌Ошибка при создании new сущности")
+        }
+    }
+}
 
 data class TransferTransaction(
     val id: Long,
@@ -76,5 +111,9 @@ data class TransferTransaction(
     override val amount: BigDecimal,
     override val date: Date,
     override val time: Time,
-    override val status: String
-): Operation
+    override val status: StatusOperation
+): Operation{
+    init {
+        if(!isValidAmount(amount)) throw IllegalArgumentException()
+    }
+}
