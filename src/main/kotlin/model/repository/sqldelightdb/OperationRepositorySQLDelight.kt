@@ -11,6 +11,10 @@ class OperationRepositorySQLDelight(private val queriesOp: OperationQueries, pri
         TODO("Not yet implemented")
     }
 
+    override fun getOperationsByStorage(storageId: Long): List<Operation> {
+        TODO()
+    }
+
     override fun getById(id: Long): Operation? {
         TODO("Not yet implemented")
     }

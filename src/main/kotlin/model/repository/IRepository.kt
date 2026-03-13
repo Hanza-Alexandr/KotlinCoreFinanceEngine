@@ -21,6 +21,7 @@ interface IStorageRepository{
 }
 interface IOperationRepository{
     fun getAll(): List<Operation>
+    fun getOperationsByStorage(storageId: Long): List<Operation>
     fun getById(id: Long): Operation?
     fun save(newOperation: NewOperation): Operation?
     fun save(operation: Operation): Operation?
