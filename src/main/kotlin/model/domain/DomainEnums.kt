@@ -139,3 +139,33 @@ enum class NeedCategory{
         }
     }
 }
+enum class StatusOperation{
+    CONFIRMED,
+    NOT_CONFIRMED;
+    companion object {
+        fun selectStatus(): StatusOperation?{
+            while (true){
+                println("====================================")
+                println("      Меню выбора статуса")
+                println("====================================")
+                println("1. Подтвержден")
+                println("2. Не подтвержден")
+                println("====================================")
+                println("-1. Назад")
+                val inp = readln().toIntOrNull() ?: run { println("❌ОШИБКА: нужно число"); continue }
+
+                when (inp){
+                    1 -> {
+                        return StatusOperation.CONFIRMED
+                    }
+                    2 -> {
+                        return StatusOperation.NOT_CONFIRMED
+                    }
+                    -1 -> {
+                        return null
+                    }
+                }
+            }
+        }
+    }
+}
