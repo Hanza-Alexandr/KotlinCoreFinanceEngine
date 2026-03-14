@@ -82,7 +82,7 @@ class StorageView(private val storageViewModel: StorageViewModel, private val op
             when(inp){
                 /** Из за того что сущность операции распихана на 2 таблицы и просто так id не передашь приходиться извращщатся так*/
                 "0" -> {
-                    when(val result = operationView.startCreationMenu()){
+                    when(val result = operationView.startCreationMenu(currentStorage, {selectStorage()})){
                         is ResultMenu.Exception -> {
                             println(result.message)
                             continue
@@ -265,6 +265,39 @@ class StorageView(private val storageViewModel: StorageViewModel, private val op
                             println("✅Успешно")
                             ResultMenu.Complete(changingState.domain, NavigationIntent.Exit)
                         }
+                    }
+                }
+            }
+        }
+    }
+    fun selectStorage(): ResultMenu<Storage>{
+        while(true){
+            while (true) {
+                val storageState = storageViewModel.getStorages()
+                ViewService.printHeadersForMenu("Меню счетов", "Выбор")
+                ViewService.printListDomain(storageViewModel.getStorages()){
+                    println("|${it.id}|${it.name}|${it.currency.name}|${it.typeStorage}")
+                }
+                ViewService.printActionsForMenu("0. Создать счет", "-1. Назад")
+                ViewService.printBottom()
+                ViewService.printHeaderChoose()
+                val inp = readln().toIntOrNull() ?: run { println("❌ОШИБКА: нужно число"); continue }
+                when(inp){
+                    0 ->{
+                        startCreateStorageMenu()
+                        continue
+                    }
+                    -1 -> {
+                        return ResultMenu.NavigationOnly(NavigationIntent.Exit)
+                    }
+                    else -> {
+                       when (val stateSelect = storageViewModel.getStorage(inp)){
+                           is StateDomain.Error -> {
+                               println(stateSelect.message)
+                               continue
+                           }
+                           is StateDomain.Success -> return ResultMenu.Complete(stateSelect.domain, NavigationIntent.Exit)
+                       }
                     }
                 }
             }

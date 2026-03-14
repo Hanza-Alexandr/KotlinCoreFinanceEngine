@@ -153,3 +153,16 @@ DELETE FROM OperationEntity
 WHERE id = :id
 RETURNING *;
 
+insertOperation:
+INSERT INTO OperationEntity (
+    storage_id,
+    type_operation,
+    category_id,
+    amount,
+    date,
+    time,
+    status
+)
+VALUES (?, ?, ?, ?, ?, ?, ?)
+RETURNING *;
+

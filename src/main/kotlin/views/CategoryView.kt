@@ -354,7 +354,7 @@ class CategoryView(private val categoryViewModel: CategoryViewModel, private val
         }
     }
 
-    private fun startCategorySelectionMenu(): ResultMenu<Category> {
+    fun startCategorySelectionMenu(): ResultMenu<Category> {
         while(true){
             while (true) {
                 val categoriesState = categoryViewModel.getBaseCategories()

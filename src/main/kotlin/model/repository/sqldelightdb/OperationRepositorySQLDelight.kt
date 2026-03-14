@@ -11,7 +11,9 @@ import org.example.model.domain.Category
 import org.example.model.domain.CreditTransaction
 import org.example.model.domain.DebitTransaction
 import org.example.model.domain.GeneralTransaction
+import org.example.model.domain.NewGeneralOperation
 import org.example.model.domain.NewOperation
+import org.example.model.domain.NewTransferTransaction
 import org.example.model.domain.Operation
 import org.example.model.domain.StatusOperation
 import org.example.model.domain.Storage
@@ -219,7 +221,32 @@ class OperationRepositorySQLDelight(private val queriesOp: OperationQueries, pri
     }
 
     override fun save(newOperation: NewOperation): Operation? {
-        TODO("Not yet implemented")
+        when(newOperation){
+            is NewGeneralOperation -> {
+                val queRes = queriesOp.insertOperation(
+                    storage_id = newOperation.storage.id,
+                    type_operation = newOperation.typeOperation.toString(),
+                    category_id = newOperation.category.id,
+                    amount = newOperation.amount.toDouble(),
+                    date = newOperation.date.toString(),
+                    time = newOperation.time.toString(),
+                    status = newOperation.status.toString()
+                ).executeAsOneOrNull() ?: return null
+                return getOperationById(queRes.id)
+            }
+            is NewTransferTransaction -> {
+                val queRes = queriesTf.insertTransfer(
+                    from_storage_id = newOperation.fromStorage.id,
+                    to_storage_id = newOperation.toStorage.id,
+                    amount = newOperation.amount.toDouble(),
+                    date = newOperation.date.toString(),
+                    time = newOperation.time.toString(),
+                    status = newOperation.status.toString()
+                ).executeAsOneOrNull()?: return null
+                return getTransferById(queRes.id)
+            }
+            else -> throw IllegalArgumentException()
+        }
     }
 
     override fun save(operation: Operation): Operation? {

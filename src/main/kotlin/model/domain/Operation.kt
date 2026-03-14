@@ -73,7 +73,7 @@ data class NewGeneralOperation private constructor(
     override val date: LocalDate,
     override val status: StatusOperation,
     val typeOperation: TypeOperation
-): Operation{
+): Operation, NewOperation{
     companion object{
         fun create(storage: Storage, category: Category, amount: BigDecimal, time: LocalTime, date: LocalDate, status: StatusOperation, typeOperation: TypeOperation): StateDomain<NewGeneralOperation>{
             try {
@@ -98,13 +98,15 @@ data class NewTransferTransaction private constructor(
     override val date: LocalDate,
     override val status: StatusOperation
 ): Operation, NewOperation{
-    fun create(fromStorage:Storage, toStorage: Storage, amount: BigDecimal, date: LocalDate, time: LocalTime, status: StatusOperation): StateDomain<NewTransferTransaction>{
-        try {
-            if(!isValidAmount(amount)) throw IllegalArgumentException()
-            return StateDomain.Success(NewTransferTransaction(fromStorage, toStorage,amount, time, date, status))
-        }
-        catch (e: IllegalArgumentException){
-            return StateDomain.Error("❌Ошибка при создании new сущности")
+    companion object{
+        fun create(fromStorage:Storage, toStorage: Storage, amount: BigDecimal, time: LocalTime, date: LocalDate, status: StatusOperation): StateDomain<NewTransferTransaction>{
+            try {
+                if(!isValidAmount(amount)) throw IllegalArgumentException()
+                return StateDomain.Success(NewTransferTransaction(fromStorage, toStorage,amount, time, date, status))
+            }
+            catch (e: IllegalArgumentException){
+                return StateDomain.Error("❌Ошибка при создании new сущности")
+            }
         }
     }
 }

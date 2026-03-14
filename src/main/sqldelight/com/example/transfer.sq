@@ -106,3 +106,15 @@ deleteTransferById:
 DELETE FROM TransferEntity
 WHERE id = :id
 RETURNING *;
+
+insertTransfer:
+INSERT INTO TransferEntity (
+    from_storage_id,
+    to_storage_id,
+    amount,
+    date,
+    time,
+    status
+)
+VALUES (?, ?, ?, ?, ?, ?)
+RETURNING *;
