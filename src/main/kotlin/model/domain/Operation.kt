@@ -26,11 +26,19 @@ sealed interface NewOperation : Operation {
     // интерфейс маркер чисто для обозначения новых операций
 }
 
-sealed interface GeneralTransaction: Operation, NewOperation{
+sealed interface GeneralTransaction: Operation{
     val id: Long
     val storage: Storage
     val category: Category
     val typeOperation: TypeOperation
+
+    fun changeStorage(newStorage: Storage): GeneralTransaction
+    fun changeCategory(newCategory: Category): GeneralTransaction
+    fun changeAmount(newAmount: BigDecimal): GeneralTransaction
+    fun changeDate(newDate: LocalDate): GeneralTransaction
+    fun changeTime(newTime: LocalTime): GeneralTransaction
+    fun changeStatus(newStatusOperation: StatusOperation): GeneralTransaction
+
 
 }
 
@@ -44,6 +52,24 @@ data class CreditTransaction (
     override val status: StatusOperation
 ): GeneralTransaction{
     override val typeOperation: TypeOperation = TypeOperation.CREDIT
+    override fun changeStorage(newStorage: Storage): CreditTransaction =
+        copy(storage= newStorage)
+
+    override fun changeCategory(newCategory: Category): CreditTransaction =
+        copy(category = newCategory)
+
+    override fun changeAmount(newAmount: BigDecimal): CreditTransaction =
+        copy(amount = newAmount)//TODO(Отсутствует проверка на корректность данных)
+
+    override fun changeDate(newDate: LocalDate): CreditTransaction=
+        copy(date = newDate)//TODO(Отсутствует проверка на корректность данных. Не может быть больше текущей)
+
+    override fun changeTime(newTime: LocalTime): CreditTransaction=
+        copy(time = newTime)//TODO(Отсутствует проверка на корректность данных. Не может быть больше текущей)
+
+    override fun changeStatus(newStatusOperation: StatusOperation): CreditTransaction =
+        copy(status = newStatusOperation)
+
     init {
         if(!isValidAmount(amount)) throw IllegalArgumentException()
     }
@@ -59,6 +85,23 @@ data class DebitTransaction(
     override val status: StatusOperation
 ): GeneralTransaction{
     override val typeOperation: TypeOperation = TypeOperation.DEBIT
+    override fun changeStorage(newStorage: Storage): DebitTransaction =
+        copy(storage= newStorage)
+
+    override fun changeCategory(newCategory: Category): DebitTransaction =
+        copy(category = newCategory)
+
+    override fun changeAmount(newAmount: BigDecimal): DebitTransaction =
+        copy(amount = newAmount) //TODO(Отсутствует проверка на корректность данных)
+
+    override fun changeDate(newDate: LocalDate): DebitTransaction=
+        copy(date= newDate) //TODO(Отсутствует проверка на корректность данных. Не может быть больше текущей)
+
+    override fun changeTime(newTime: LocalTime): DebitTransaction=
+        copy(time=newTime) //TODO(Отсутствует проверка на корректность данных. Не может быть больше текущей)
+
+    override fun changeStatus(newStatusOperation: StatusOperation): DebitTransaction =
+        copy(status = newStatusOperation)
     init {
         if(!isValidAmount(amount)) throw IllegalArgumentException()
     }
@@ -86,8 +129,6 @@ data class NewGeneralOperation private constructor(
         }
     }
 }
-
-
 
 @ConsistentCopyVisibility
 data class NewTransferTransaction private constructor(
@@ -120,6 +161,24 @@ data class TransferTransaction(
     override val time: LocalTime,
     override val status: StatusOperation
 ): Operation{
+    fun changeFromStorage(newStorage: Storage): TransferTransaction =
+        copy(fromStorage= newStorage)
+
+    fun changeToStorage(newStorage: Storage): TransferTransaction =
+        copy(toStorage= newStorage)
+
+    fun changeAmount(newAmount: BigDecimal): TransferTransaction =
+        copy(amount = newAmount) //TODO(Отсутствует проверка на корректность данных)
+
+    fun changeDate(newDate: LocalDate): TransferTransaction=
+        copy(date= newDate) //TODO(Отсутствует проверка на корректность данных. Не может быть больше текущей)
+
+    fun changeTime(newTime: LocalTime): TransferTransaction=
+        copy(time=newTime) //TODO(Отсутствует проверка на корректность данных. Не может быть больше текущей)
+
+    fun changeStatus(newStatusOperation: StatusOperation): TransferTransaction =
+        copy(status = newStatusOperation)
+
     init {
         if(!isValidAmount(amount)) throw IllegalArgumentException()
     }

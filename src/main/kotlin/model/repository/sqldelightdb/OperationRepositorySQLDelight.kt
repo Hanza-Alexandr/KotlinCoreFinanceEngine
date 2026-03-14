@@ -28,7 +28,6 @@ class OperationRepositorySQLDelight(private val queriesOp: OperationQueries, pri
     override fun getAll(): List<Operation> {
         TODO("Not yet implemented")
     }
-
     override fun getOperationsByStorage(storageId: Long): List<Operation> {
         val listGenOp = queriesOp.selectOperationsByStorageId(storageId).executeAsList().map {
             OperationEntity(
@@ -124,7 +123,6 @@ class OperationRepositorySQLDelight(private val queriesOp: OperationQueries, pri
         }
         return listTf+listGenOp
     }
-
     override fun getOperationById(id: Long): GeneralTransaction? {
         val queRes =  queriesOp.selectOperationById(id).executeAsOneOrNull() ?: return null
         return OperationEntity(
@@ -219,7 +217,6 @@ class OperationRepositorySQLDelight(private val queriesOp: OperationQueries, pri
             )
         )
     }
-
     override fun save(newOperation: NewOperation): Operation? {
         when(newOperation){
             is NewGeneralOperation -> {
@@ -248,11 +245,51 @@ class OperationRepositorySQLDelight(private val queriesOp: OperationQueries, pri
             else -> throw IllegalArgumentException()
         }
     }
-
     override fun save(operation: Operation): Operation? {
-        TODO("Not yet implemented")
-    }
+        when(operation) {
+            is CreditTransaction -> {
+                val queRes = queriesOp.updateOperation(
+                    id = operation.id,
+                    storage_id = operation.storage.id,
+                    type_operation = operation.typeOperation.name,
+                    category_id = operation.category.id,
+                    amount = operation.amount.toDouble(),
+                    date = operation.date.toString(),
+                    time = operation.time.toString(),
+                    status = operation.status.name
+                ).executeAsOneOrNull() ?: return null
+                return operation
+            }
 
+            is DebitTransaction -> {
+                val queRes = queriesOp.updateOperation(
+                    id = operation.id,
+                    storage_id = operation.storage.id,
+                    type_operation = operation.typeOperation.name,
+                    category_id = operation.category.id,
+                    amount = operation.amount.toDouble(),
+                    date = operation.date.toString(),
+                    time = operation.time.toString(),
+                    status = operation.status.name
+                ).executeAsOneOrNull() ?: return null
+                return operation
+            }
+
+            is TransferTransaction -> {
+                val queRes = queriesTf.updateTransfer(
+                    id = operation.id,
+                    from_storage_id = operation.fromStorage.id,
+                    to_storage_id = operation.toStorage.id,
+                    amount = operation.amount.toDouble(),
+                    date = operation.date.toString(),
+                    time = operation.time.toString(),
+                    status = operation.status.name
+                ).executeAsOneOrNull() ?: return null
+                return operation
+            }
+            else -> throw IllegalArgumentException()
+        }
+    }
     override fun delete(operation: Operation): Operation? {
 
         when (operation){
@@ -296,7 +333,6 @@ fun OperationEntity.toDomain(storage: Storage, category: Category): GeneralTrans
         else -> throw IllegalArgumentException()
     }
 }
-
 fun TransferEntity.toDomain(fromStorage: Storage, toStorage: Storage): TransferTransaction{
     return TransferTransaction(
         id = id,

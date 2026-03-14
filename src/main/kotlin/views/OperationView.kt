@@ -2,25 +2,27 @@ package org.example.views
 
 import org.example.NavigationIntent
 import org.example.ViewService
+import org.example.model.domain.BaseStorage
+import org.example.model.domain.Category
 import org.example.model.domain.CreditTransaction
 import org.example.model.domain.DebitTransaction
 import org.example.model.domain.GeneralTransaction
-import org.example.model.domain.NeedCategory
 import org.example.model.domain.Operation
 import org.example.model.domain.ResultMenu
 import org.example.model.domain.StateDomain
-import org.example.model.domain.StateDomainList
 import org.example.model.domain.StatusOperation
 import org.example.model.domain.Storage
 import org.example.model.domain.TransferTransaction
 import org.example.model.domain.TypeOperation
+import org.example.model.domain.TypeStorage
 import org.example.viewmodels.OperationViewModel
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalTime
 import kotlin.reflect.KClass
 
 class OperationView(private val operationViewModel: OperationViewModel, private val categoryView: CategoryView){
-    fun startOperationMenu(operationId: Int, operationClass: KClass<out Operation>): ResultMenu<Operation>{
+    fun startOperationMenu(operationId: Int, operationClass: KClass<out Operation>, selectStorage: () -> ResultMenu<Storage>): ResultMenu<Operation>{
         while (true){
             val currentOperation = when(val state = operationViewModel.getOperation(operationId,operationClass)){
                 is StateDomain.Success -> {
@@ -41,7 +43,7 @@ class OperationView(private val operationViewModel: OperationViewModel, private 
                     return ResultMenu.NavigationOnly(NavigationIntent.Exit)
                 }
                 -2 -> {
-                    when(val resMenu = startEditStorageMenu(currentOperation)){
+                    when(val resMenu = startEditStorageMenu(currentOperation, selectStorage)){
                         is ResultMenu.NavigationOnly -> continue
                         else -> return resMenu
                     }
@@ -61,8 +63,134 @@ class OperationView(private val operationViewModel: OperationViewModel, private 
 
     }
 
-    private fun startEditStorageMenu(operation: Operation): ResultMenu<Operation>{
-        TODO()
+    private fun startEditStorageMenu(operation: Operation, selectStorage: () -> ResultMenu<Storage>): ResultMenu<Operation>{
+        return when(operation){
+            is GeneralTransaction -> startEditingGeneralOperation(operation,selectStorage)
+            is TransferTransaction -> startEditingTransferOperation(operation, selectStorage)
+            else -> throw IllegalArgumentException()
+        }
+    }
+    private fun startEditingGeneralOperation(operation: GeneralTransaction, selectStorage: () -> ResultMenu<Storage>): ResultMenu<GeneralTransaction>{
+        var newFromStorage: Storage? =null
+        var newCategory: Category? = null
+        var newAmount: BigDecimal? = null
+        var newDate: LocalDate? = null
+        var newTime: LocalTime? = null
+        var newStaus: StatusOperation? = null
+
+        while (true){
+            ViewService.printHeadersForMenu("Editing operation menu", "|${operation.id}|${operation.storage.name}|${operation.category.name}|${operation.amount}|${operation.date}|${operation.time}|${operation.status.name}")
+            ViewService.printActionsForMenu("-1. Выйти","1. Изменить счет","2. Изменить категорию","3. Редактировать сумму", "4. Изменить дату", "5. Изменить время", "6. Изменить статус", "7. SAVE")
+            println("Не сохраненные изменения: |${if (newFromStorage!=null)"$newCategory" else ""}|${if (newAmount != null) "$newDate" else ""}|${if (newTime != null) "$newStaus" else ""}|}")
+            val inp = readln().toIntOrNull() ?: run { println("❌ОШИБКА: нужно число"); continue }
+            when(inp){
+                -1 -> return ResultMenu.NavigationOnly(NavigationIntent.Exit)
+                1 -> {
+                    newFromStorage = when(val selectState = selectStorage()){
+                        is ResultMenu.Exception -> return ResultMenu.Exception(selectState.message)
+                        is ResultMenu.Complete -> selectState.item
+                        is ResultMenu.NavigationOnly -> continue
+                    }
+                }
+                2 -> {
+                    newCategory = when(val selectState = categoryView.startCategorySelectionMenu()){
+                        is ResultMenu.Exception -> return ResultMenu.Exception(selectState.message)
+                        is ResultMenu.Complete -> selectState.item
+                        is ResultMenu.NavigationOnly -> continue
+                    }
+                }
+                3 -> {
+                    print("Amount: ")
+                    newAmount = readln().toBigDecimal()
+                }
+                4 -> {
+                    print("Date:")
+                    newDate= LocalDate.parse(readln())
+                }
+                5 -> {
+                    print("Time:")
+                    newTime= LocalTime.parse(readln())
+                }
+                6 -> {
+                    newStaus = StatusOperation.selectStatus() ?: continue
+                }
+                7 -> {
+                    return when(val changingState = operationViewModel.updateOperation(operation,newFromStorage,newCategory,newAmount,newDate,newTime,newStaus)){
+                        is StateDomain.Error -> ResultMenu.Exception(changingState.message)
+                        is StateDomain.Success -> {
+                            when(changingState.domain){
+                                is GeneralTransaction -> {
+                                    println("✅Успешно")
+                                    ResultMenu.Complete(changingState.domain, NavigationIntent.Exit)
+                                }
+                                else -> throw IllegalArgumentException()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    private fun startEditingTransferOperation(transfer: TransferTransaction, selectStorage: ()-> ResultMenu<Storage>): ResultMenu<TransferTransaction>{
+        var newFromStorage: Storage? =null
+        var newToStorage: Storage? = null
+        var newAmount: BigDecimal? = null
+        var newDate: LocalDate? = null
+        var newTime: LocalTime? = null
+        var newStaus: StatusOperation? = null
+
+        while (true){
+            ViewService.printHeadersForMenu("Editing operation menu", "|${transfer.id}|${transfer.fromStorage.name}|${transfer.toStorage.name}|${transfer.amount}|${transfer.date}|${transfer.time}|${transfer.status.name}")
+            ViewService.printActionsForMenu("-1. Выйти","1. Изменить счет получателя","2. Изменить счет отправителя","3. Редактировать сумму", "4. Изменить дату", "5. Изменить время", "6. Изменить статус", "7. SAVE")
+            println("Не сохраненные изменения: |${if (newFromStorage!=null)"$newToStorage" else ""}|${if (newAmount != null) "$newDate" else ""}|${if (newTime != null) "$newStaus" else ""}|}")
+            val inp = readln().toIntOrNull() ?: run { println("❌ОШИБКА: нужно число"); continue }
+            when(inp){
+                -1 -> return ResultMenu.NavigationOnly(NavigationIntent.Exit)
+                1 -> {
+                    newFromStorage = when(val selectState = selectStorage()){
+                        is ResultMenu.Exception -> return ResultMenu.Exception(selectState.message)
+                        is ResultMenu.Complete -> selectState.item
+                        is ResultMenu.NavigationOnly -> continue
+                    }
+                }
+                2 -> {
+                    newFromStorage = when(val selectState = selectStorage()){
+                        is ResultMenu.Exception -> return ResultMenu.Exception(selectState.message)
+                        is ResultMenu.Complete -> selectState.item
+                        is ResultMenu.NavigationOnly -> continue
+                    }
+                }
+                3 -> {
+                    print("Amount: ")
+                    newAmount = readln().toBigDecimal()
+                }
+                4 -> {
+                    print("Date:")
+                    newDate= LocalDate.parse(readln())
+                }
+                5 -> {
+                    print("Time:")
+                    newTime= LocalTime.parse(readln())
+                }
+                6 -> {
+                    newStaus = StatusOperation.selectStatus() ?: continue
+                }
+                7 -> {
+                    return when(val changingState = operationViewModel.updateTransfer(transfer,newFromStorage,newToStorage,newAmount,newDate,newTime,newStaus)){
+                        is StateDomain.Error -> ResultMenu.Exception(changingState.message)
+                        is StateDomain.Success -> {
+                            when(changingState.domain){
+                                is TransferTransaction -> {
+                                    println("✅Успешно")
+                                    ResultMenu.Complete(changingState.domain, NavigationIntent.Exit)
+                                }
+                                else -> throw IllegalArgumentException()
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private fun startDeleteStorageMenu(operation: Operation): ResultMenu<Operation>{

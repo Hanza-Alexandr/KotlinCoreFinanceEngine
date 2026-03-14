@@ -166,3 +166,15 @@ INSERT INTO OperationEntity (
 VALUES (?, ?, ?, ?, ?, ?, ?)
 RETURNING *;
 
+updateOperation:
+UPDATE OperationEntity
+SET storage_id = ?,
+    type_operation = ?,
+    category_id = ?,
+    amount = ?,
+    date = ?,
+    time = ?,
+    status = ?
+WHERE id = ?
+RETURNING *;
+

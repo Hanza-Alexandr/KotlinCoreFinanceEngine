@@ -22,7 +22,6 @@ class OperationViewModel(private val service: OperationService){
     fun getOperations(storage: Storage): StateDomainList<Operation>{
         return service.getOperations(storage)
     }
-
     fun delete(operation: Operation): StateDomain<Operation>{
         return service.delete(operation)
     }
@@ -31,6 +30,12 @@ class OperationViewModel(private val service: OperationService){
     }
     fun createTransfer(fromStorage: Storage, toStorage: Storage, amount: BigDecimal, time: LocalTime, date: LocalDate, status: StatusOperation): StateDomain<TransferTransaction>{
         return service.createTransfer(fromStorage,toStorage,amount,time,date,status)
+    }
+    fun updateOperation(oldOperations: GeneralTransaction, fromStorage: Storage?, category: Category?, amount: BigDecimal?, date: LocalDate?, time: LocalTime?, staus: StatusOperation?): StateDomain<Operation>{
+        return service.updateOperation(oldOperations, fromStorage,category,amount, date, time, staus)
+    }
+    fun updateTransfer(oldTransfer: TransferTransaction, fromStorage: Storage?, toStorage: Storage?, amount: BigDecimal?, date: LocalDate?, time: LocalTime?, staus: StatusOperation?): StateDomain<Operation>{
+        return service.updateTransfer(oldTransfer, fromStorage, toStorage, amount, date,time,staus)
     }
 }
 

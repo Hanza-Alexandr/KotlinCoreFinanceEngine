@@ -118,3 +118,14 @@ INSERT INTO TransferEntity (
 )
 VALUES (?, ?, ?, ?, ?, ?)
 RETURNING *;
+
+updateTransfer:
+UPDATE TransferEntity
+SET from_storage_id = ?,
+    to_storage_id = ?,
+    amount = ?,
+    date = ?,
+    time = ?,
+    status = ?
+WHERE id = ?
+RETURNING *;

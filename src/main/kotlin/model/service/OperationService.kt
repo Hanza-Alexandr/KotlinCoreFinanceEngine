@@ -27,7 +27,6 @@ class OperationService(private val repo: IOperationRepository) {
         return if (list.isEmpty()) StateDomainList.Empty
         else StateDomainList.Success(list)
     }
-
     fun getOperation(operationId: Int, operationClass: KClass<out Operation>): StateDomain<Operation>{
         when(operationClass){
             TransferTransaction::class  -> {
@@ -47,7 +46,6 @@ class OperationService(private val repo: IOperationRepository) {
             else -> StateDomain.Success(resDel)
         }
     }
-
     fun createTransfer(fromStorage: Storage, toStorage: Storage, amount: BigDecimal, time: LocalTime, date: LocalDate, status: StatusOperation): StateDomain<TransferTransaction>{
         if(fromStorage.id == toStorage.id) return StateDomain.Error("❌Счет отправления не может совпадать со счетом получения")
         return when(val localStateCreate = NewTransferTransaction.create(fromStorage,toStorage,amount,time,date,status)){
@@ -71,6 +69,31 @@ class OperationService(private val repo: IOperationRepository) {
                     else -> throw IllegalArgumentException()
                 }
             }
+        }
+    }
+    fun updateTransfer(oldTransfer: TransferTransaction, fromStorage: Storage?, toStorage: Storage?, amount: BigDecimal?, date: LocalDate?, time: LocalTime?, staus: StatusOperation?): StateDomain<Operation>{
+        var transfer = oldTransfer
+        fromStorage?.let { transfer = transfer.changeFromStorage(it) }
+        toStorage?.let { transfer = transfer.changeToStorage(it) }
+        amount?.let { transfer = transfer.changeAmount(it) }
+        date?.let { transfer = transfer.changeDate(it) }
+        time?.let { transfer = transfer.changeTime(it) }
+        staus?.let { transfer = transfer.changeStatus(it) }
+        return when(val stateChanging = repo.save(transfer)){
+            null -> StateDomain.Error("❌Ошибка при попытке редактирования")
+            else -> StateDomain.Success(stateChanging)
+        }
+    }
+    fun updateOperation(oldOperations: GeneralTransaction, fromStorage: Storage?, category: Category?, amount: BigDecimal?, date: LocalDate?, time: LocalTime?, staus: StatusOperation?): StateDomain<Operation>{
+        var operation = oldOperations
+        fromStorage?.let { operation = operation.changeStorage(it) }
+        amount?.let { operation = operation.changeAmount(it) }
+        date?.let { operation = operation.changeDate(it) }
+        time?.let { operation = operation.changeTime(it) }
+        staus?.let { operation = operation.changeStatus(it) }
+        return when(val stateChanging = repo.save(operation)){
+            null -> StateDomain.Error("❌Ошибка при попытке редактирования")
+            else -> StateDomain.Success(stateChanging)
         }
     }
 }

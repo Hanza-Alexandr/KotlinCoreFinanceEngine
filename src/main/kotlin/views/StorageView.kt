@@ -133,7 +133,7 @@ class StorageView(private val storageViewModel: StorageViewModel, private val op
                         }
 
                         if (operationClass != null) {
-                            when (val result = operationView.startOperationMenu(id.toInt(), operationClass)) {
+                            when (val result = operationView.startOperationMenu(id.toInt(), operationClass, {selectStorage()})) {
                                 is ResultMenu.Exception -> {
                                     println(result.message)
                                     continue
