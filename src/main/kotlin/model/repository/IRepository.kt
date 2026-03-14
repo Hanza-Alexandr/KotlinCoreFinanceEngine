@@ -2,6 +2,7 @@ package org.example.model.repository
 
 import org.example.model.domain.ExistColor
 import org.example.model.domain.Category
+import org.example.model.domain.GeneralTransaction
 import org.example.model.domain.NewCategory
 import org.example.model.domain.NewColor
 import org.example.model.domain.NewOperation
@@ -9,6 +10,7 @@ import org.example.model.domain.NewStorage
 import org.example.model.domain.Operation
 import org.example.model.domain.Setting
 import org.example.model.domain.Storage
+import org.example.model.domain.TransferTransaction
 import org.example.model.domain.User
 import org.example.model.domain.UserColor
 
@@ -22,7 +24,8 @@ interface IStorageRepository{
 interface IOperationRepository{
     fun getAll(): List<Operation>
     fun getOperationsByStorage(storageId: Long): List<Operation>
-    fun getById(id: Long): Operation?
+    fun getOperationById(id: Long): GeneralTransaction?
+    fun getTransferById(id: Long): TransferTransaction?
     fun save(newOperation: NewOperation): Operation?
     fun save(operation: Operation): Operation?
     fun delete(operation: Operation): Operation?

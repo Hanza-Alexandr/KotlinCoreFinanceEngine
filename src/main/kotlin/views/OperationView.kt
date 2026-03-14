@@ -11,11 +11,12 @@ import org.example.model.domain.StateDomainList
 import org.example.model.domain.Storage
 import org.example.model.domain.TransferTransaction
 import org.example.viewmodels.OperationViewModel
+import kotlin.reflect.KClass
 
 class OperationView(private val operationViewModel: OperationViewModel){
-    fun startOperationMenu(operationId: Int): ResultMenu<Operation>{
+    fun startOperationMenu(operationId: Int, operationClass: KClass<out Operation>): ResultMenu<Operation>{
         while (true){
-            val currentOperation = when(val state = operationViewModel.getOperation(operationId)){
+            val currentOperation = when(val state = operationViewModel.getOperation(operationId,operationClass)){
                 is StateDomain.Success -> {
                     state.domain
                 }
@@ -23,7 +24,8 @@ class OperationView(private val operationViewModel: OperationViewModel){
                     return ResultMenu.Exception(state.message)
                 }
             }
-            ViewService.printHeadersForMenu("Меню операции", displayOperation(currentOperation).toString())
+            ViewService.printHeadersForMenu("Меню операции")
+            displayOperation(currentOperation)
             ViewService.printActionsForMenu("-1. Выйти", "-2. Изменить", "-3. Удалить")
             ViewService.printBottom()
             ViewService.printHeaderChoose()
@@ -58,7 +60,14 @@ class OperationView(private val operationViewModel: OperationViewModel){
     }
 
     private fun startDeleteStorageMenu(operation: Operation): ResultMenu<Operation>{
-        TODO()
+
+        return when(val stateDelete = operationViewModel.delete(operation)){
+            is StateDomain.Error -> ResultMenu.Exception(stateDelete.message)
+            is StateDomain.Success -> {
+                println("✅Успешно")
+                return ResultMenu.Complete(stateDelete.domain, NavigationIntent.Exit)
+            }
+        }
     }
 
     fun startCreationMenu(): ResultMenu<Operation>{
@@ -68,13 +77,13 @@ class OperationView(private val operationViewModel: OperationViewModel){
     fun displayOperation(operation: Operation){
         when(operation){
             is DebitTransaction -> {
-                println("ПРИХОД|${operation.date}|${operation.time}|+${operation.amount}|${operation.category}|$")
+                println("${operation.id}|ПРИХОД|${operation.date}|${operation.time}|+${operation.amount}|${operation.category}|$")
             }
             is CreditTransaction -> {
-                println("РАСХОД|${operation.date}|${operation.time}|-${operation.amount}|${operation.category}|$")
+                println("${operation.id}|РАСХОД|${operation.date}|${operation.time}|-${operation.amount}|${operation.category}|$")
             }
             is TransferTransaction -> {
-                println("ПЕРЕВОД|${operation.date}|${operation.time}|${operation.fromStorage} --${operation.amount}--> ${operation.toStorage}|")
+                println("${operation.id}|ПЕРЕВОД|${operation.date}|${operation.time}|${operation.fromStorage} --${operation.amount}--> ${operation.toStorage}|")
             }
             else -> throw IllegalArgumentException("Поступил неверный тип операции")
         }

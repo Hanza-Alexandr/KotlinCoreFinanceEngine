@@ -27,6 +27,7 @@ sealed interface NewOperation : Operation {
 }
 
 sealed interface GeneralTransaction: Operation, NewOperation{
+    val id: Long
     val storage: Storage
     val category: Category
     val typeOperation: TypeOperation
@@ -34,7 +35,7 @@ sealed interface GeneralTransaction: Operation, NewOperation{
 }
 
 data class CreditTransaction (
-    val id: Long,
+    override val id: Long,
     override val storage: Storage,
     override val category: Category,
     override val amount: BigDecimal,
@@ -49,7 +50,7 @@ data class CreditTransaction (
 }
 
 data class DebitTransaction(
-    val id: Long,
+    override val id: Long,
     override val storage: Storage,
     override val category: Category,
     override val amount: BigDecimal,
@@ -65,14 +66,14 @@ data class DebitTransaction(
 
 @ConsistentCopyVisibility
 data class NewGeneralOperation private constructor(
-    override val storage: Storage,
-    override val category: Category,
+    val storage: Storage,
+    val category: Category,
     override val amount: BigDecimal,
     override val time: LocalTime,
     override val date: LocalDate,
     override val status: StatusOperation,
-    override val typeOperation: TypeOperation
-): GeneralTransaction{
+    val typeOperation: TypeOperation
+): Operation{
     companion object{
         fun create(storage: Storage, category: Category, amount: BigDecimal, time: LocalTime, date: LocalDate, status: StatusOperation, typeOperation: TypeOperation): StateDomain<NewGeneralOperation>{
             try {

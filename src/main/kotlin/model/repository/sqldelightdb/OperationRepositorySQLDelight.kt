@@ -123,8 +123,99 @@ class OperationRepositorySQLDelight(private val queriesOp: OperationQueries, pri
         return listTf+listGenOp
     }
 
-    override fun getById(id: Long): Operation? {
-        TODO("Not yet implemented")
+    override fun getOperationById(id: Long): GeneralTransaction? {
+        val queRes =  queriesOp.selectOperationById(id).executeAsOneOrNull() ?: return null
+        return OperationEntity(
+            id = queRes.op_id,
+            storage_id = queRes.storage_id,
+            type_operation = queRes.type_operation,
+            category_id = queRes.category_id,
+            amount = queRes.amount,
+            date = queRes.date,
+            time = queRes.time,
+            status = queRes.status
+        ).toDomain(
+            StorageEntity(
+                id = queRes.storage_id,
+                name = queRes.storage_name,
+                user_id = queRes.user_id,
+                currency = queRes.storage_currency,
+                type_storage = queRes.storage_type,
+                note = queRes.storage_note,
+                color_id = queRes.storage_color_id,
+                is_statistics = queRes.storage_is_statistics,
+                is_archive = queRes.storage_is_archive
+            ).toDomain(
+                ColorEntity(
+                    id = queRes.storage_color_id,
+                    user_id = queRes.storage_color_user_id,
+                    hex_code = queRes.storage_color_hex
+                ).toDomain()
+            ),
+            category = CategoryEntity(
+                id = queRes.category_id,
+                path_icon = queRes.category_icon,
+                user_id = queRes.category_user_id,
+                color_id = queRes.category_color_id,
+                name = queRes.category_name,
+                parent_category_id = queRes.category_parent_category_id,
+                need = queRes.category_need,
+                is_hide = queRes.category_is_hide
+            ).toDomain(
+                ColorEntity(
+                    id = queRes.category_color_id,
+                    user_id = queRes.category_color_user_id,
+                    hex_code = queRes.category_color_hex
+                ).toDomain()
+            ),
+        )
+    }
+    override fun getTransferById(id: Long): TransferTransaction? {
+        val queRes = queriesTf.selectTransferById(id).executeAsOneOrNull() ?: return null
+        return TransferEntity(
+            id = queRes.tr_id,
+            from_storage_id = queRes.from_id,
+            to_storage_id = queRes.to_id,
+            amount = queRes.amount,
+            date = queRes.date,
+            time = queRes.time,
+            status = queRes.status
+        ).toDomain(
+            fromStorage = StorageEntity(
+                id = queRes.from_id,
+                name = queRes.from_name,
+                user_id = queRes.from_user_id,
+                currency = queRes.from_currency,
+                type_storage = queRes.from_type,
+                note = queRes.from_note,
+                color_id = queRes.from_color_id,
+                is_statistics = queRes.from_is_statistics,
+                is_archive = queRes.from_is_archive
+            ).toDomain(
+                ColorEntity(
+                    id = queRes.from_color_id,
+                    user_id = queRes.from_color_user_id,
+                    hex_code = queRes.from_color_hex,
+                ).toDomain()
+            ),
+            toStorage = StorageEntity(
+                id = queRes.to_id,
+                name = queRes.to_name,
+                user_id = queRes.to_user_id,
+                currency = queRes.to_currency,
+                type_storage = queRes.to_type,
+                note = queRes.to_note,
+                color_id = queRes.to_color_id,
+                is_statistics = queRes.to_is_statistics,
+                is_archive = queRes.to_is_archive
+            ).toDomain(
+                ColorEntity(
+                    id = queRes.to_color_id,
+                    user_id = queRes.to_color_user_id,
+                    hex_code = queRes.to_color_hex,
+                ).toDomain()
+            )
+        )
     }
 
     override fun save(newOperation: NewOperation): Operation? {
@@ -136,7 +227,18 @@ class OperationRepositorySQLDelight(private val queriesOp: OperationQueries, pri
     }
 
     override fun delete(operation: Operation): Operation? {
-        TODO("Not yet implemented")
+
+        when (operation){
+            is GeneralTransaction -> {
+                val queRes = queriesTf.deleteTransferById(operation.id).executeAsOneOrNull() ?: return null
+                return operation
+            }
+            is TransferTransaction -> {
+                val queRes = queriesTf.deleteTransferById(operation.id).executeAsOneOrNull() ?: return null
+                return operation
+            }
+            else -> throw IllegalArgumentException()
+        }
     }
 }
 

@@ -5,9 +5,11 @@ import org.example.ViewService
 import org.example.model.domain.BaseStorage
 import org.example.model.domain.Currency
 import org.example.model.domain.ExistColor
+import org.example.model.domain.GeneralTransaction
 import org.example.model.domain.ResultMenu
 import org.example.model.domain.StateDomain
 import org.example.model.domain.Storage
+import org.example.model.domain.TransferTransaction
 import org.example.model.domain.TypeStorage
 import org.example.viewmodels.StorageViewModel
 import java.awt.Color
@@ -76,9 +78,10 @@ class StorageView(private val storageViewModel: StorageViewModel, private val op
             ViewService.printActionsForMenu("0. Добавить операцию", "-1. Выйти", "-2. Изменить", "-3. Удалить")
             ViewService.printBottom()
             ViewService.printHeaderChoose()
-            val inp = readln().toIntOrNull() ?: run { println("❌ОШИБКА: нужно число"); continue }
+            val inp = readln()
             when(inp){
-                0 -> {
+                /** Из за того что сущность операции распихана на 2 таблицы и просто так id не передашь приходиться извращщатся так*/
+                "0" -> {
                     when(val result = operationView.startCreationMenu()){
                         is ResultMenu.Exception -> {
                             println(result.message)
@@ -87,10 +90,10 @@ class StorageView(private val storageViewModel: StorageViewModel, private val op
                         else -> continue
                     }
                 }
-                -1 -> {
+                "-1" -> {
                     return ResultMenu.NavigationOnly(NavigationIntent.Exit)
                 }
-                -2 -> {
+                "-2" -> {
                     when(val result = startEditingStorageMenu(currentStorage)){
                         is ResultMenu.Exception -> {
                             println(result.message)
@@ -99,7 +102,7 @@ class StorageView(private val storageViewModel: StorageViewModel, private val op
                         else -> continue
                     }
                 }
-                -3 -> {
+                "-3" -> {
                     when(val result = startDeleteMenu(currentStorage)){
                         is ResultMenu.Exception -> {
                             println(result.message)
@@ -115,12 +118,36 @@ class StorageView(private val storageViewModel: StorageViewModel, private val op
                     }
                 }
                 else -> {
-                    when(val result = operationView.startOperationMenu(inp)){
-                        is ResultMenu.Exception -> {
-                            println(result.message)
+                    val regex = Regex("^([TO])-(\\d+)$")
+                    val matchResult = regex.find(inp)
+
+                    if (matchResult != null) {
+                        val (prefix, idString) = matchResult.destructured
+                        val id = idString.toLong()
+
+                        // Определяем класс на основе префикса
+                        val operationClass = when (prefix) {
+                            "T" -> TransferTransaction::class
+                            "O" -> GeneralTransaction::class // Или конкретный тип, если нужно
+                            else -> null
+                        }
+
+                        if (operationClass != null) {
+                            when (val result = operationView.startOperationMenu(id.toInt(), operationClass)) {
+                                is ResultMenu.Exception -> {
+                                    println(result.message)
+                                    continue
+                                }
+                                // Обработка других исходов...
+                                else -> continue
+                            }
+                        } else {
+                            println("Неизвестный тип операции")
                             continue
                         }
-                        else -> continue
+                    } else {
+                        println("Неверный формат ввода. Введите ID или команду (T-id / O-id)")
+                        continue
                     }
                 }
             }

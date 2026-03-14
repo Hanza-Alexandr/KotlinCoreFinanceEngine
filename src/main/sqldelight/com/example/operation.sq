@@ -57,6 +57,51 @@ INNER JOIN CategoryEntity AS cat ON op.category_id = cat.id
 INNER JOIN ColorEntity AS catColor ON cat.color_id = catColor.id
 WHERE op.storage_id = :storageId;
 
+selectOperationById:
+SELECT
+    -- Данные операции
+    op.id AS op_id,
+    op.amount,
+    op.date,
+    op.time,
+    op.type_operation,
+    op.status,
+
+    -- Данные хранилища
+    st.id AS storage_id,
+    st.name AS storage_name,
+    st.user_id AS user_id,
+    st.currency AS storage_currency,
+    st.type_storage AS storage_type,
+    st.note AS storage_note,
+    st.is_statistics AS storage_is_statistics,
+    st.is_archive AS storage_is_archive,
+
+    -- Цвет хранилища
+    stColor.id AS storage_color_id,
+    stColor.user_id AS storage_color_user_id,
+    stColor.hex_code AS storage_color_hex,
+
+    -- Данные категории
+    cat.id AS category_id,
+    cat.parent_category_id AS category_parent_category_id,
+    cat.user_id AS category_user_id,
+    cat.name AS category_name,
+    cat.path_icon AS category_icon,
+    cat.need AS category_need,
+    cat.is_hide AS category_is_hide,
+
+    -- Цвет категории
+    catColor.id AS category_color_id,
+    catColor.user_id AS category_color_user_id,
+    catColor.hex_code AS category_color_hex
+FROM OperationEntity AS op
+INNER JOIN StorageEntity AS st ON op.storage_id = st.id
+INNER JOIN ColorEntity AS stColor ON st.color_id = stColor.id
+INNER JOIN CategoryEntity AS cat ON op.category_id = cat.id
+INNER JOIN ColorEntity AS catColor ON cat.color_id = catColor.id
+WHERE op.id = :id;
+
 
 
 selectOperations:
@@ -103,4 +148,8 @@ JOIN ColorEntity sc ON sc.id = s.color_id
 JOIN CategoryEntity c ON c.id = o.category_id
 JOIN ColorEntity cc ON cc.id = c.color_id;
 
+deleteOperationById:
+DELETE FROM OperationEntity
+WHERE id = :id
+RETURNING *;
 

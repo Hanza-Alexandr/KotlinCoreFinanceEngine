@@ -57,44 +57,52 @@ INNER JOIN ColorEntity AS colorTo ON stTo.color_id = colorTo.id
 WHERE tr.from_storage_id = :storageId OR tr.to_storage_id = :storageId
 ORDER BY tr.date DESC, tr.time DESC;
 
-selectTransfers:
+
+selectTransferById:
 SELECT
-    t.id,
-    t.amount,
-    t.date,
-    t.time,
-    t.status,
+    -- Данные самого перевода
+    tr.id AS tr_id,
+    tr.amount,
+    tr.date,
+    tr.time,
+    tr.status,
 
-    -- From storage
-    fs.id AS from_id,
-    fs.name AS from_name,
-    fs.user_id AS from_user_id,
-    fs.currency AS from_currency,
-    fs.type_storage AS from_type,
-    fs.note AS from_note,
-    fs.is_statistics AS from_is_statistics,
-    fs.is_archive AS from_is_archive,
+    -- Данные хранилища ОТКУДА (From)
+    stFrom.id AS from_id,
+    stFrom.name AS from_name,
+    stFrom.user_id AS from_user_id,
+    stFrom.note AS from_note,
+    stFrom.currency AS from_currency,
+    stFrom.type_storage AS from_type,
+    stFrom.is_statistics AS from_is_statistics,
+    stFrom.is_archive AS from_is_archive,
 
-    fsc.id AS from_color_id,
-    fsc.user_id AS from_color_user_id,
-    fsc.hex_code AS from_color_hex,
+    stFrom.color_id AS from_color_id,
+    colorFrom.user_id AS from_color_user_id,
+    colorFrom.hex_code AS from_color_hex,
 
-    -- To storage
-    ts.id AS to_id,
-    ts.name AS to_name,
-    ts.user_id AS to_user_id,
-    ts.currency AS to_currency,
-    ts.type_storage AS to_type,
-    ts.note AS to_note,
-    ts.is_statistics AS to_is_statistics,
-    ts.is_archive AS to_is_archive,
+    -- Данные хранилища КУДА (To)
+    stTo.id AS to_id,
+    stTo.name AS to_name,
+    stTo.note AS to_note,
+    stTo.user_id AS to_user_id,
+    stTo.currency AS to_currency,
+    stTo.type_storage AS to_type,
+    stTo.is_statistics AS to_is_statistics,
+    stTo.is_archive AS to_is_archive,
 
-    tsc.id AS to_color_id,
-    tsc.user_id AS to_color_user_id,
-    tsc.hex_code AS to_color_hex
+    stTo.color_id AS to_color_id,
+    colorTo.user_id AS to_color_user_id,
+    colorTo.hex_code AS to_color_hex
 
-FROM TransferEntity t
-JOIN StorageEntity fs ON fs.id = t.from_storage_id
-JOIN ColorEntity fsc ON fsc.id = fs.color_id
-JOIN StorageEntity ts ON ts.id = t.to_storage_id
-JOIN ColorEntity tsc ON tsc.id = ts.color_id;
+FROM TransferEntity AS tr
+INNER JOIN StorageEntity AS stFrom ON tr.from_storage_id = stFrom.id
+INNER JOIN ColorEntity AS colorFrom ON stFrom.color_id = colorFrom.id
+INNER JOIN StorageEntity AS stTo ON tr.to_storage_id = stTo.id
+INNER JOIN ColorEntity AS colorTo ON stTo.color_id = colorTo.id
+WHERE tr.id = :id;
+
+deleteTransferById:
+DELETE FROM TransferEntity
+WHERE id = :id
+RETURNING *;
