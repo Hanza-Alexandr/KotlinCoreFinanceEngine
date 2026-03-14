@@ -20,16 +20,32 @@ SELECT
     -- Данные хранилища ОТКУДА (From)
     stFrom.id AS from_id,
     stFrom.name AS from_name,
+    stFrom.user_id AS from_user_id,
+    stFrom.note AS from_note,
     stFrom.currency AS from_currency,
     stFrom.type_storage AS from_type,
+    stFrom.is_statistics AS from_is_statistics,
+    stFrom.is_archive AS from_is_archive,
+
+    stFrom.color_id AS from_color_id,
+    colorFrom.user_id AS from_color_user_id,
     colorFrom.hex_code AS from_color_hex,
+
 
     -- Данные хранилища КУДА (To)
     stTo.id AS to_id,
     stTo.name AS to_name,
+    stTo.note AS to_note,
+    stTo.user_id AS to_user_id,
     stTo.currency AS to_currency,
     stTo.type_storage AS to_type,
+    stTo.is_statistics AS to_is_statistics,
+    stTo.is_archive AS to_is_archive,
+
+    stTo.color_id AS to_color_id,
+    colorTo.user_id AS to_color_user_id,
     colorTo.hex_code AS to_color_hex
+
 FROM TransferEntity AS tr
 -- Джойним отправителя и его цвет
 INNER JOIN StorageEntity AS stFrom ON tr.from_storage_id = stFrom.id

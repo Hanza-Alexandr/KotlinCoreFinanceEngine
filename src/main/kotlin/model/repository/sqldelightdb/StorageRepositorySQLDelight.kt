@@ -3,8 +3,8 @@ package org.example.model.repository.sqldelightdb
 import com.example.ColorEntity
 import com.example.StorageEntity
 import com.example.StorageQueries
-import org.example.model.domain.ExistColor
 import org.example.model.domain.Currency
+import org.example.model.domain.ExistColor
 import org.example.model.domain.NewStorage
 import org.example.model.domain.Storage
 import org.example.model.domain.TypeStorage
@@ -80,19 +80,21 @@ class StorageRepositorySQLDelight(private val queries: StorageQueries): IStorage
         ).executeAsOneOrNull()?.toDomain(storage.color)
     }
 
-    override fun delete(storage: Storage): Storage? = queries.deleteById(storage.id).executeAsOneOrNull()?.toDomain(storage.color)
+    override fun delete(storage: Storage): Storage? = queries.deleteById(storage.id).executeAsOneOrNull()?.toDomain(
+        storage.color
+    )
 
-    fun StorageEntity.toDomain(color: ExistColor): Storage{
-        return Storage(
-            id = id,
-            name = name,
-            userId = user_id,
-            currency = Currency.valueOf(currency),
-            typeStorage = TypeStorage.valueOf(type_storage),
-            note = note,
-            color = color,
-            isStatistics = is_statistics==1L,
-            isArchive = is_archive==1L
-        )
-    }
+}
+fun StorageEntity.toDomain(color: ExistColor): Storage{
+    return Storage(
+        id = id,
+        name = name,
+        userId = user_id,
+        currency = Currency.valueOf(currency),
+        typeStorage = TypeStorage.valueOf(type_storage),
+        note = note,
+        color = color,
+        isStatistics = is_statistics==1L,
+        isArchive = is_archive==1L
+    )
 }

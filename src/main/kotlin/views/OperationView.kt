@@ -7,6 +7,8 @@ import org.example.model.domain.DebitTransaction
 import org.example.model.domain.Operation
 import org.example.model.domain.ResultMenu
 import org.example.model.domain.StateDomain
+import org.example.model.domain.StateDomainList
+import org.example.model.domain.Storage
 import org.example.model.domain.TransferTransaction
 import org.example.viewmodels.OperationViewModel
 
@@ -21,7 +23,7 @@ class OperationView(private val operationViewModel: OperationViewModel){
                     return ResultMenu.Exception(state.message)
                 }
             }
-            ViewService.printHeadersForMenu("Меню операции", displayOperations(currentOperation).toString())
+            ViewService.printHeadersForMenu("Меню операции", displayOperation(currentOperation).toString())
             ViewService.printActionsForMenu("-1. Выйти", "-2. Изменить", "-3. Удалить")
             ViewService.printBottom()
             ViewService.printHeaderChoose()
@@ -63,7 +65,7 @@ class OperationView(private val operationViewModel: OperationViewModel){
         TODO()
     }
 
-    fun displayOperations(operation: Operation){
+    fun displayOperation(operation: Operation){
         when(operation){
             is DebitTransaction -> {
                 println("ПРИХОД|${operation.date}|${operation.time}|+${operation.amount}|${operation.category}|$")
@@ -75,6 +77,13 @@ class OperationView(private val operationViewModel: OperationViewModel){
                 println("ПЕРЕВОД|${operation.date}|${operation.time}|${operation.fromStorage} --${operation.amount}--> ${operation.toStorage}|")
             }
             else -> throw IllegalArgumentException("Поступил неверный тип операции")
+        }
+    }
+
+    fun displayListOperationsByStorage(storage: Storage){
+        val stateListOperation = operationViewModel.getOperations(storage)
+        ViewService.printListDomain(stateListOperation){
+            displayOperation(it)
         }
     }
 }

@@ -72,6 +72,7 @@ class StorageView(private val storageViewModel: StorageViewModel, private val op
                 }
             }
             ViewService.printHeadersForMenu("Меню счета", currentStorage.name)
+            operationView.displayListOperationsByStorage(currentStorage)
             ViewService.printActionsForMenu("0. Добавить операцию", "-1. Выйти", "-2. Изменить", "-3. Удалить")
             ViewService.printBottom()
             ViewService.printHeaderChoose()

@@ -25,17 +25,22 @@ SELECT
     -- Данные хранилища
     st.id AS storage_id,
     st.name AS storage_name,
+    st.user_id AS user_id,
     st.currency AS storage_currency,
     st.type_storage AS storage_type,
     st.note AS storage_note,
     st.is_statistics AS storage_is_statistics,
+    st.is_archive AS storage_is_archive,
 
     -- Цвет хранилища
     stColor.id AS storage_color_id,
+    stColor.user_id AS storage_color_user_id,
     stColor.hex_code AS storage_color_hex,
 
     -- Данные категории
     cat.id AS category_id,
+    cat.parent_category_id AS category_parent_category_id,
+    cat.user_id AS category_user_id,
     cat.name AS category_name,
     cat.path_icon AS category_icon,
     cat.need AS category_need,
@@ -43,6 +48,7 @@ SELECT
 
     -- Цвет категории
     catColor.id AS category_color_id,
+    catColor.user_id AS category_color_user_id,
     catColor.hex_code AS category_color_hex
 FROM OperationEntity AS op
 INNER JOIN StorageEntity AS st ON op.storage_id = st.id
